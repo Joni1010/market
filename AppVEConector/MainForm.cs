@@ -159,7 +159,7 @@ namespace AppVEConector
                     {
                         if (row.Tag.NotIsNull())
                         {
-                            ShowGraphicDepth((Securities)row.Tag);
+                            ShowGraphicDepth(((Position)row.Tag).Sec);
                         }
                     }
                 };
@@ -225,7 +225,7 @@ namespace AppVEConector
                 {
                     if (p.Sec.NotIsNull())
                     {
-                        var row = listRowsPositions.FirstOrDefault(r => ((Securities)r.Tag).Code == p.Sec.Code.ToString());
+                        var row = listRowsPositions.FirstOrDefault(r => ((Position)r.Tag) == p);
                         if (row.IsNull())
                         {
                             var newRow = (DataGridViewRow)dataGridPositions.Rows[0].Clone();
@@ -236,24 +236,31 @@ namespace AppVEConector
 
                             Trader.RegisterSecurities(p.Sec);
                         }
-                        row.Tag = p.Sec;
+                        row.Tag = p;
                         row.Cells[0].Value = p.Sec.Name;
-                        row.Cells[1].Value = p.Sec.Code + ":" + p.Sec.Class.Code;
-                        row.Cells[2].Value = p.Sec.Lot.ToString();
-                        row.Cells[3].Value = p.Sec.StepPrice.ToString();
-                        row.Cells[4].Value = p.Sec.Params.BuyDepo.ToString();
-                        row.Cells[5].Value = p.Data.CurrentNet.ToString();
+                        row.Cells[1].Value = p.Client.NotIsNull() ? p.Client.Code + " " + p.Data.Type : "";
+                        row.Cells[2].Value = p.Sec.Code + ":" + p.Sec.Class.Code;
+                        row.Cells[3].Value = p.Sec.Lot.ToString();
+                        row.Cells[4].Value = p.Sec.StepPrice.ToString();
+                        row.Cells[5].Value = p.Sec.Params.BuyDepo.ToString();
+                        row.Cells[6].Value = p.Data.CurrentNet.ToString();
+                        setColorRow(row.Cells[6], p.Data.CurrentNet);
                         //Orders
-                        row.Cells[6].Value = p.Data.OrdersBuy.ToString() + " / " + p.Data.OrdersSell.ToString();
+                        row.Cells[7].Value = p.Data.OrdersBuy.ToString() + " / " + p.Data.OrdersSell.ToString();
                         //Var margin
-                        row.Cells[7].Value = p.Data.VarMargin.ToString();
-                        if (p.Data.VarMargin > 0) row.Cells[7].Style.BackColor = Color.LightGreen;
-                        if (p.Data.VarMargin == 0) row.Cells[7].Style.BackColor = Color.White;
-                        if (p.Data.VarMargin < 0) row.Cells[7].Style.BackColor = Color.LightCoral;
+                        row.Cells[8].Value = p.Data.VarMargin.ToString();
+                        setColorRow(row.Cells[8], p.Data.VarMargin);
                     }
                 });
                 i++;
             }
+        }
+
+        void setColorRow(DataGridViewCell cell, decimal value)
+        {
+            if (value > 0) cell.Style.BackColor = Color.LightGreen;
+            if (value < 0) cell.Style.BackColor = Color.LightCoral;
+            if (value == 0) cell.Style.BackColor = Color.White;
         }
 
         /// /////////////////////////////////////////////////////////////////////////
@@ -710,7 +717,6 @@ namespace AppVEConector
                 }
             }
         }
-
 
         DateTime Timer3s = DateTime.Now;
         DateTime Timer5s = DateTime.Now;

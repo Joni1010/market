@@ -63,6 +63,8 @@
             this.checkBoxStrechPrice = new System.Windows.Forms.CheckBox();
             this.checkBoxVisibleLevels = new System.Windows.Forms.CheckBox();
             this.checkBoxClearHorVol = new System.Windows.Forms.CheckBox();
+            this.numericUpDownTradeVolControl = new System.Windows.Forms.NumericUpDown();
+            this.label20 = new System.Windows.Forms.Label();
             this.panelRight = new System.Windows.Forms.Panel();
             this.panel7 = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -239,6 +241,7 @@
             this.panel8.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.tableLayoutPanel19.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTradeVolControl)).BeginInit();
             this.panelRight.SuspendLayout();
             this.panel7.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -405,7 +408,7 @@
             this.labelStatOrdBid.Location = new System.Drawing.Point(380, 19);
             this.labelStatOrdBid.Margin = new System.Windows.Forms.Padding(1);
             this.labelStatOrdBid.Name = "labelStatOrdBid";
-            this.labelStatOrdBid.Size = new System.Drawing.Size(92, 19);
+            this.labelStatOrdBid.Size = new System.Drawing.Size(78, 19);
             this.labelStatOrdBid.TabIndex = 17;
             this.labelStatOrdBid.Text = "10000 / 10000";
             this.labelStatOrdBid.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -415,7 +418,7 @@
             this.label6.Location = new System.Drawing.Point(380, 1);
             this.label6.Margin = new System.Windows.Forms.Padding(1);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(92, 16);
+            this.label6.Size = new System.Drawing.Size(78, 16);
             this.label6.TabIndex = 16;
             this.label6.Text = "Ord. B/A";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -507,12 +510,12 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 64F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 78F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 123F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 94F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 125F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 137F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 273F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 14F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 27F));
             this.tableLayoutPanel2.Controls.Add(this.buttonDec, 11, 0);
             this.tableLayoutPanel2.Controls.Add(this.buttonInc, 10, 0);
             this.tableLayoutPanel2.Controls.Add(this.label12, 0, 0);
@@ -530,13 +533,14 @@
             this.tableLayoutPanel2.Controls.Add(this.label27, 7, 0);
             this.tableLayoutPanel2.Controls.Add(this.labelATR, 7, 1);
             this.tableLayoutPanel2.Controls.Add(this.tableLayoutPanel19, 8, 0);
+            this.tableLayoutPanel2.Controls.Add(this.numericUpDownTradeVolControl, 9, 1);
+            this.tableLayoutPanel2.Controls.Add(this.label20, 9, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 3;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(913, 45);
             this.tableLayoutPanel2.TabIndex = 6;
@@ -547,7 +551,7 @@
             this.buttonDec.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonDec.BackgroundImage")));
             this.buttonDec.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.buttonDec.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.buttonDec.Location = new System.Drawing.Point(886, 0);
+            this.buttonDec.Location = new System.Drawing.Point(831, 0);
             this.buttonDec.Margin = new System.Windows.Forms.Padding(0);
             this.buttonDec.Name = "buttonDec";
             this.tableLayoutPanel2.SetRowSpan(this.buttonDec, 2);
@@ -562,7 +566,7 @@
             this.buttonInc.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("buttonInc.BackgroundImage")));
             this.buttonInc.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.buttonInc.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.buttonInc.Location = new System.Drawing.Point(859, 0);
+            this.buttonInc.Location = new System.Drawing.Point(801, 0);
             this.buttonInc.Margin = new System.Windows.Forms.Padding(0);
             this.buttonInc.Name = "buttonInc";
             this.tableLayoutPanel2.SetRowSpan(this.buttonInc, 2);
@@ -658,7 +662,7 @@
             // 
             // label27
             // 
-            this.label27.Location = new System.Drawing.Point(474, 1);
+            this.label27.Location = new System.Drawing.Point(460, 1);
             this.label27.Margin = new System.Windows.Forms.Padding(1);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(78, 14);
@@ -668,7 +672,7 @@
             // 
             // labelATR
             // 
-            this.labelATR.Location = new System.Drawing.Point(474, 19);
+            this.labelATR.Location = new System.Drawing.Point(460, 19);
             this.labelATR.Margin = new System.Windows.Forms.Padding(1);
             this.labelATR.Name = "labelATR";
             this.labelATR.Size = new System.Drawing.Size(78, 19);
@@ -678,24 +682,26 @@
             // 
             // tableLayoutPanel19
             // 
-            this.tableLayoutPanel19.ColumnCount = 5;
+            this.tableLayoutPanel19.ColumnCount = 7;
             this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 124F));
+            this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel19.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 43F));
             this.tableLayoutPanel19.Controls.Add(this.checkBoxMovePrice, 0, 0);
             this.tableLayoutPanel19.Controls.Add(this.checkBoxStrechPrice, 1, 0);
             this.tableLayoutPanel19.Controls.Add(this.checkBoxVisibleLevels, 3, 0);
             this.tableLayoutPanel19.Controls.Add(this.checkBoxClearHorVol, 2, 0);
-            this.tableLayoutPanel19.Location = new System.Drawing.Point(572, 0);
+            this.tableLayoutPanel19.Location = new System.Drawing.Point(539, 0);
             this.tableLayoutPanel19.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel19.Name = "tableLayoutPanel19";
             this.tableLayoutPanel19.RowCount = 2;
             this.tableLayoutPanel2.SetRowSpan(this.tableLayoutPanel19, 2);
             this.tableLayoutPanel19.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tableLayoutPanel19.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel19.Size = new System.Drawing.Size(244, 38);
+            this.tableLayoutPanel19.Size = new System.Drawing.Size(125, 38);
             this.tableLayoutPanel19.TabIndex = 32;
             // 
             // checkBoxMovePrice
@@ -742,6 +748,33 @@
             this.checkBoxClearHorVol.TabIndex = 32;
             this.checkBoxClearHorVol.UseVisualStyleBackColor = true;
             this.checkBoxClearHorVol.CheckedChanged += new System.EventHandler(this.checkBoxClearHorVol_CheckedChanged);
+            // 
+            // numericUpDownTradeVolControl
+            // 
+            this.numericUpDownTradeVolControl.Location = new System.Drawing.Point(667, 21);
+            this.numericUpDownTradeVolControl.Maximum = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
+            this.numericUpDownTradeVolControl.Name = "numericUpDownTradeVolControl";
+            this.numericUpDownTradeVolControl.Size = new System.Drawing.Size(59, 20);
+            this.numericUpDownTradeVolControl.TabIndex = 33;
+            this.numericUpDownTradeVolControl.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label20
+            // 
+            this.label20.Location = new System.Drawing.Point(665, 1);
+            this.label20.Margin = new System.Windows.Forms.Padding(1);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(118, 14);
+            this.label20.TabIndex = 34;
+            this.label20.Text = "Мин. обьем сделки";
+            this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panelRight
             // 
@@ -2850,6 +2883,7 @@
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             this.tableLayoutPanel19.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownTradeVolControl)).EndInit();
             this.panelRight.ResumeLayout(false);
             this.panel7.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
@@ -3132,5 +3166,7 @@
         private System.Windows.Forms.Button buttonACPriceUp;
         private System.Windows.Forms.Button buttonACPriceDown;
         private System.Windows.Forms.NumericUpDown numericUpDownStepDepth;
+        private System.Windows.Forms.NumericUpDown numericUpDownTradeVolControl;
+        private System.Windows.Forms.Label label20;
     }
 }

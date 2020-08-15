@@ -185,6 +185,11 @@ namespace AppVEConector
                     UpdateGraphic();
                 }
             };
+
+            numericUpDownTradeVolControl.ValueChanged += (s, e) =>
+            {
+                GraphicStock.ActiveTrades.MinVolumeShow = (int)numericUpDownTradeVolControl.Value;
+            };
             UpdateGraphic();
         }
 
@@ -605,13 +610,19 @@ namespace AppVEConector
             var check = (CheckBox)sender;
             if (check.Checked)
             {
-                if (!this.TrElement.Empty())
+                if (this.TrElement.NotIsNull())
+                {
                     this.Trader.RegisterDepth(Securities);
+                }
                 dataGridViewDepth.Enabled = false;
                 panelLock.Visible = true;
             }
             else
             {
+                if (this.TrElement.NotIsNull())
+                {
+                    this.Trader.UnregisterDepth(Securities);
+                }
                 dataGridViewDepth.Enabled = true;
                 panelLock.Visible = false;
             }
