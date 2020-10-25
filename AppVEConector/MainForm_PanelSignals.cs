@@ -20,22 +20,20 @@ namespace AppVEConector
 {
     public partial class MainForm : Form
     {
-        public static SignalGSM GSMSignaler = new SignalGSM();
-
         private Securities LastSecSignal = null;
         /// <summary>
         /// Последний выбранный сигнал в гриде
         /// </summary>
         //private SignalMarket SelSignal = null;
 
-        private int LastIndexSelectRow = 0;
+        protected int LastIndexSelectRow = 0;
 
         /// <summary>
         /// 
         /// </summary>
         public void InitPanelSignal()
         {
-            GSMSignaler.Phone = Connector.QuikConnector.ConfSettings.GetParam("Main", "PhoneSignal").Value;
+            SignalView.GSMSignaler.Phone = Connector.QuikConnector.ConfSettings.GetParam("Main", "PhoneSignal").Value;
 
             comboBoxSecSign.SetListValues(Global.GetWorkingListSec().ToArray());
             comboBoxSecSign.TextChanged += (s, e) =>
@@ -111,11 +109,11 @@ namespace AppVEConector
             comboBoxCond.SetListValues(new string[] { ">=", ">", "<=", "<", "==" });
             comboBoxCond.SelectedIndex = 0;
 
-            GSMSignaler.OnAdd += (s) =>
+            SignalView.GSMSignaler.OnAdd += (s) =>
             {
                 UpdateGridSignals();
             };
-            GSMSignaler.OnRemove += (s) =>
+            SignalView.GSMSignaler.OnRemove += (s) =>
             {
                 UpdateGridSignals();
             };
@@ -124,7 +122,7 @@ namespace AppVEConector
 			{
 				UpdateGridSignals();
 			};*/
-            GSMSignaler.Load();
+            SignalView.GSMSignaler.Load();
 
             buttonSignUp.Click += (s, e) => { MoveSignal(true); };
             buttonSignDown.Click += (s, e) => { MoveSignal(false); };
@@ -168,12 +166,12 @@ namespace AppVEConector
                                 {
                                     if (isUp)
                                     {
-                                        GSMSignaler.MoveUp((SignalMarket)r.Tag);
+                                        SignalView.GSMSignaler.MoveUp((SignalMarket)r.Tag);
                                         LastIndexSelectRow--;
                                     }
                                     else
                                     {
-                                        GSMSignaler.MoveDown((SignalMarket)r.Tag);
+                                        SignalView.GSMSignaler.MoveDown((SignalMarket)r.Tag);
                                         LastIndexSelectRow++;
                                     }
                                 }
@@ -192,12 +190,12 @@ namespace AppVEConector
         {
             foreach (var port in SignalPort.GetListPorts())
             {
-                if (GSMSignaler.PortDevice) break;
-                if (GSMSignaler.NotIsNull()) GSMSignaler.Close();
-                if (GSMSignaler.Init(port))
+                if (SignalView.GSMSignaler.PortDevice) break;
+                if (SignalView.GSMSignaler.NotIsNull()) SignalView.GSMSignaler.Close();
+                if (SignalView.GSMSignaler.Init(port))
                 {
-                    GSMSignaler.SendTestSignal();
-                    GSMSignaler.sPort.OnReceived = (data, objPort, sd) =>
+                    SignalView.GSMSignaler.SendTestSignal();
+                    SignalView.GSMSignaler.sPort.OnReceived = (data, objPort, sd) =>
                     {
                         if (data.Length > 1)
                         {
@@ -206,7 +204,7 @@ namespace AppVEConector
                             {
                                 comboBoxPorts.SelectedItem = objPort.PortName;
                             });
-                            GSMSignaler.PortDevice = true;
+                            SignalView.GSMSignaler.PortDevice = true;
                             return;
                         }
                     };
@@ -229,81 +227,30 @@ namespace AppVEConector
 
         public void UpdateGridSignals()
         {
-            dataGridViewListSign.GuiAsync(() =>
+            SignalView.constructGridSignals(dataGridViewListSign, comboBoxSecSign.Text, () =>
             {
-                dataGridViewListSign.Rows.Clear();
-                if (GSMSignaler.ToArray().Length > 0)
+                LastIndexSelectRow = LastIndexSelectRow < 0 ? 0 : LastIndexSelectRow;
+                LastIndexSelectRow = LastIndexSelectRow >= dataGridViewListSign.Rows.Count ? dataGridViewListSign.Rows.Count - 1 : LastIndexSelectRow;
+                foreach (DataGridViewRow row in dataGridViewListSign.Rows)
                 {
-                    int i = 0;
-                    foreach (var sig in GSMSignaler.ToArray())
+                    if (row.Index == LastIndexSelectRow)
                     {
-                        if (sig.SecClass == comboBoxSecSign.Text || comboBoxSecSign.Text.Empty() || comboBoxSecSign.Text.Length == 0)
-                        {
-                            var newRow = (DataGridViewRow)dataGridViewListSign.Rows[0].Clone();
-                            if (sig.Type == SignalMarket.TypeSignal.ByPrice)
-                            {
-                                newRow.Cells[0].Value = sig.SecClass;
-                                newRow.Cells[1].Value = "Price: " + sig.Price.ToString() + " (" + sig.Comment + ")";
-
-                                if (sig.Condition == SignalMarket.CondSignal.MoreOrEquals)
-                                    newRow.Cells[2].Value = ">=";
-                                else if (sig.Condition == SignalMarket.CondSignal.More)
-                                    newRow.Cells[2].Value = ">";
-                                else if (sig.Condition == SignalMarket.CondSignal.LessOrEquals)
-                                    newRow.Cells[2].Value = "<=";
-                                else if (sig.Condition == SignalMarket.CondSignal.Less)
-                                    newRow.Cells[2].Value = "<";
-                                else if (sig.Condition == SignalMarket.CondSignal.Equals)
-                                    newRow.Cells[2].Value = "==";
-                            }
-                            else if (sig.Type == SignalMarket.TypeSignal.ByVolume)
-                            {
-                                newRow.Cells[0].Value = sig.SecClass;
-                                newRow.Cells[1].Value = "Volume: " + sig.Volume.ToString() + " tf:" + sig.TimeFrame;
-                                newRow.Cells[2].Value = ">=";
-                            }
-                            else if (sig.Type == SignalMarket.TypeSignal.ByTime)
-                            {
-                                newRow.Cells[0].Value = sig.Comment;
-                                newRow.Cells[1].Value = "Time: " + sig.DateTime.GetDateTime().ToLongTimeString();
-                                newRow.Cells[2].Value = "==";
-                            }
-                            else
-                            {
-                                newRow.Cells[0].Value = "none";
-                                newRow.Cells[1].Value = "none";
-                                newRow.Cells[2].Value = "none";
-                            }
-                            dataGridViewListSign.Rows.Add(newRow);
-                            newRow.Tag = sig;
-                            i++;
-                        }
-                    }
-                    LastIndexSelectRow = LastIndexSelectRow < 0 ? 0 : LastIndexSelectRow;
-                    LastIndexSelectRow = LastIndexSelectRow >= dataGridViewListSign.Rows.Count ? dataGridViewListSign.Rows.Count - 1 : LastIndexSelectRow;
-                    foreach (DataGridViewRow row in dataGridViewListSign.Rows)
-                    {
-                        if (row.Index == LastIndexSelectRow)
-                        {
-                            row.Selected = true;
-                            dataGridViewListSign.FirstDisplayedScrollingRowIndex = LastIndexSelectRow;
-                        }
+                        row.Selected = true;
+                        dataGridViewListSign.FirstDisplayedScrollingRowIndex = LastIndexSelectRow;
                     }
                 }
             });
         }
-
-
 
         /// <summary>
         /// Проверка выполнения сигналов
         /// </summary>
         public void CheckAllSignals()
         {
-            if (!GSMSignaler.IsInit()) return;
+            if (!SignalView.GSMSignaler.IsInit()) return;
             Qlog.CatchException(() =>
             {
-                foreach (var sig in GSMSignaler.ToArray())
+                foreach (var sig in SignalView.GSMSignaler.ToArray())
                 {
                     switch (sig.Type)
                     {
@@ -328,8 +275,8 @@ namespace AppVEConector
                                                     if (candleCur.Volume >= sig.Volume && sig.TimeAntiRepeat.GetDateTime() < DateTime.Now)
                                                     {
                                                         sig.TimeAntiRepeat.SetDateTime(DateTime.Now.AddMinutes(sig.TimeFrame));
-                                                        GSMSignaler.SendSignalCall();
-                                                        if (!sig.Infinity) GSMSignaler.RemoveSignal(sig);
+                                                        SignalView.GSMSignaler.SendSignalCall();
+                                                        if (!sig.Infinity) SignalView.GSMSignaler.RemoveSignal(sig);
                                                         textBoxLogSign.Text = "Volume: " + sig.SecClass + " > " + sig.Volume.ToString() + " tf:" + sig.TimeFrame + " [" + DateTime.Now.ToString() + "] (" + sig.Comment + ")" +
                                                             "\r\n-------------------------------\r\n" +
                                                             textBoxLogSign.Text;
@@ -356,7 +303,7 @@ namespace AppVEConector
                                     {
                                         if (!sig.Infinity)
                                         {
-                                            GSMSignaler.RemoveSignal(sig);
+                                            SignalView.GSMSignaler.RemoveSignal(sig);
                                         }
                                         string msg = "Time: " + sig.DateTime.GetDateTime().ToShortTimeString() + " (" + sig.Comment + ")" +
                                             "\r\n-------------------------------\r\n";
@@ -381,7 +328,7 @@ namespace AppVEConector
                                         case SignalMarket.CondSignal.MoreOrEquals:
                                             if (sec.LastPrice >= sig.Price)
                                             {
-                                                GSMSignaler.SendSignalCall();
+                                                SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
                                                 cond = ">=";
                                             }
@@ -389,7 +336,7 @@ namespace AppVEConector
                                         case SignalMarket.CondSignal.More:
                                             if (sec.LastPrice > sig.Price)
                                             {
-                                                GSMSignaler.SendSignalCall();
+                                                SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
                                                 cond = ">";
                                             }
@@ -397,7 +344,7 @@ namespace AppVEConector
                                         case SignalMarket.CondSignal.LessOrEquals:
                                             if (sec.LastPrice <= sig.Price)
                                             {
-                                                GSMSignaler.SendSignalCall();
+                                                SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
                                                 cond = "<=";
                                             }
@@ -405,7 +352,7 @@ namespace AppVEConector
                                         case SignalMarket.CondSignal.Less:
                                             if (sec.LastPrice < sig.Price)
                                             {
-                                                GSMSignaler.SendSignalCall();
+                                                SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
                                                 cond = "<";
                                             }
@@ -413,7 +360,7 @@ namespace AppVEConector
                                         case SignalMarket.CondSignal.Equals:
                                             if (sec.LastPrice < sig.Price)
                                             {
-                                                GSMSignaler.SendSignalCall();
+                                                SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
                                                 cond = "==";
                                             }
@@ -426,7 +373,7 @@ namespace AppVEConector
                                             "\r\n";
                                         textBoxLogSign.Text = msg + textBoxLogSign.Text;
                                         Form_MessageSignal.Show(msg);
-                                        GSMSignaler.RemoveSignal(sig);
+                                        SignalView.GSMSignaler.RemoveSignal(sig);
                                         Thread.Sleep(1);
                                     }
                                 }
@@ -460,7 +407,7 @@ namespace AppVEConector
         {
             if (data.Contains("RING") && data.Contains("CLIP"))
             {
-                if (data.Contains(GSMSignaler.Phone.Replace("+", "")))
+                if (data.Contains(SignalView.GSMSignaler.Phone.Replace("+", "")))
                 {
                     if (LastIncomingCall > DateTime.Now.AddSeconds(-60))
                     {
@@ -468,7 +415,7 @@ namespace AppVEConector
                         if (CounterCalls == 8)
                         {
                             MProcess.CloseTerminal();
-                            GSMSignaler.SendSignalResetCall();
+                            SignalView.GSMSignaler.SendSignalResetCall();
                         }
                     }
                     else
@@ -505,7 +452,7 @@ namespace AppVEConector
                 Condition = cond,
                 Comment = textBoxSignComment.Text
             };
-            GSMSignaler.AddSignal(newSign);
+            SignalView.GSMSignaler.AddSignal(newSign);
             textBoxSignComment.Text = "";
         }
 
@@ -519,7 +466,7 @@ namespace AppVEConector
                 Comment = textBoxSignComment.Text,
                 Infinity = true
             };
-            GSMSignaler.AddSignal(newSign);
+            SignalView.GSMSignaler.AddSignal(newSign);
             textBoxSignComment.Text = "";
         }
 
@@ -542,7 +489,7 @@ namespace AppVEConector
                     Comment = textBoxSignComment.Text,
                     Infinity = true
                 };
-                GSMSignaler.AddSignal(newSign);
+                SignalView.GSMSignaler.AddSignal(newSign);
                 textBoxSignComment.Text = "";
             });
         }
@@ -564,7 +511,7 @@ namespace AppVEConector
                                 if (r.Tag is SignalMarket)
                                 {
                                     LastIndexSelectRow = r.Index - 1;
-                                    GSMSignaler.RemoveSignal((SignalMarket)r.Tag);
+                                    SignalView.GSMSignaler.RemoveSignal((SignalMarket)r.Tag);
                                 }
                             }
                         }
@@ -599,11 +546,11 @@ namespace AppVEConector
 
         private void SetPort(string namePort)
         {
-            if (GSMSignaler.NotIsNull()) GSMSignaler.Close();
-            if (GSMSignaler.Init(namePort))
+            if (SignalView.GSMSignaler.NotIsNull()) SignalView.GSMSignaler.Close();
+            if (SignalView.GSMSignaler.Init(namePort))
             {
-                GSMSignaler.sPort.OnReceived = null;
-                GSMSignaler.sPort.OnReceived = DataFromPorts;
+                SignalView.GSMSignaler.sPort.OnReceived = null;
+                SignalView.GSMSignaler.sPort.OnReceived = DataFromPorts;
             }
             this.GuiAsync(() =>
             {
@@ -621,21 +568,21 @@ namespace AppVEConector
 
         private void buttonSignTestCall_Click(object sender, EventArgs e)
         {
-            GSMSignaler.SendSignalCall();
+            SignalView.GSMSignaler.SendSignalCall();
             MThread.InitThread(() =>
             {
                 Thread.Sleep(15000);
-                GSMSignaler.SendSignalResetCall();
+                SignalView.GSMSignaler.SendSignalResetCall();
             });
         }
 
         private void buttonSignTestDev_Click(object sender, EventArgs e)
         {
-            GSMSignaler.SendTestSignal();
+            SignalView.GSMSignaler.SendTestSignal();
             MThread.InitThread(() =>
             {
                 Thread.Sleep(1000);
-                GSMSignaler.SendTestSignal(false);
+                SignalView.GSMSignaler.SendTestSignal(false);
             });
         }
     }

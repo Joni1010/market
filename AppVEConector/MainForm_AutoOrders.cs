@@ -1,4 +1,5 @@
 ﻿using AppVEConector.libs;
+using AppVEConector.libs.Signal;
 using Managers;
 using MarketObjects;
 using System;
@@ -280,7 +281,7 @@ namespace AppVEConector
                             ObjAutoOrders.Delete(ord);
 
                             Trader.CreateOrder(order);
-                            GSMSignaler.SendSignalCall();
+                            SignalView.GSMSignaler.SendSignalCall();
 
                             textBoxLogSign.GuiAsync(() =>
                             {

@@ -200,7 +200,7 @@ namespace GraphicTools.Extension
             RightPrices.Panel.SetRect(GRectangle.Join(Candels.Panel.RectScreen, RightPrices.Panel.RectScreen));
 
             GHorVolumes.Panel.SetRect(Candels.Panel.RectScreen);
-            GHorVolumes.PanelVolume.SetRect(Candels.Panel.ExtractRight(100));
+            GHorVolumes.PanelVolume.SetRect(Candels.Panel.ExtractRight(150));
             Candels.Panel.ExtractRight(15);
 
             //Ширина свечки
@@ -600,8 +600,13 @@ namespace GraphicTools.Extension
                     }
                     else if (TypeHorVolume == 2 || TypeHorVolume == 3)
                     {
-                        GHorVolumes.PaintHorVolByPeriodCandleDelta();
-                    } else if (TypeHorVolume == 4)
+                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, false);
+                    }
+                    else if (TypeHorVolume == 5)
+                    {
+                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, true);
+                    }
+                    else if (TypeHorVolume == 4)
                     {
                         GHorVolumes.PaintCollectionHVol();
                     }

@@ -18,6 +18,7 @@ using AppVEConector.GraphicTools.Indicators;
 using GraphicTools.Extension;
 using System.Drawing;
 using GraphicTools.Base;
+using AppVEConector.libs.Signal;
 
 namespace AppVEConector
 {
@@ -940,7 +941,7 @@ namespace AppVEConector
 
         private void buttonSignals_Click(object sender, EventArgs e)
         {
-            FormSignalGsm formSignal = new FormSignalGsm(this.TrElement, MainForm.GSMSignaler);
+            FormSignalGsm formSignal = new FormSignalGsm(this.TrElement, SignalView.GSMSignaler);
             formSignal.ShowDialog();
         }
 

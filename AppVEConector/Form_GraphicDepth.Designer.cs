@@ -150,28 +150,35 @@
             this.buttonOrder10Plus = new System.Windows.Forms.Button();
             this.buttonOrder10Minus = new System.Windows.Forms.Button();
             this.tabPageLevels = new System.Windows.Forms.TabPage();
-            this.panel1 = new System.Windows.Forms.Panel();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel17 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonSignalUpdate = new System.Windows.Forms.Button();
+            this.dataGridViewSignal = new System.Windows.Forms.DataGridView();
+            this.ColumnSec = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnValue = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnCondition = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.buttonSignalDelete = new System.Windows.Forms.Button();
             this.groupBoxLevels = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label23 = new System.Windows.Forms.Label();
-            this.label22 = new System.Windows.Forms.Label();
-            this.numericUpDownPriceLevel = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDownPriceLevel2 = new System.Windows.Forms.NumericUpDown();
-            this.label21 = new System.Windows.Forms.Label();
-            this.textBoxDateTimeLevel1 = new System.Windows.Forms.TextBox();
-            this.textBoxDateTimeLevel2 = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel18 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkBoxPLAddLevelOnGraphic = new System.Windows.Forms.CheckBox();
-            this.checkBoxPLAddRectLevlOnGraphic = new System.Windows.Forms.CheckBox();
-            this.buttonAddLevel = new System.Windows.Forms.Button();
-            this.buttonDelLevel = new System.Windows.Forms.Button();
-            this.buttonEditLevel = new System.Windows.Forms.Button();
             this.dataGridViewLList = new System.Windows.Forms.DataGridView();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.label21 = new System.Windows.Forms.Label();
+            this.numericUpDownPriceLevel = new System.Windows.Forms.NumericUpDown();
+            this.label22 = new System.Windows.Forms.Label();
+            this.numericUpDownPriceLevel2 = new System.Windows.Forms.NumericUpDown();
+            this.label23 = new System.Windows.Forms.Label();
+            this.textBoxDateTimeLevel1 = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.textBoxDateTimeLevel2 = new System.Windows.Forms.TextBox();
+            this.buttonEditLevel = new System.Windows.Forms.Button();
+            this.buttonDelLevel = new System.Windows.Forms.Button();
+            this.buttonAddLevel = new System.Windows.Forms.Button();
+            this.tableLayoutPanel18 = new System.Windows.Forms.TableLayoutPanel();
+            this.checkBoxPLAddLevelOnGraphic = new System.Windows.Forms.CheckBox();
+            this.checkBoxPLAddRectLevlOnGraphic = new System.Windows.Forms.CheckBox();
             this.tabPageHistory = new System.Windows.Forms.TabPage();
             this.groupBoxStopOrd = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
@@ -228,6 +235,7 @@
             this.неПоказыватToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemHorVolByStep = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemHorVolPeriod = new System.Windows.Forms.ToolStripMenuItem();
+            this.диапазондельтаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemHorVolCurrent = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuItemHorVolCollect = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -274,13 +282,15 @@
             this.panelControl.SuspendLayout();
             this.tableLayoutPanel5.SuspendLayout();
             this.tabPageLevels.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.tableLayoutPanel17.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSignal)).BeginInit();
             this.groupBoxLevels.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPriceLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPriceLevel2)).BeginInit();
             this.tableLayoutPanel18.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLList)).BeginInit();
             this.tabPageHistory.SuspendLayout();
             this.groupBoxStopOrd.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
@@ -760,11 +770,6 @@
             this.numericUpDownTradeVolControl.Name = "numericUpDownTradeVolControl";
             this.numericUpDownTradeVolControl.Size = new System.Drawing.Size(59, 20);
             this.numericUpDownTradeVolControl.TabIndex = 33;
-            this.numericUpDownTradeVolControl.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // label20
             // 
@@ -1864,7 +1869,8 @@
             // 
             // tabPageLevels
             // 
-            this.tabPageLevels.Controls.Add(this.panel1);
+            this.tabPageLevels.Controls.Add(this.groupBox6);
+            this.tabPageLevels.Controls.Add(this.groupBoxLevels);
             this.tabPageLevels.Location = new System.Drawing.Point(4, 22);
             this.tabPageLevels.Name = "tabPageLevels";
             this.tabPageLevels.Size = new System.Drawing.Size(280, 750);
@@ -1872,24 +1878,103 @@
             this.tabPageLevels.Text = "Уровни";
             this.tabPageLevels.UseVisualStyleBackColor = true;
             // 
-            // panel1
+            // groupBox6
             // 
-            this.panel1.Controls.Add(this.groupBoxLevels);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Margin = new System.Windows.Forms.Padding(10);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(280, 520);
-            this.panel1.TabIndex = 0;
+            this.groupBox6.Controls.Add(this.tableLayoutPanel17);
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBox6.Location = new System.Drawing.Point(0, 385);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(280, 344);
+            this.groupBox6.TabIndex = 2;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Сигналы";
+            // 
+            // tableLayoutPanel17
+            // 
+            this.tableLayoutPanel17.ColumnCount = 2;
+            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel17.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel17.Controls.Add(this.buttonSignalUpdate, 0, 1);
+            this.tableLayoutPanel17.Controls.Add(this.dataGridViewSignal, 0, 0);
+            this.tableLayoutPanel17.Controls.Add(this.buttonSignalDelete, 1, 1);
+            this.tableLayoutPanel17.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel17.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel17.Name = "tableLayoutPanel17";
+            this.tableLayoutPanel17.RowCount = 4;
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel17.Size = new System.Drawing.Size(274, 325);
+            this.tableLayoutPanel17.TabIndex = 0;
+            // 
+            // buttonSignalUpdate
+            // 
+            this.buttonSignalUpdate.Location = new System.Drawing.Point(1, 201);
+            this.buttonSignalUpdate.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonSignalUpdate.Name = "buttonSignalUpdate";
+            this.buttonSignalUpdate.Size = new System.Drawing.Size(135, 20);
+            this.buttonSignalUpdate.TabIndex = 16;
+            this.buttonSignalUpdate.Text = "Обновить";
+            this.buttonSignalUpdate.UseVisualStyleBackColor = true;
+            // 
+            // dataGridViewSignal
+            // 
+            this.dataGridViewSignal.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewSignal.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColumnSec,
+            this.ColumnValue,
+            this.ColumnCondition});
+            this.tableLayoutPanel17.SetColumnSpan(this.dataGridViewSignal, 2);
+            this.dataGridViewSignal.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridViewSignal.Location = new System.Drawing.Point(3, 3);
+            this.dataGridViewSignal.Name = "dataGridViewSignal";
+            this.dataGridViewSignal.ReadOnly = true;
+            this.dataGridViewSignal.RowHeadersVisible = false;
+            this.dataGridViewSignal.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewSignal.Size = new System.Drawing.Size(268, 194);
+            this.dataGridViewSignal.TabIndex = 0;
+            // 
+            // ColumnSec
+            // 
+            this.ColumnSec.HeaderText = "Инструмент";
+            this.ColumnSec.Name = "ColumnSec";
+            this.ColumnSec.ReadOnly = true;
+            this.ColumnSec.Width = 10;
+            // 
+            // ColumnValue
+            // 
+            this.ColumnValue.HeaderText = "Значение";
+            this.ColumnValue.Name = "ColumnValue";
+            this.ColumnValue.ReadOnly = true;
+            this.ColumnValue.Width = 150;
+            // 
+            // ColumnCondition
+            // 
+            this.ColumnCondition.HeaderText = "Условие";
+            this.ColumnCondition.Name = "ColumnCondition";
+            this.ColumnCondition.ReadOnly = true;
+            // 
+            // buttonSignalDelete
+            // 
+            this.buttonSignalDelete.Location = new System.Drawing.Point(138, 201);
+            this.buttonSignalDelete.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonSignalDelete.Name = "buttonSignalDelete";
+            this.buttonSignalDelete.Size = new System.Drawing.Size(135, 20);
+            this.buttonSignalDelete.TabIndex = 2;
+            this.buttonSignalDelete.Text = "Удалить";
+            this.buttonSignalDelete.UseVisualStyleBackColor = true;
             // 
             // groupBoxLevels
             // 
             this.groupBoxLevels.Controls.Add(this.tableLayoutPanel7);
-            this.groupBoxLevels.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxLevels.Dock = System.Windows.Forms.DockStyle.Top;
             this.groupBoxLevels.Location = new System.Drawing.Point(0, 0);
             this.groupBoxLevels.Name = "groupBoxLevels";
-            this.groupBoxLevels.Size = new System.Drawing.Size(280, 520);
-            this.groupBoxLevels.TabIndex = 0;
+            this.groupBoxLevels.Size = new System.Drawing.Size(280, 385);
+            this.groupBoxLevels.TabIndex = 1;
             this.groupBoxLevels.TabStop = false;
             this.groupBoxLevels.Text = "Уровни";
             // 
@@ -1898,182 +1983,38 @@
             this.tableLayoutPanel7.ColumnCount = 2;
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel7.Controls.Add(this.label24, 0, 8);
-            this.tableLayoutPanel7.Controls.Add(this.label23, 0, 7);
-            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 6);
-            this.tableLayoutPanel7.Controls.Add(this.numericUpDownPriceLevel, 1, 5);
-            this.tableLayoutPanel7.Controls.Add(this.numericUpDownPriceLevel2, 1, 6);
-            this.tableLayoutPanel7.Controls.Add(this.label21, 0, 5);
-            this.tableLayoutPanel7.Controls.Add(this.textBoxDateTimeLevel1, 1, 7);
-            this.tableLayoutPanel7.Controls.Add(this.textBoxDateTimeLevel2, 1, 8);
-            this.tableLayoutPanel7.Controls.Add(this.tableLayoutPanel18, 0, 11);
-            this.tableLayoutPanel7.Controls.Add(this.buttonAddLevel, 0, 10);
-            this.tableLayoutPanel7.Controls.Add(this.buttonDelLevel, 1, 10);
-            this.tableLayoutPanel7.Controls.Add(this.buttonEditLevel, 1, 9);
             this.tableLayoutPanel7.Controls.Add(this.dataGridViewLList, 0, 0);
+            this.tableLayoutPanel7.Controls.Add(this.label21, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.numericUpDownPriceLevel, 1, 1);
+            this.tableLayoutPanel7.Controls.Add(this.label22, 0, 2);
+            this.tableLayoutPanel7.Controls.Add(this.numericUpDownPriceLevel2, 1, 2);
+            this.tableLayoutPanel7.Controls.Add(this.label23, 0, 3);
+            this.tableLayoutPanel7.Controls.Add(this.textBoxDateTimeLevel1, 0, 4);
+            this.tableLayoutPanel7.Controls.Add(this.label24, 1, 3);
+            this.tableLayoutPanel7.Controls.Add(this.textBoxDateTimeLevel2, 1, 4);
+            this.tableLayoutPanel7.Controls.Add(this.buttonEditLevel, 1, 5);
+            this.tableLayoutPanel7.Controls.Add(this.buttonDelLevel, 1, 6);
+            this.tableLayoutPanel7.Controls.Add(this.buttonAddLevel, 0, 5);
+            this.tableLayoutPanel7.Controls.Add(this.tableLayoutPanel18, 0, 7);
             this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel7.Name = "tableLayoutPanel7";
             this.tableLayoutPanel7.RowCount = 13;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 150F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(274, 501);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(274, 366);
             this.tableLayoutPanel7.TabIndex = 1;
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(1, 249);
-            this.label24.Margin = new System.Windows.Forms.Padding(1);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(88, 13);
-            this.label24.TabIndex = 13;
-            this.label24.Text = "Date candle right";
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(1, 227);
-            this.label23.Margin = new System.Windows.Forms.Padding(1);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(82, 13);
-            this.label23.TabIndex = 12;
-            this.label23.Text = "Date candle left";
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(1, 205);
-            this.label22.Margin = new System.Windows.Forms.Padding(1);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(66, 13);
-            this.label22.TabIndex = 9;
-            this.label22.Text = "Price bottom";
-            // 
-            // numericUpDownPriceLevel
-            // 
-            this.numericUpDownPriceLevel.Location = new System.Drawing.Point(138, 183);
-            this.numericUpDownPriceLevel.Margin = new System.Windows.Forms.Padding(1);
-            this.numericUpDownPriceLevel.Name = "numericUpDownPriceLevel";
-            this.numericUpDownPriceLevel.Size = new System.Drawing.Size(107, 20);
-            this.numericUpDownPriceLevel.TabIndex = 2;
-            // 
-            // numericUpDownPriceLevel2
-            // 
-            this.numericUpDownPriceLevel2.Location = new System.Drawing.Point(138, 205);
-            this.numericUpDownPriceLevel2.Margin = new System.Windows.Forms.Padding(1);
-            this.numericUpDownPriceLevel2.Name = "numericUpDownPriceLevel2";
-            this.numericUpDownPriceLevel2.Size = new System.Drawing.Size(107, 20);
-            this.numericUpDownPriceLevel2.TabIndex = 4;
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(1, 183);
-            this.label21.Margin = new System.Windows.Forms.Padding(1);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(81, 13);
-            this.label21.TabIndex = 8;
-            this.label21.Text = "Price top (base)";
-            // 
-            // textBoxDateTimeLevel1
-            // 
-            this.textBoxDateTimeLevel1.Location = new System.Drawing.Point(138, 227);
-            this.textBoxDateTimeLevel1.Margin = new System.Windows.Forms.Padding(1);
-            this.textBoxDateTimeLevel1.Name = "textBoxDateTimeLevel1";
-            this.textBoxDateTimeLevel1.Size = new System.Drawing.Size(131, 20);
-            this.textBoxDateTimeLevel1.TabIndex = 10;
-            // 
-            // textBoxDateTimeLevel2
-            // 
-            this.textBoxDateTimeLevel2.Location = new System.Drawing.Point(138, 249);
-            this.textBoxDateTimeLevel2.Margin = new System.Windows.Forms.Padding(1);
-            this.textBoxDateTimeLevel2.Name = "textBoxDateTimeLevel2";
-            this.textBoxDateTimeLevel2.Size = new System.Drawing.Size(131, 20);
-            this.textBoxDateTimeLevel2.TabIndex = 11;
-            // 
-            // tableLayoutPanel18
-            // 
-            this.tableLayoutPanel18.ColumnCount = 6;
-            this.tableLayoutPanel7.SetColumnSpan(this.tableLayoutPanel18, 2);
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
-            this.tableLayoutPanel18.Controls.Add(this.checkBoxPLAddLevelOnGraphic, 0, 0);
-            this.tableLayoutPanel18.Controls.Add(this.checkBoxPLAddRectLevlOnGraphic, 1, 0);
-            this.tableLayoutPanel18.Location = new System.Drawing.Point(0, 330);
-            this.tableLayoutPanel18.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel18.Name = "tableLayoutPanel18";
-            this.tableLayoutPanel18.RowCount = 1;
-            this.tableLayoutPanel18.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel18.Size = new System.Drawing.Size(269, 35);
-            this.tableLayoutPanel18.TabIndex = 14;
-            // 
-            // checkBoxPLAddLevelOnGraphic
-            // 
-            this.checkBoxPLAddLevelOnGraphic.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBoxPLAddLevelOnGraphic.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxPLAddLevelOnGraphic.Image")));
-            this.checkBoxPLAddLevelOnGraphic.Location = new System.Drawing.Point(1, 1);
-            this.checkBoxPLAddLevelOnGraphic.Margin = new System.Windows.Forms.Padding(1);
-            this.checkBoxPLAddLevelOnGraphic.Name = "checkBoxPLAddLevelOnGraphic";
-            this.checkBoxPLAddLevelOnGraphic.Size = new System.Drawing.Size(27, 27);
-            this.checkBoxPLAddLevelOnGraphic.TabIndex = 6;
-            this.checkBoxPLAddLevelOnGraphic.UseVisualStyleBackColor = true;
-            // 
-            // checkBoxPLAddRectLevlOnGraphic
-            // 
-            this.checkBoxPLAddRectLevlOnGraphic.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBoxPLAddRectLevlOnGraphic.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxPLAddRectLevlOnGraphic.Image")));
-            this.checkBoxPLAddRectLevlOnGraphic.Location = new System.Drawing.Point(31, 1);
-            this.checkBoxPLAddRectLevlOnGraphic.Margin = new System.Windows.Forms.Padding(1);
-            this.checkBoxPLAddRectLevlOnGraphic.Name = "checkBoxPLAddRectLevlOnGraphic";
-            this.checkBoxPLAddRectLevlOnGraphic.Size = new System.Drawing.Size(27, 27);
-            this.checkBoxPLAddRectLevlOnGraphic.TabIndex = 7;
-            this.checkBoxPLAddRectLevlOnGraphic.UseVisualStyleBackColor = true;
-            // 
-            // buttonAddLevel
-            // 
-            this.buttonAddLevel.Location = new System.Drawing.Point(1, 296);
-            this.buttonAddLevel.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonAddLevel.Name = "buttonAddLevel";
-            this.buttonAddLevel.Size = new System.Drawing.Size(135, 20);
-            this.buttonAddLevel.TabIndex = 1;
-            this.buttonAddLevel.Text = "Добавить";
-            this.buttonAddLevel.UseVisualStyleBackColor = true;
-            // 
-            // buttonDelLevel
-            // 
-            this.buttonDelLevel.Location = new System.Drawing.Point(138, 296);
-            this.buttonDelLevel.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonDelLevel.Name = "buttonDelLevel";
-            this.buttonDelLevel.Size = new System.Drawing.Size(135, 20);
-            this.buttonDelLevel.TabIndex = 3;
-            this.buttonDelLevel.Text = "Удалить";
-            this.buttonDelLevel.UseVisualStyleBackColor = true;
-            // 
-            // buttonEditLevel
-            // 
-            this.buttonEditLevel.Location = new System.Drawing.Point(138, 271);
-            this.buttonEditLevel.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonEditLevel.Name = "buttonEditLevel";
-            this.buttonEditLevel.Size = new System.Drawing.Size(135, 20);
-            this.buttonEditLevel.TabIndex = 15;
-            this.buttonEditLevel.Text = "Изменить";
-            this.buttonEditLevel.UseVisualStyleBackColor = true;
             // 
             // dataGridViewLList
             // 
@@ -2092,7 +2033,7 @@
             this.dataGridViewLList.ReadOnly = true;
             this.dataGridViewLList.RowHeadersVisible = false;
             this.dataGridViewLList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewLList.Size = new System.Drawing.Size(274, 150);
+            this.dataGridViewLList.Size = new System.Drawing.Size(274, 200);
             this.dataGridViewLList.TabIndex = 17;
             // 
             // dataGridViewTextBoxColumn1
@@ -2122,6 +2063,154 @@
             this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
             this.dataGridViewTextBoxColumn4.ReadOnly = true;
             this.dataGridViewTextBoxColumn4.Width = 80;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(1, 201);
+            this.label21.Margin = new System.Windows.Forms.Padding(1);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(81, 13);
+            this.label21.TabIndex = 8;
+            this.label21.Text = "Price top (base)";
+            // 
+            // numericUpDownPriceLevel
+            // 
+            this.numericUpDownPriceLevel.Location = new System.Drawing.Point(138, 201);
+            this.numericUpDownPriceLevel.Margin = new System.Windows.Forms.Padding(1);
+            this.numericUpDownPriceLevel.Name = "numericUpDownPriceLevel";
+            this.numericUpDownPriceLevel.Size = new System.Drawing.Size(107, 20);
+            this.numericUpDownPriceLevel.TabIndex = 2;
+            // 
+            // label22
+            // 
+            this.label22.AutoSize = true;
+            this.label22.Location = new System.Drawing.Point(1, 223);
+            this.label22.Margin = new System.Windows.Forms.Padding(1);
+            this.label22.Name = "label22";
+            this.label22.Size = new System.Drawing.Size(66, 13);
+            this.label22.TabIndex = 9;
+            this.label22.Text = "Price bottom";
+            // 
+            // numericUpDownPriceLevel2
+            // 
+            this.numericUpDownPriceLevel2.Location = new System.Drawing.Point(138, 223);
+            this.numericUpDownPriceLevel2.Margin = new System.Windows.Forms.Padding(1);
+            this.numericUpDownPriceLevel2.Name = "numericUpDownPriceLevel2";
+            this.numericUpDownPriceLevel2.Size = new System.Drawing.Size(107, 20);
+            this.numericUpDownPriceLevel2.TabIndex = 4;
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label23.Location = new System.Drawing.Point(1, 245);
+            this.label23.Margin = new System.Windows.Forms.Padding(1);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(135, 13);
+            this.label23.TabIndex = 12;
+            this.label23.Text = "Date candle left";
+            this.label23.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // textBoxDateTimeLevel1
+            // 
+            this.textBoxDateTimeLevel1.Location = new System.Drawing.Point(1, 267);
+            this.textBoxDateTimeLevel1.Margin = new System.Windows.Forms.Padding(1);
+            this.textBoxDateTimeLevel1.Name = "textBoxDateTimeLevel1";
+            this.textBoxDateTimeLevel1.Size = new System.Drawing.Size(131, 20);
+            this.textBoxDateTimeLevel1.TabIndex = 10;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label24.Location = new System.Drawing.Point(138, 245);
+            this.label24.Margin = new System.Windows.Forms.Padding(1);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(135, 13);
+            this.label24.TabIndex = 13;
+            this.label24.Text = "Date candle right";
+            this.label24.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // textBoxDateTimeLevel2
+            // 
+            this.textBoxDateTimeLevel2.Location = new System.Drawing.Point(138, 267);
+            this.textBoxDateTimeLevel2.Margin = new System.Windows.Forms.Padding(1);
+            this.textBoxDateTimeLevel2.Name = "textBoxDateTimeLevel2";
+            this.textBoxDateTimeLevel2.Size = new System.Drawing.Size(131, 20);
+            this.textBoxDateTimeLevel2.TabIndex = 11;
+            // 
+            // buttonEditLevel
+            // 
+            this.buttonEditLevel.Location = new System.Drawing.Point(138, 289);
+            this.buttonEditLevel.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonEditLevel.Name = "buttonEditLevel";
+            this.buttonEditLevel.Size = new System.Drawing.Size(135, 20);
+            this.buttonEditLevel.TabIndex = 15;
+            this.buttonEditLevel.Text = "Изменить";
+            this.buttonEditLevel.UseVisualStyleBackColor = true;
+            // 
+            // buttonDelLevel
+            // 
+            this.buttonDelLevel.Location = new System.Drawing.Point(138, 311);
+            this.buttonDelLevel.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonDelLevel.Name = "buttonDelLevel";
+            this.buttonDelLevel.Size = new System.Drawing.Size(135, 20);
+            this.buttonDelLevel.TabIndex = 3;
+            this.buttonDelLevel.Text = "Удалить";
+            this.buttonDelLevel.UseVisualStyleBackColor = true;
+            // 
+            // buttonAddLevel
+            // 
+            this.buttonAddLevel.Location = new System.Drawing.Point(1, 289);
+            this.buttonAddLevel.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonAddLevel.Name = "buttonAddLevel";
+            this.buttonAddLevel.Size = new System.Drawing.Size(135, 20);
+            this.buttonAddLevel.TabIndex = 1;
+            this.buttonAddLevel.Text = "Добавить";
+            this.buttonAddLevel.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel18
+            // 
+            this.tableLayoutPanel18.ColumnCount = 6;
+            this.tableLayoutPanel7.SetColumnSpan(this.tableLayoutPanel18, 2);
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
+            this.tableLayoutPanel18.Controls.Add(this.checkBoxPLAddLevelOnGraphic, 0, 0);
+            this.tableLayoutPanel18.Controls.Add(this.checkBoxPLAddRectLevlOnGraphic, 1, 0);
+            this.tableLayoutPanel18.Location = new System.Drawing.Point(0, 332);
+            this.tableLayoutPanel18.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel18.Name = "tableLayoutPanel18";
+            this.tableLayoutPanel18.RowCount = 1;
+            this.tableLayoutPanel18.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel18.Size = new System.Drawing.Size(269, 26);
+            this.tableLayoutPanel18.TabIndex = 14;
+            // 
+            // checkBoxPLAddLevelOnGraphic
+            // 
+            this.checkBoxPLAddLevelOnGraphic.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxPLAddLevelOnGraphic.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxPLAddLevelOnGraphic.Image")));
+            this.checkBoxPLAddLevelOnGraphic.Location = new System.Drawing.Point(1, 1);
+            this.checkBoxPLAddLevelOnGraphic.Margin = new System.Windows.Forms.Padding(1);
+            this.checkBoxPLAddLevelOnGraphic.Name = "checkBoxPLAddLevelOnGraphic";
+            this.checkBoxPLAddLevelOnGraphic.Size = new System.Drawing.Size(27, 24);
+            this.checkBoxPLAddLevelOnGraphic.TabIndex = 6;
+            this.checkBoxPLAddLevelOnGraphic.UseVisualStyleBackColor = true;
+            // 
+            // checkBoxPLAddRectLevlOnGraphic
+            // 
+            this.checkBoxPLAddRectLevlOnGraphic.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBoxPLAddRectLevlOnGraphic.Image = ((System.Drawing.Image)(resources.GetObject("checkBoxPLAddRectLevlOnGraphic.Image")));
+            this.checkBoxPLAddRectLevlOnGraphic.Location = new System.Drawing.Point(31, 1);
+            this.checkBoxPLAddRectLevlOnGraphic.Margin = new System.Windows.Forms.Padding(1);
+            this.checkBoxPLAddRectLevlOnGraphic.Name = "checkBoxPLAddRectLevlOnGraphic";
+            this.checkBoxPLAddRectLevlOnGraphic.Size = new System.Drawing.Size(27, 24);
+            this.checkBoxPLAddRectLevlOnGraphic.TabIndex = 7;
+            this.checkBoxPLAddRectLevlOnGraphic.UseVisualStyleBackColor = true;
             // 
             // tabPageHistory
             // 
@@ -2782,6 +2871,7 @@
             this.неПоказыватToolStripMenuItem,
             this.MenuItemHorVolByStep,
             this.MenuItemHorVolPeriod,
+            this.диапазондельтаToolStripMenuItem,
             this.MenuItemHorVolCurrent,
             this.MenuItemHorVolCollect});
             this.MenuItemHorVol.Image = ((System.Drawing.Image)(resources.GetObject("MenuItemHorVol.Image")));
@@ -2812,7 +2902,15 @@
             this.MenuItemHorVolPeriod.Name = "MenuItemHorVolPeriod";
             this.MenuItemHorVolPeriod.Size = new System.Drawing.Size(205, 22);
             this.MenuItemHorVolPeriod.Tag = "2";
-            this.MenuItemHorVolPeriod.Text = "Выбранный диапазон";
+            this.MenuItemHorVolPeriod.Text = "Диапазон";
+            // 
+            // диапазондельтаToolStripMenuItem
+            // 
+            this.диапазондельтаToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("диапазондельтаToolStripMenuItem.Image")));
+            this.диапазондельтаToolStripMenuItem.Name = "диапазондельтаToolStripMenuItem";
+            this.диапазондельтаToolStripMenuItem.Size = new System.Drawing.Size(205, 22);
+            this.диапазондельтаToolStripMenuItem.Tag = "5";
+            this.диапазондельтаToolStripMenuItem.Text = "Диапазон (дельта)";
             // 
             // MenuItemHorVolCurrent
             // 
@@ -2924,14 +3022,16 @@
             this.panelControl.ResumeLayout(false);
             this.tableLayoutPanel5.ResumeLayout(false);
             this.tabPageLevels.ResumeLayout(false);
-            this.panel1.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.tableLayoutPanel17.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSignal)).EndInit();
             this.groupBoxLevels.ResumeLayout(false);
             this.tableLayoutPanel7.ResumeLayout(false);
             this.tableLayoutPanel7.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPriceLevel)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownPriceLevel2)).EndInit();
             this.tableLayoutPanel18.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLList)).EndInit();
             this.tabPageHistory.ResumeLayout(false);
             this.groupBoxStopOrd.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
@@ -3103,21 +3203,6 @@
         private System.Windows.Forms.CheckBox checkBoxIndHVEnable;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel16;
-        private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.GroupBox groupBoxLevels;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.Button buttonDelLevel;
-        private System.Windows.Forms.Button buttonAddLevel;
-        private System.Windows.Forms.NumericUpDown numericUpDownPriceLevel;
-        private System.Windows.Forms.NumericUpDown numericUpDownPriceLevel2;
-        private System.Windows.Forms.CheckBox checkBoxPLAddLevelOnGraphic;
-        private System.Windows.Forms.CheckBox checkBoxPLAddRectLevlOnGraphic;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.TextBox textBoxDateTimeLevel1;
-        private System.Windows.Forms.TextBox textBoxDateTimeLevel2;
         private System.Windows.Forms.ComboBox comboBoxTypeClientLimit;
         private System.Windows.Forms.ComboBox comboBoxCodeClient;
         private System.Windows.Forms.CheckBox checkBoxVisibleLevels;
@@ -3127,7 +3212,6 @@
         private System.Windows.Forms.Button buttonLoadSec;
         private System.Windows.Forms.Button buttonSaveSec;
         private System.Windows.Forms.Button buttonClearAllCandle;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel18;
         private System.Windows.Forms.CheckBox checkBoxAutoSizePrice;
         private System.Windows.Forms.ToolStripMenuItem toolStripGraphicStopOrder;
         private System.Windows.Forms.ToolStripMenuItem масштабToolStripMenuItem;
@@ -3151,12 +3235,6 @@
         private System.Windows.Forms.CheckBox checkBoxMCTakeProfit;
         private System.Windows.Forms.CheckBox checkBoxMCStopLoss;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel22;
-        private System.Windows.Forms.Button buttonEditLevel;
-        private System.Windows.Forms.DataGridView dataGridViewLList;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.GroupBox groupBox5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel23;
         private System.Windows.Forms.RadioButton radioButtonPercentTake100;
@@ -3168,5 +3246,35 @@
         private System.Windows.Forms.NumericUpDown numericUpDownStepDepth;
         private System.Windows.Forms.NumericUpDown numericUpDownTradeVolControl;
         private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.ToolStripMenuItem диапазондельтаToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBoxLevels;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
+        private System.Windows.Forms.DataGridView dataGridViewLList;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown numericUpDownPriceLevel;
+        private System.Windows.Forms.Label label22;
+        private System.Windows.Forms.NumericUpDown numericUpDownPriceLevel2;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.TextBox textBoxDateTimeLevel1;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox textBoxDateTimeLevel2;
+        private System.Windows.Forms.Button buttonEditLevel;
+        private System.Windows.Forms.Button buttonDelLevel;
+        private System.Windows.Forms.Button buttonAddLevel;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel18;
+        private System.Windows.Forms.CheckBox checkBoxPLAddLevelOnGraphic;
+        private System.Windows.Forms.CheckBox checkBoxPLAddRectLevlOnGraphic;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel17;
+        private System.Windows.Forms.Button buttonSignalUpdate;
+        private System.Windows.Forms.DataGridView dataGridViewSignal;
+        private System.Windows.Forms.Button buttonSignalDelete;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColumnSec;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColumnValue;
+        private System.Windows.Forms.DataGridViewTextBoxColumn ColumnCondition;
     }
 }

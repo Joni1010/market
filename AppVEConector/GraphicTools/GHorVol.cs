@@ -436,7 +436,7 @@ namespace GraphicTools
             }
         }
 
-        public void PaintHorVolByPeriodCandleDelta(bool alwaysUpdate = false)
+        public void PaintHorVolByPeriodCandleDelta(bool alwaysUpdate = false, bool delta = false)
         {
             lock (_lockPaint)
             {
@@ -476,19 +476,24 @@ namespace GraphicTools
                 PrepDataHorVol.HorVolumes.ToArray().ForEach<MarketObjects.ChartVol>((hv) =>
                 {
                     PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
-                    PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, null, true);
-                    //this.PaintLineHVol(canvasDelta, PanelDelta.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, true);
+                    if (delta)
+                    {
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, null, true);
+                        var d = hv.VolBuy - hv.VolSell;
+                        if (d > 0)
+                        {
+                            PrepDataHorVol.SumDeltaBuy += d;
+                        }
+                        else
+                        {
+                            PrepDataHorVol.SumDeltaSell += d * -1;
+                        }
+                    } else
+                    {
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
+                    }
                     PrepDataHorVol.SumBuyVol += hv.VolBuy;
-                    PrepDataHorVol.SumSellVol += hv.VolSell;
-                    var d = hv.VolBuy - hv.VolSell;
-                    if (d > 0)
-                    {
-                        PrepDataHorVol.SumDeltaBuy += d;
-                    }
-                    else
-                    {
-                        PrepDataHorVol.SumDeltaSell += d * -1;
-                    }
+                    PrepDataHorVol.SumSellVol += hv.VolSell; 
                 });
 
                 var textMax = new TextDraw();
@@ -499,12 +504,22 @@ namespace GraphicTools
                     + "max:" + PrepDataHorVol.MaxVol.ToString() + "\r\n"
                     + "p:" + PrepDataHorVol.MaxElem.Price.ToString(),
                     rectPaint.X, Panel.Rect.Y);
-
-                textMax.Paint(canvasOnlyVol,
+                if (delta)
+                {
+                    textMax.Paint(canvasOnlyVol,
                     "max: " + PrepDataHorVol.MinDeltaElem.Volume.ToString() + "/" + PrepDataHorVol.MaxDeltaElem.Volume.ToString() + "\r\n" +
                     "sum: " + PrepDataHorVol.SumDeltaSell.ToString() + "/" + PrepDataHorVol.SumDeltaBuy.ToString() + "\r\n"
                     ,
                     this.RectForDelta.X, this.RectForDelta.Y);
+                } else
+                {
+                    textMax.Paint(canvasOnlyVol,
+                    "max: " + PrepDataHorVol.MaxElem.Volume.ToString() + "\r\n" +
+                    "sum: " + (PrepDataHorVol.SumSellVol + PrepDataHorVol.SumBuyVol).ToString() + "\r\n" +
+                    "sum S/B: " + PrepDataHorVol.SumSellVol.ToString() + "/" + PrepDataHorVol.SumBuyVol.ToString() + "\r\n"
+                    ,
+                    this.RectForDelta.X, this.RectForDelta.Y);
+                }
             }
         }
 

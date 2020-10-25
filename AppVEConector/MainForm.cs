@@ -15,6 +15,7 @@ using Connector.Logs;
 using Managers;
 using AppVEConector.Forms;
 using Libs;
+using AppVEConector.libs.Signal;
 
 namespace AppVEConector
 {
@@ -176,7 +177,7 @@ namespace AppVEConector
         private void UpdateInfoPortfolios()
         {
             int i = 0;
-            var listPortf = Trader.Objects.tPortfolios.AsArray;
+            var listPortf = Trader.Objects.tPortfolios.AsArray;//.Where(p => p.TypeClient == 2);
             //int count = listPortf.Count();
             foreach (var p in listPortf)
             {
@@ -531,12 +532,12 @@ namespace AppVEConector
                 {
                     if (ord.Status == OrderStatus.CLOSED)
                     {
-                        var listSig = MainForm.GSMSignaler.GetSignalByOrder(ord.ConditionPrice, Define.STOP_LOSS);
+                        var listSig = SignalView.GSMSignaler.GetSignalByOrder(ord.ConditionPrice, Define.STOP_LOSS);
                         if (listSig.NotIsNull() && listSig.Count() > 0)
                         {
                             foreach (var sig in listSig)
                             {
-                                MainForm.GSMSignaler.RemoveSignal(sig);
+                                SignalView.GSMSignaler.RemoveSignal(sig);
                             };
                         }
                     }
@@ -877,21 +878,21 @@ namespace AppVEConector
         }
         private void ToolStripMenuItemTestSign_Click_1(object sender, EventArgs e)
         {
-            MainForm.GSMSignaler.SendTestSignal();
+            SignalView.GSMSignaler.SendTestSignal();
             MThread.InitThread(() =>
             {
                 Thread.Sleep(1000);
-                MainForm.GSMSignaler.SendTestSignal(false);
+                SignalView.GSMSignaler.SendTestSignal(false);
             });
         }
 
         private void ToolStripMenuItemSignCall_Click(object sender, EventArgs e)
         {
-            MainForm.GSMSignaler.SendSignalCall();
+            SignalView.GSMSignaler.SendSignalCall();
             MThread.InitThread(() =>
             {
                 Thread.Sleep(15000);
-                MainForm.GSMSignaler.SendSignalResetCall();
+                SignalView.GSMSignaler.SendSignalResetCall();
             });
         }
 

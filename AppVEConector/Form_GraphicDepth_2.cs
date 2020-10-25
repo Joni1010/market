@@ -111,7 +111,7 @@ namespace AppVEConector
             {
                 cond = SignalMarket.CondSignal.LessOrEquals;
             }
-            MainForm.GSMSignaler.AddSignal(new SignalMarket()
+            SignalView.GSMSignaler.AddSignal(new SignalMarket()
             {
                 Type = SignalMarket.TypeSignal.ByPrice,
                 SecClass = Securities.Code + ":" + Securities.Class.Code,

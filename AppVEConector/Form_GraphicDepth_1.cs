@@ -15,6 +15,7 @@ using Managers;
 using libs;
 using QuikConnector.libs;
 using QuikConnector.MarketObjects;
+using AppVEConector.libs.Signal;
 
 namespace AppVEConector
 {
@@ -82,17 +83,17 @@ namespace AppVEConector
             Action updateSingnals = () =>
             {
                 GraphicStock.LevelsSignal.SetLevels(
-                        MainForm.GSMSignaler.ToArray().
+                        SignalView.GSMSignaler.ToArray().
                         Where(s => s.SecClass == Securities.ToString()).
                         Select(s => s.Price).ToArray()
                     );
                 UpdateGraphic();
             };
-            MainForm.GSMSignaler.OnAdd += (sig) =>
+            SignalView.GSMSignaler.OnAdd += (sig) =>
             {
                 updateSingnals();
             };
-            MainForm.GSMSignaler.OnRemove += (sig) =>
+            SignalView.GSMSignaler.OnRemove += (sig) =>
             {
                 updateSingnals();
             };
@@ -155,7 +156,7 @@ namespace AppVEConector
             InitPanelLevels();
             InitPanelClearCharts();
             InitPanelControl();
-
+            InitPanelSignals();
             //Уровни
             UpdatePanelLevels(true);
         }
@@ -533,6 +534,10 @@ namespace AppVEConector
                                 }
                                 else
                                 {
+                                    if (QuoteAsk[i].IsNull())
+                                    {
+                                        continue;
+                                    }
                                     decimal Price = QuoteAsk[i].Price;
                                     int Volume = QuoteAsk[i].Volume;
                                     CountInDepth[1] += Volume;
@@ -581,6 +586,10 @@ namespace AppVEConector
                                 }
                                 else
                                 {
+                                    if (QuoteBid[countInDepthBuy - i - 1].IsNull())
+                                    {
+                                        continue;
+                                    }
                                     decimal Price = QuoteBid[countInDepthBuy - i - 1].Price;
                                     int Volume = QuoteBid[countInDepthBuy - i - 1].Volume;
                                     CountInDepth[0] += Volume;

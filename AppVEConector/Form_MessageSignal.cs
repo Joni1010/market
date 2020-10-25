@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppVEConector.libs.Signal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,7 +29,7 @@ namespace AppVEConector
             form.Show();
             if (sendSignal)
             {
-                MainForm.GSMSignaler.SendSignalCall();
+                SignalView.GSMSignaler.SendSignalCall();
             }
             TextMsg = test + "\r\n" + TextMsg;
             form.textBox1.Text = TextMsg;

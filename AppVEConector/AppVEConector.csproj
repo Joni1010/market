@@ -78,6 +78,9 @@
     <Compile Include="Form_GraphicDepth_3.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Form_GraphicDepth_Signals.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form_MessageSignal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -106,6 +109,7 @@
     <Compile Include="GraphicTools\Shapes\Ellipse.cs" />
     <Compile Include="libs\BaseInfoMarket.cs" />
     <Compile Include="libs\Kliring.cs" />
+    <Compile Include="libs\Signal\SignalView.cs" />
     <Compile Include="MainForm_AutoStopLoss.cs">
       <SubType>Form</SubType>
     </Compile>

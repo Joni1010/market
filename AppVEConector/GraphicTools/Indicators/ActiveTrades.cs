@@ -14,7 +14,7 @@ namespace AppVEConector.GraphicTools.Indicators
 {
     public class ActiveTrades : Indicator
     {
-        public int MinVolumeShow = 3;
+        public int MinVolumeShow = 0;
         /// <summary>
         /// Список сделок
         /// </summary>
