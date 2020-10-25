@@ -594,7 +594,7 @@ namespace AppVEConector.Forms
                     Condition = cond,
                     Comment = stopOrder.Comment
                 };
-                MainForm.GSMSignaler.AddSignal(newSign);
+                SignalView.GSMSignaler.AddSignal(newSign);
             });
         }
         /// <summary>
@@ -603,10 +603,10 @@ namespace AppVEConector.Forms
         /// <param name="price"></param>
         private void RemoveSignal(decimal price)
         {
-            var listSigDel = MainForm.GSMSignaler.ToArray().Where(s => s.Price == price);
+            var listSigDel = SignalView.GSMSignaler.ToArray().Where(s => s.Price == price);
             foreach (var sig in listSigDel)
             {
-                MainForm.GSMSignaler.RemoveSignal(sig);
+                SignalView.GSMSignaler.RemoveSignal(sig);
             }
         }
         /// <summary>

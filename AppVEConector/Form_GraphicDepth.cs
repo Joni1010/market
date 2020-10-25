@@ -18,6 +18,7 @@ using AppVEConector.GraphicTools.Indicators;
 using GraphicTools.Extension;
 using System.Drawing;
 using GraphicTools.Base;
+using AppVEConector.libs.Signal;
 
 namespace AppVEConector
 {
@@ -184,6 +185,11 @@ namespace AppVEConector
                 {
                     UpdateGraphic();
                 }
+            };
+
+            numericUpDownTradeVolControl.ValueChanged += (s, e) =>
+            {
+                GraphicStock.ActiveTrades.MinVolumeShow = (int)numericUpDownTradeVolControl.Value;
             };
             UpdateGraphic();
         }
@@ -605,13 +611,19 @@ namespace AppVEConector
             var check = (CheckBox)sender;
             if (check.Checked)
             {
-                if (!this.TrElement.Empty())
+                if (this.TrElement.NotIsNull())
+                {
                     this.Trader.RegisterDepth(Securities);
+                }
                 dataGridViewDepth.Enabled = false;
                 panelLock.Visible = true;
             }
             else
             {
+                if (this.TrElement.NotIsNull())
+                {
+                    this.Trader.UnregisterDepth(Securities);
+                }
                 dataGridViewDepth.Enabled = true;
                 panelLock.Visible = false;
             }
@@ -929,7 +941,7 @@ namespace AppVEConector
 
         private void buttonSignals_Click(object sender, EventArgs e)
         {
-            FormSignalGsm formSignal = new FormSignalGsm(this.TrElement, MainForm.GSMSignaler);
+            FormSignalGsm formSignal = new FormSignalGsm(this.TrElement, SignalView.GSMSignaler);
             formSignal.ShowDialog();
         }
 

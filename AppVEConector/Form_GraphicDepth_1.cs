@@ -15,6 +15,7 @@ using Managers;
 using libs;
 using QuikConnector.libs;
 using QuikConnector.MarketObjects;
+using AppVEConector.libs.Signal;
 
 namespace AppVEConector
 {
@@ -82,17 +83,17 @@ namespace AppVEConector
             Action updateSingnals = () =>
             {
                 GraphicStock.LevelsSignal.SetLevels(
-                        MainForm.GSMSignaler.ToArray().
+                        SignalView.GSMSignaler.ToArray().
                         Where(s => s.SecClass == Securities.ToString()).
                         Select(s => s.Price).ToArray()
                     );
                 UpdateGraphic();
             };
-            MainForm.GSMSignaler.OnAdd += (sig) =>
+            SignalView.GSMSignaler.OnAdd += (sig) =>
             {
                 updateSingnals();
             };
-            MainForm.GSMSignaler.OnRemove += (sig) =>
+            SignalView.GSMSignaler.OnRemove += (sig) =>
             {
                 updateSingnals();
             };
@@ -155,7 +156,7 @@ namespace AppVEConector
             InitPanelLevels();
             InitPanelClearCharts();
             InitPanelControl();
-
+            InitPanelSignals();
             //Уровни
             UpdatePanelLevels(true);
         }
@@ -284,7 +285,15 @@ namespace AppVEConector
                     Portfolio = listPortf.First();
                 }
             }
-            Position = Trader.Objects.Positions.FirstOrDefault(s => s.Sec == Securities);
+            if (SettingsDepth.Data.CodeClient.Empty())
+            {
+                Position = Trader.Objects.Positions.FirstOrDefault(s => s.Sec == Securities);
+            }
+            else
+            {
+                Position = Trader.Objects.Positions.FirstOrDefault(s => s.Sec == Securities
+                    && s.Client.Code == SettingsDepth.Data.CodeClient);
+            }
             ThreadInfo = MThread.InitThread(() =>
             {
                 if (this.Position.NotIsNull())
@@ -344,6 +353,9 @@ namespace AppVEConector
                             decimal result = (gapPrice / Securities.Params.MinPriceStep) * Securities.Params.StepPrice;
                             decimal countLots = Position.CurrentVolume;
                             Info.ForecastSum = result * countLots;
+                        } else
+                        {
+                            Info.ForecastSum = 0;
                         }
                     }
                 }
@@ -382,7 +394,7 @@ namespace AppVEConector
                     + (Info.CountStopLimitOrderSell > 0 ? Info.CountStopLimitOrderSell + " (" + Info.CountStopLimitVolumeSell + ")" : "0");
                 }
                 //forecast
-                if (Info.ForecastSum > 0)
+                if (Info.ForecastSum >= 0)
                 {
                     labelForecastStop.Text = Info.ForecastSum.ToString();
                 }
@@ -522,6 +534,10 @@ namespace AppVEConector
                                 }
                                 else
                                 {
+                                    if (QuoteAsk[i].IsNull())
+                                    {
+                                        continue;
+                                    }
                                     decimal Price = QuoteAsk[i].Price;
                                     int Volume = QuoteAsk[i].Volume;
                                     CountInDepth[1] += Volume;
@@ -570,6 +586,10 @@ namespace AppVEConector
                                 }
                                 else
                                 {
+                                    if (QuoteBid[countInDepthBuy - i - 1].IsNull())
+                                    {
+                                        continue;
+                                    }
                                     decimal Price = QuoteBid[countInDepthBuy - i - 1].Price;
                                     int Volume = QuoteBid[countInDepthBuy - i - 1].Volume;
                                     CountInDepth[0] += Volume;
@@ -785,6 +805,12 @@ namespace AppVEConector
             {
                 if (CurrentTimeFrame.NotIsNull())
                 {
+                    if (GraphicStock.ActiveTrades.NotIsNull())
+                    {
+                        GraphicStock.ActiveTrades.ListTrades = TrElement.LastTrades
+                        .OrderByDescending(t => t.Number)
+                        .Take(80);
+                    }
                     GraphicStock.RedrawActual();
                     pictureBoxGraphic.Refresh();
                 }
@@ -868,6 +894,11 @@ namespace AppVEConector
                     return;
                 }
             }
+            //Устанавливаем в форму значение стоп цены
+            this.GuiAsync(() =>
+            {
+                numericUpDownStopPrice.Value = Price;
+            });
             MThread.InitThread(() =>
             {
                 var cancelOrders = this.Trader.Objects.StopOrders.Where(so => so.Sec == Securities

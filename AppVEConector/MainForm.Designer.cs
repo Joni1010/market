@@ -94,6 +94,7 @@ namespace AppVEConector
             this.PanelPositions = new System.Windows.Forms.GroupBox();
             this.dataGridPositions = new System.Windows.Forms.DataGridView();
             this.NamePos = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnClient = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Code = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnLot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.StepPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -929,6 +930,7 @@ namespace AppVEConector
             this.dataGridPositions.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridPositions.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.NamePos,
+            this.ColumnClient,
             this.Code,
             this.ColumnLot,
             this.StepPrice,
@@ -954,13 +956,19 @@ namespace AppVEConector
             this.NamePos.ReadOnly = true;
             this.NamePos.Width = 130;
             // 
+            // ColumnClient
+            // 
+            this.ColumnClient.Frozen = true;
+            this.ColumnClient.HeaderText = "Счет";
+            this.ColumnClient.Name = "ColumnClient";
+            // 
             // Code
             // 
             this.Code.Frozen = true;
             this.Code.HeaderText = "Код";
             this.Code.Name = "Code";
             this.Code.ReadOnly = true;
-            this.Code.Width = 70;
+            this.Code.Width = 90;
             // 
             // ColumnLot
             // 
@@ -2899,15 +2907,6 @@ namespace AppVEConector
         private Label labelDescription;
         private Label labelSignNameSec;
         private DataGridView dataGridPositions;
-        private DataGridViewTextBoxColumn NamePos;
-        private DataGridViewTextBoxColumn Code;
-        private DataGridViewTextBoxColumn ColumnLot;
-        private DataGridViewTextBoxColumn StepPrice;
-        private DataGridViewTextBoxColumn ColumnGO;
-        private DataGridViewTextBoxColumn ActPoss;
-        private DataGridViewTextBoxColumn Orders;
-        private DataGridViewTextBoxColumn PosVarMargin;
-        private DataGridViewButtonColumn BtnGetDepth;
         private TableLayoutPanel tableLayoutPanel20;
         private TabPage tabPageAutoOrders;
         private TableLayoutPanel tableLayoutPanel24;
@@ -2957,6 +2956,16 @@ namespace AppVEConector
         private Label labelASLLog;
         private ComboBox comboBoxASLAccount;
         private Label label18;
+        private DataGridViewTextBoxColumn NamePos;
+        private DataGridViewTextBoxColumn ColumnClient;
+        private DataGridViewTextBoxColumn Code;
+        private DataGridViewTextBoxColumn ColumnLot;
+        private DataGridViewTextBoxColumn StepPrice;
+        private DataGridViewTextBoxColumn ColumnGO;
+        private DataGridViewTextBoxColumn ActPoss;
+        private DataGridViewTextBoxColumn Orders;
+        private DataGridViewTextBoxColumn PosVarMargin;
+        private DataGridViewButtonColumn BtnGetDepth;
     }
 }
 

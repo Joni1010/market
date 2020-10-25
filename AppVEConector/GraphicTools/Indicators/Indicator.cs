@@ -1,4 +1,5 @@
-﻿using GraphicTools.Base;
+﻿using GraphicTools;
+using GraphicTools.Base;
 using Market.Candles;
 using System;
 using System.Drawing;
@@ -30,7 +31,12 @@ namespace AppVEConector.GraphicTools.Indicators
         /// <summary>
         /// Включить индикатор
         /// </summary>
-        public bool Enable = false; 
+        public bool Enable = false;
+
+        /// <summary>
+        /// Быстрая перерисовка
+        /// </summary>
+        public bool FastRedraw = false;
         /// <summary>
         /// Флаг инициализации
         /// </summary>
@@ -88,6 +94,20 @@ namespace AppVEConector.GraphicTools.Indicators
         {
             Panel.Paint(canvas);
         }
+        /// <summary>
+        /// Получение координаты Y по цене
+        /// </summary>
+        /// <param name="price"></param>
+        /// <returns></returns>
+        protected decimal GetYByPrice(decimal price)
+        {
+            return GMath.GetCoordinate(Panel.Rect.Height, Panel.Params.MaxPrice, Panel.Params.MinPrice, price);
+        }
+
+        public virtual void FastUpdate()
+        {
+
+        }
 
         public abstract void EventInitStartIndicator();
         public abstract void EventInitEndIndicator();
@@ -100,7 +120,6 @@ namespace AppVEConector.GraphicTools.Indicators
         /// </summary>
         /// <param name="candle"></param>
         public abstract void EachCandle(int index, CandleData candle, int count);
-
         /// <summary>
         /// Новая свечка в тайм-фрейме
         /// </summary>
@@ -108,5 +127,5 @@ namespace AppVEConector.GraphicTools.Indicators
         /// <param name="candle"></param>
         public abstract void NewCandleInTimeFrame(int timeFrame, CandleData candle);
     }
-    
+
 }

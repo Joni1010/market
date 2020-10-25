@@ -66,10 +66,21 @@
     <Compile Include="Form_CopySecurity.Designer.cs">
       <DependentUpon>Form_CopySecurity.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form_GraphicDepth_2.cs" />
-    <Compile Include="Form_GraphicDepth_Control.cs" />
-    <Compile Include="Form_GraphicDepth_Levels.cs" />
-    <Compile Include="Form_GraphicDepth_3.cs" />
+    <Compile Include="Form_GraphicDepth_2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_GraphicDepth_Control.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_GraphicDepth_Levels.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_GraphicDepth_3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_GraphicDepth_Signals.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form_MessageSignal.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,6 +96,7 @@
     <Compile Include="GraphicTools\Extension\DragAndDrop.cs" />
     <Compile Include="GraphicTools\Extension\PeriodActCandles.cs" />
     <Compile Include="GraphicTools\Extension\SelectCandle.cs" />
+    <Compile Include="GraphicTools\Indicators\ActiveTrades.cs" />
     <Compile Include="GraphicTools\GraphicEvents.cs" />
     <Compile Include="GraphicTools\Indicators\Indicator.cs" />
     <Compile Include="GraphicTools\Indicators\IndicatorPaintLevels.cs" />
@@ -97,10 +109,13 @@
     <Compile Include="GraphicTools\Shapes\Ellipse.cs" />
     <Compile Include="libs\BaseInfoMarket.cs" />
     <Compile Include="libs\Kliring.cs" />
+    <Compile Include="libs\Signal\SignalView.cs" />
     <Compile Include="MainForm_AutoStopLoss.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm_FinderFastGaps.cs" />
+    <Compile Include="MainForm_FinderFastGaps.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="MainForm_AutoOrders.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -215,6 +230,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form_GraphicDepth.resx">
       <DependentUpon>Form_GraphicDepth.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form_LightOrders.resx">
       <DependentUpon>Form_LightOrders.cs</DependentUpon>

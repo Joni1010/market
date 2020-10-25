@@ -97,6 +97,7 @@ namespace GraphicTools.Extension
             return Cross.GetDataCross();
         }
 
+        public ActiveTrades ActiveTrades = null;
         public IndicatorATR ATR = null;
         public IndicatorPaintLevels LevelsSignal = null;
 
@@ -116,6 +117,7 @@ namespace GraphicTools.Extension
             Indicators.Add(new MovingAverage(Candels.Panel));
             Indicators.Add(new IndicatorCTHV(Candels.Panel));
             Indicators.Add(new IndicatorHV(Candels.Panel));
+            Indicators.Add(ActiveTrades = new ActiveTrades(Candels.Panel));
             Indicators.Add(ATR = new IndicatorATR(Candels.Panel));
             Indicators.Add(LevelsSignal = new IndicatorPaintLevels(Candels.Panel));
 
@@ -198,7 +200,7 @@ namespace GraphicTools.Extension
             RightPrices.Panel.SetRect(GRectangle.Join(Candels.Panel.RectScreen, RightPrices.Panel.RectScreen));
 
             GHorVolumes.Panel.SetRect(Candels.Panel.RectScreen);
-            GHorVolumes.PanelVolume.SetRect(Candels.Panel.ExtractRight(100));
+            GHorVolumes.PanelVolume.SetRect(Candels.Panel.ExtractRight(150));
             Candels.Panel.ExtractRight(15);
 
             //Ширина свечки
@@ -432,6 +434,18 @@ namespace GraphicTools.Extension
                     }
                 }
             }
+
+            Indicators.ForEach((objIndicator) =>
+            {
+                if (objIndicator is Indicator)
+                {
+                    var obj = (Indicator)objIndicator;
+                    if (obj.FastRedraw)
+                    {
+                        obj.FastUpdate();
+                    }
+                }
+            });
             return true;
         }
 
@@ -586,8 +600,13 @@ namespace GraphicTools.Extension
                     }
                     else if (TypeHorVolume == 2 || TypeHorVolume == 3)
                     {
-                        GHorVolumes.PaintHorVolByPeriodCandle();
-                    } else if (TypeHorVolume == 4)
+                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, false);
+                    }
+                    else if (TypeHorVolume == 5)
+                    {
+                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, true);
+                    }
+                    else if (TypeHorVolume == 4)
                     {
                         GHorVolumes.PaintCollectionHVol();
                     }

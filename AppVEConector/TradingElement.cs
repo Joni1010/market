@@ -93,6 +93,8 @@ namespace TradingLib
         /// </summary>
         public Securities Security = null;
 
+        public List<Trade> LastTrades = new List<Trade>();
+
         /// <summary> Последние данный по стакану </summary>
         //public LockObject<Quote> LastQuote = new LockObject<Quote>();
 
@@ -281,6 +283,14 @@ namespace TradingLib
         /// <param name="trade"></param>
         public void NewTrade(Trade trade, bool history = false)
         {
+            if (!history)
+            {
+                LastTrades.Add(trade);
+                if(LastTrades.Count > 300)
+                {
+                    LastTrades.Remove(LastTrades.First());
+                }
+            }
             if (!this.TFControllTrades.ExistTradeInTF(trade))
             {
                 lock (syncObj)

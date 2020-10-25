@@ -21,7 +21,7 @@ namespace GraphicTools
 
         public ViewPanel Panel = null;
         public ViewPanel PanelVolume = null;
-        
+
         public GHorVol(BaseParams param)
         {
             Panel = new ViewPanel(param);
@@ -64,6 +64,8 @@ namespace GraphicTools
             public long MinDeltaVol = 0;
             public long SumBuyVol = 0;
             public long SumSellVol = 0;
+            public long SumDeltaBuy = 0;
+            public long SumDeltaSell = 0;
             public RectangleF RectBlock = new RectangleF();
             /// <summary>
             /// Индекс левой свечи
@@ -216,7 +218,7 @@ namespace GraphicTools
                                 {
                                     break;
                                 }
-                                steper = CollectionCandleInBlocks.ElementAt(indexer) - CollectionCandleInBlocks.ElementAt(indexer-1);
+                                steper = CollectionCandleInBlocks.ElementAt(indexer) - CollectionCandleInBlocks.ElementAt(indexer - 1);
                             }
                             CurrentHVol = new PrepareHorVol();
                             CurrentHVol.HorVolumes = new HVolume();
@@ -434,20 +436,106 @@ namespace GraphicTools
             }
         }
 
+        public void PaintHorVolByPeriodCandleDelta(bool alwaysUpdate = false, bool delta = false)
+        {
+            lock (_lockPaint)
+            {
+                if (PrepDataHorVol.IsNull()) return;
+                if (activeCandle1.IsNull() || activeCandle2.IsNull()) return;
+
+                Panel.Clear();
+                PanelVolume.Clear();
+                if (!CreateBlockHorVolume())
+                {
+                    return;
+                }
+
+                var canvas = Panel.GetGraphics;
+                var canvasOnlyVol = PanelVolume.GetGraphics;
+
+                var countCandleInVol = PrepDataHorVol.index1 - PrepDataHorVol.index2 + 1;
+                var xLineBorder = activeCandle2.dataCandle.Body.X + activeCandle2.dataCandle.Body.Width;
+
+                RectangleF rectPaint = new RectangleF();
+                rectPaint.X = activeCandle1.dataCandle.Body.X;
+                rectPaint.Width = xLineBorder - activeCandle1.dataCandle.Body.X;
+                rectPaint.Width = rectPaint.Width < 40 ? 40 : rectPaint.Width;
+
+                rectPaint.Y = activeCandle1.dataCandle.TailCoord.Low.Y;
+                rectPaint.Height = 0;
+
+                rectPaint.Y = rectPaint.Y - 13;
+                rectPaint.Height = rectPaint.Height + 13;
+                //рисует прямоугольник выделяющий период
+                var rectVol = new RectDraw();
+                rectVol.ColorFill = ColorLayVol;
+                rectVol.ColorBorder = ColorLayBorder;
+                rectVol.Paint(canvas, rectPaint.X, Panel.Rect.Y, rectPaint.Width, Panel.Rect.Height);
+
+                //Получяаем максимальный гор. объем в свече или наборе свечей
+                PrepDataHorVol.HorVolumes.ToArray().ForEach<MarketObjects.ChartVol>((hv) =>
+                {
+                    PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
+                    if (delta)
+                    {
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, null, true);
+                        var d = hv.VolBuy - hv.VolSell;
+                        if (d > 0)
+                        {
+                            PrepDataHorVol.SumDeltaBuy += d;
+                        }
+                        else
+                        {
+                            PrepDataHorVol.SumDeltaSell += d * -1;
+                        }
+                    } else
+                    {
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
+                    }
+                    PrepDataHorVol.SumBuyVol += hv.VolBuy;
+                    PrepDataHorVol.SumSellVol += hv.VolSell; 
+                });
+
+                var textMax = new TextDraw();
+                textMax.Color = Color.Black;
+                textMax.Paint(canvas,
+                    "V:" + (PrepDataHorVol.SumBuyVol + PrepDataHorVol.SumSellVol).ToString() + "\r\n"
+                    + "D:" + (PrepDataHorVol.SumBuyVol - PrepDataHorVol.SumSellVol).ToString() + "\r\n"
+                    + "max:" + PrepDataHorVol.MaxVol.ToString() + "\r\n"
+                    + "p:" + PrepDataHorVol.MaxElem.Price.ToString(),
+                    rectPaint.X, Panel.Rect.Y);
+                if (delta)
+                {
+                    textMax.Paint(canvasOnlyVol,
+                    "max: " + PrepDataHorVol.MinDeltaElem.Volume.ToString() + "/" + PrepDataHorVol.MaxDeltaElem.Volume.ToString() + "\r\n" +
+                    "sum: " + PrepDataHorVol.SumDeltaSell.ToString() + "/" + PrepDataHorVol.SumDeltaBuy.ToString() + "\r\n"
+                    ,
+                    this.RectForDelta.X, this.RectForDelta.Y);
+                } else
+                {
+                    textMax.Paint(canvasOnlyVol,
+                    "max: " + PrepDataHorVol.MaxElem.Volume.ToString() + "\r\n" +
+                    "sum: " + (PrepDataHorVol.SumSellVol + PrepDataHorVol.SumBuyVol).ToString() + "\r\n" +
+                    "sum S/B: " + PrepDataHorVol.SumSellVol.ToString() + "/" + PrepDataHorVol.SumBuyVol.ToString() + "\r\n"
+                    ,
+                    this.RectForDelta.X, this.RectForDelta.Y);
+                }
+            }
+        }
+
         /// <summary>
         /// Рисует линию горизонтального объема
         /// </summary>
-        private int PaintLineHVol(Graphics canvas, RectangleF rect, MarketObjects.Chart maxElem, MarketObjects.Chart minElem, MarketObjects.ChartVol hv, Color? colorVol = null)
+        private int PaintLineHVol(Graphics canvas, RectangleF rect, MarketObjects.Chart maxElem, MarketObjects.Chart minElem, MarketObjects.ChartVol hv, Color? colorVol = null, bool isDelta = false)
         {
             var widthLayoutVolume = rect.Width;
             var value = hv.VolBuy + hv.VolSell;
-            /*if (isDelta)
+            if (isDelta)
             {
                 value = hv.VolBuy - hv.VolSell;
-            }*/
+            }
             float y = GMath.GetCoordinate(Panel.Rect.Height, Panel.Params.MaxPrice, Panel.Params.MinPrice, hv.Price);
             var height = GMath.GetCoordinate(Panel.Rect.Height, Panel.Params.MaxPrice, Panel.Params.MinPrice, hv.Price - Panel.Params.MinStepPrice) - y;
-
 
             if (y == 0 || y == Panel.Rect.Height)
             {
@@ -471,7 +559,7 @@ namespace GraphicTools
             RectDraw rectVol = new RectDraw();
 
             var color = ColorVol;
-            /*if (isDelta)
+            if (isDelta)
             {
                 if (value < 0)
                 {
@@ -481,7 +569,7 @@ namespace GraphicTools
                 {
                     color = this.ColorDeltaPositive;
                 }
-            }*/
+            }
             if (maxElem.Price == hv.Price)
             {
                 color = ColorMaxVol;
