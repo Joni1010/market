@@ -161,6 +161,10 @@ namespace AppVEConector.GraphicTools.Indicators
                 lastPoint = new PointF(lineCandle, y1);
                 return;
             }
+            if(index >= allVal.Length)
+            {
+                index = allVal.Length - 1;
+            }
             if (allVal[index].Count == Period)
             {
                 allVal[index].Value = Math.Round(allVal[index].Value / Period, Panel.Params.CountFloat);

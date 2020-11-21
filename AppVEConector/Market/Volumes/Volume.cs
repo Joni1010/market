@@ -9,6 +9,9 @@ namespace Market.Volumes
         public long SumBuy = 0;
 		/// <summary> Сумма объемов на продажу </summary>
 		public long SumSell = 0;
+        /// <summary>
+        /// Коллекция гор. обьемов
+        /// </summary>
 		public HVolume HVolCollection = new HVolume();
 
 		/// <summary> Добавляет объем Buy</summary>

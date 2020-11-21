@@ -1,11 +1,11 @@
 ﻿using AppVEConector.libs;
+using Market.AppTools;
 using MarketObjects;
 using QuikConnector.MarketObjects;
 using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using TradingLib;
 
 namespace AppVEConector
 {

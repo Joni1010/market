@@ -326,7 +326,6 @@ namespace Market.Candles
         {
             if (trade.IsNull()) return false;
             DateTime time = CandleData.GetTimeCandle(trade.DateTrade.GetDateTime(), this.TimeFrame);
-
             if (this.Count > 0)
             {
                 lock (syncLock)

@@ -1,5 +1,6 @@
 ﻿using GraphicTools.Base;
 using GraphicTools.Shapes;
+using MarketObjects.Charts;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace GraphicTools
             Panel = new ViewPanel(param);
         }
 
-        public IEnumerable<MarketObjects.Chart> CollectionOrders = null;
+        public IEnumerable<Chart> CollectionOrders = null;
 
 		public void Paint()
 		{

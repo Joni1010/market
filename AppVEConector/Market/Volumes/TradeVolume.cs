@@ -3,7 +3,7 @@ using MarketObjects;
 using System;
 
 
-namespace VolumeLib
+namespace Market.Volumes
 {
     [Serializable]
     public class TradeVolume : Volume

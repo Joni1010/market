@@ -7,15 +7,15 @@ using System.Windows.Forms;
 
 using System.Windows.Threading;
 using System.Threading;
-using TradingLib;
 using AppVEConector.libs;
 
 using MarketObjects;
 using Connector.Logs;
 using Managers;
-using AppVEConector.Forms;
+using AppVEConector.Forms.StopOrders;
 using Libs;
 using AppVEConector.libs.Signal;
+using Market.AppTools;
 
 namespace AppVEConector
 {
@@ -23,12 +23,16 @@ namespace AppVEConector
     {
         public Connector.QuikConnector Trader = new Connector.QuikConnector();
         /// <summary> Торгуемы набор </summary>
-        public TElementCollection DataTrading = new TElementCollection();
+        public TCollection DataTrading = new TCollection();
 
+        /// <summary> 100ms секундный таймер </summary>
+        public event Action<DispatcherTimer> OnTimer100ms = null;
         /// <summary> 1 секундный таймер </summary>
-        public event Action OnTimer1s = null;
+        public event Action<DispatcherTimer> OnTimer1s = null;
         /// <summary> 3-х секундный таймер </summary>
         public event Action<DispatcherTimer> OnTimer3s = null;
+        /// <summary> 5-х секундный таймер </summary>
+        public event Action<DispatcherTimer> OnTimer5s = null;
 
         /// <summary> Событие новых сообщений в терминале </summary>
         public event Action<IEnumerable<Reply>> OnNewReply = null;
@@ -719,6 +723,8 @@ namespace AppVEConector
             }
         }
 
+        DateTime Timer100ms = DateTime.Now;
+        DateTime Timer1s = DateTime.Now;
         DateTime Timer3s = DateTime.Now;
         DateTime Timer5s = DateTime.Now;
         private void InitTimers()
@@ -727,32 +733,49 @@ namespace AppVEConector
             {
                 Qlog.CatchException(() =>
                 {
-                    if (this.OnTimer1s.NotIsNull())
-                    {
-                        this.OnTimer1s();
-                    }
                     var now = DateTime.Now;
+                    //100ms
+                    if (now > Timer100ms.AddMilliseconds(100))
+                    {
+                        if (OnTimer100ms.NotIsNull())
+                        {
+                            this.OnTimer100ms((DispatcherTimer)s);
+                        }
+                        Timer100ms = now;
+                    }
+                    //1 sec
+                    if (now > Timer1s.AddSeconds(1))
+                    {
+                        if (OnTimer1s.NotIsNull())
+                        {
+                            this.OnTimer1s((DispatcherTimer)s);
+                        }
+                        Timer1s = now;
+                    }
                     //3 sec
                     if (now > Timer3s.AddSeconds(3))
                     {
                         if (this.OnTimer3s.NotIsNull())
+                        {
                             this.OnTimer3s((DispatcherTimer)s);
+                        }
                         Timer3s = now;
                     }
                     // 5 sec
                     if (now > Timer5s.AddSeconds(5))
                     {
-                        this.StartSaver();
+                        if (this.OnTimer5s.NotIsNull())
+                        {
+                            this.OnTimer5s((DispatcherTimer)s);
+                        }
                         Timer5s = now;
-                        UpdateInfoPositions();
-                        ChangeTextMainStatusBar(Trader.Objects.tTrades.CountOld.ToString());
                     }
                     EventStartegy();
                 });
             };
-            MTimer.InitTimer(new TimeSpan(0, 0, 1), livingLoop);
+            MTimer.InitTimer(new TimeSpan(100), livingLoop);
 
-            OnTimer1s += () =>
+            OnTimer1s += (timer) =>
             {
                 Qlog.CatchException(() =>
                 {
@@ -775,6 +798,15 @@ namespace AppVEConector
                     {
                         formDepth.LoopControl();
                     });
+                });
+            };
+            OnTimer5s += (timer) =>
+            {
+                Qlog.CatchException(() =>
+                {
+                    StartSaver();
+                    UpdateInfoPositions();
+                    ChangeTextMainStatusBar(Trader.Objects.tTrades.CountOld.ToString());
                 });
             };
         }

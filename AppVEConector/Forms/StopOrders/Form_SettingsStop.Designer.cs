@@ -1,4 +1,4 @@
-﻿namespace AppVEConector.Forms
+﻿namespace AppVEConector.Forms.StopOrders
 {
 	partial class Form_SettingsStop
 	{

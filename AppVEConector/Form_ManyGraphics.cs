@@ -1,6 +1,8 @@
 ﻿using GraphicTools;
 using GraphicTools.Extension;
+using Market.AppTools;
 using MarketObjects;
+using MarketObjects.Charts;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -9,7 +11,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using TradingLib;
 
 namespace AppVEConector
 {
@@ -306,14 +307,14 @@ namespace AppVEConector
 				int index = 0;// GetIndexFirstCandle(timeFrame);
 
 				//Orders
-				List<MarketObjects.Chart> orders = new List<MarketObjects.Chart>();
+				List<Chart> orders = new List<Chart>();
 				var allOrd = this.Trader.Objects.Orders.ToArray().Where(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allOrd)
 				{
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
 					var vol = o.IsSell() ? o.Volume * -1 : o.Volume;
 					if (ch != null) ch.Volume += vol;
-					else orders.Add(new MarketObjects.Chart() { Price = o.Price, Volume = vol });
+					else orders.Add(new Chart() { Price = o.Price, Volume = vol });
 				}
 				var allStOrd = this.Trader.Objects.StopOrders.ToArray().Where(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allStOrd)
@@ -321,7 +322,7 @@ namespace AppVEConector
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
 					var vol = o.IsSell() ? o.Volume * -1 : o.Volume;
 					if (ch != null) ch.Volume += vol;
-					else orders.Add(new MarketObjects.Chart() { Price = o.ConditionPrice, Volume = vol });
+					else orders.Add(new Chart() { Price = o.ConditionPrice, Volume = vol });
 				}
 				//panelGraph.Graphic.SetOrders(orders);
 				//panelGraph.Graphic.SetLevels(panelGraph.Levels.Collection);

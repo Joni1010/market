@@ -1,4 +1,6 @@
-﻿using Connector.Logs;
+﻿using AppVEConector.libs;
+using Connector.Logs;
+using MarketObjects;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace AppVEConector
 {
-    public class Settings
+    public class SettingsFormSec : Settings
     {
         [Serializable]
         public class SDataTF
@@ -65,27 +67,38 @@ namespace AppVEConector
             public int PercentTakeOut = 0;
         }
         /// <summary>
-        /// Locker
-        /// </summary>
-        private readonly object syncLock = new object();
-        /// <summary>
         /// Data
         /// </summary>
-        public SData Data = new SData();
+        //public SData Data = new SData();
+        public SData Data
+        {
+            set { this.data = value; }
+            get { return (SData)this.data; }
+        }
         /// <summary>
-        /// SecurityCode:CodeClass
+        /// 
         /// </summary>
-        private string SecCode = "";
+        protected override void init() {
+            if (data.IsNull())
+            {
+                data = new SData();
+            }
+        }
 
-        public Settings()
+        private SettingsFormSec(string fileName) : base(fileName)
         {
 
+        }
+        public static SettingsFormSec New(Securities sec)
+        {
+            var filename = getFilename(sec.ToString());
+            return new SettingsFormSec(filename);
         }
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        private string GetFilename()
+        private static string getFilename(string secAndClass)
         {
             var rootDir = libs.Global.GetPathData();
             var dir = rootDir != "" ? rootDir + "\\settings\\" : ".\\settings\\";
@@ -93,21 +106,8 @@ namespace AppVEConector
             {
                 Directory.CreateDirectory(dir);
             }
-            var filename = dir + "set_" + this.SecCode.Replace(':', '_') + ".dat";
+            var filename = dir + "set_" + secAndClass.Replace(':', '_') + ".dat";
             return filename;
-        }
-        /// <summary>
-        /// Перезагрузить инструмент
-        /// </summary>
-        /// <param name="SecAndClass"></param>
-        public void ReloadSecurity(string SecAndClass)
-        {
-            if (!this.SecCode.Empty())
-            {
-                this.Save();
-            }
-            this.SecCode = SecAndClass;
-            this.Load();
         }
         /// <summary>
         /// Инициализируем все time-frames
@@ -115,10 +115,12 @@ namespace AppVEConector
         /// <param name="timeFrames"></param>
         public void InitTimeFrame(IEnumerable<int> timeFrames)
         {
-            timeFrames.ForEach<int>((tf)=> {
+            timeFrames.ForEach<int>((tf) =>
+            {
                 CreateTimeFrame(tf);
             });
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -130,55 +132,6 @@ namespace AppVEConector
             {
                 Data.TimeFrame.Add(timeFrame, new SDataTF());
             }
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Close()
-        {
-            if (!this.SecCode.Empty())
-            {
-                this.Save();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        private void Save()
-        {
-            Qlog.CatchException(() =>
-            {
-                Stream stream = File.Open(GetFilename(), FileMode.Create);
-                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                lock (syncLock)
-                {
-                    binaryFormatter.Serialize(stream, this.Data);
-                }
-                stream.Close();
-                return true;
-            }, "");
-        }
-
-        private void Load()
-        {
-            Qlog.CatchException(() =>
-            {
-                var filename = GetFilename();
-                if (File.Exists(filename))
-                {
-                    Stream stream = File.Open(filename, FileMode.Open);
-                    stream.Position = 0;
-                    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    lock (syncLock)
-                    {
-                        this.Data = (SData)binaryFormatter.Deserialize(stream);
-                    }
-                    stream.Close();
-                    return true;
-                }
-                return false;
-            }, "");
         }
     }
 }

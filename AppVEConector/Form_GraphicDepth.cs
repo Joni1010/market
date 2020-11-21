@@ -3,7 +3,6 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
-using TradingLib;
 using Libs;
 using System.Collections.Generic;
 
@@ -19,6 +18,7 @@ using GraphicTools.Extension;
 using System.Drawing;
 using GraphicTools.Base;
 using AppVEConector.libs.Signal;
+using Market.AppTools;
 
 namespace AppVEConector
 {
@@ -78,6 +78,7 @@ namespace AppVEConector
             {
                 this.Close();
             }
+            SettingsDepth = SettingsFormSec.New(TrElement.Security);
         }
 
         private void Form_GraphicDepth_Load(object sender, EventArgs ev)
@@ -489,7 +490,7 @@ namespace AppVEConector
         private void Form_GraphicDepth_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.Trader.UnregisterDepth(Securities);
-            SettingsDepth.Close();
+            SettingsDepth.Save();
         }
 
         private void buttonCancelAll_Click(object sender, EventArgs e)

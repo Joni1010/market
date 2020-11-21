@@ -5,6 +5,7 @@ using GraphicTools.Shapes;
 using Managers;
 using Market.Candles;
 using MarketObjects;
+using MarketObjects.Charts;
 using QuikConnector.MarketObjects;
 using QuikControl;
 using System;

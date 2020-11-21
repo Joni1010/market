@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using TradingLib;
 using System.Collections.Generic;
 using System;
 using MarketObjects;
 using Market.Candles;
 using GraphicTools.Extension;
+using Market.AppTools;
 
 namespace AppVEConector
 {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using GraphicTools.Base;
+using MarketObjects.Charts;
 
 namespace GraphicTools.Extension
 {
@@ -10,7 +10,7 @@ namespace GraphicTools.Extension
     public class BaseLevels
     {
         /// <summary> Коллекция для отрисовки уровней </summary>
-        public List<MarketObjects.Chart> CollectionLevels = new List<MarketObjects.Chart>();
+        public List<Chart> CollectionLevels = new List<Chart>();
         /// <summary> Минимальное значение </summary>
         public decimal Min = 100000000;
         /// <summary> Максимальное значение </summary>

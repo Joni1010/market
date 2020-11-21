@@ -4,8 +4,6 @@ using System.Drawing;
 using System;
 using GraphicTools.Base;
 using GraphicTools.Shapes;
-using Market.Candles;
-using TradingLib;
 
 namespace GraphicTools.Extension
 {
@@ -55,9 +53,6 @@ namespace GraphicTools.Extension
         }
     }
 
-    /// <summary>
-    /// Клас отрисовки шкалы цен.
-    /// </summary>
     public partial class GTimeFrame
     {
         /// <summary>
@@ -66,10 +61,7 @@ namespace GraphicTools.Extension
         const int PERIOD_SPLIT_LINE = 80;
         /// <summary> Ширина одной свечки </summary>
         public float WidthOneCandle = 0;
-    }
 
-    public partial class GTimeFrame
-    {
         /// <summary> Цвет вертикальных линий отметок </summary>
         public Color ColorMarkLine = Color.FromArgb(238, 238, 238);
 

@@ -1,8 +1,8 @@
-﻿using MarketObjects;
+﻿using Market.Volumes;
+using MarketObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VolumeLib;
 /// <summary>  Данные по свечкам.  </summary>
 namespace Market.Candles
 {

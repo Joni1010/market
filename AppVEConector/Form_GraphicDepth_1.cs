@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Forms;
 using MarketObjects;
 using System.Threading;
-using TradingLib;
 using AppVEConector.libs;
 using Market.Candles;
 using GraphicTools;
@@ -16,6 +15,7 @@ using libs;
 using QuikConnector.libs;
 using QuikConnector.MarketObjects;
 using AppVEConector.libs.Signal;
+using MarketObjects.Charts;
 
 namespace AppVEConector
 {
@@ -66,7 +66,7 @@ namespace AppVEConector
         /// <summary>
         /// Все настройки, которые необходимо хранить.
         /// </summary>
-        private Settings SettingsDepth = new Settings();
+        private SettingsFormSec SettingsDepth = null;
 
         class StructClickDepth
         {
@@ -166,7 +166,7 @@ namespace AppVEConector
         {
             this.SetHead(Securities);
             //Загружаем настройки по инструменту
-            SettingsDepth.ReloadSecurity(Securities.ToString());
+            //SettingsDepth.ReloadSecurity(Securities.ToString());
             SettingsDepth.InitTimeFrame(TrElement.CollectionTimeFrames.Select(t => t.TimeFrame));
 
             //Инициализация всех панелей

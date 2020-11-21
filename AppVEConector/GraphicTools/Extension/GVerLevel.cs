@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using static GraphicTools.GCandles;
-using MarketObjects;
+using MarketObjects.Charts;
 
 namespace GraphicTools
 {

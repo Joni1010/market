@@ -2,11 +2,11 @@
 using GraphicTools.Extension;
 using GraphicTools.Shapes;
 using Market.Volumes;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using static GraphicTools.GCandles;
+using MarketObjects.Charts;
 
 namespace GraphicTools
 {
@@ -42,10 +42,10 @@ namespace GraphicTools
         {
             public HVolume HorVolumes = null;
             public GCandles.CandleInfo LastCandle = null;
-            public MarketObjects.Chart MaxElem = new MarketObjects.Chart();
-            public MarketObjects.Chart MinElem = new MarketObjects.Chart();
-            public MarketObjects.Chart MaxDeltaElem = new MarketObjects.Chart();
-            public MarketObjects.Chart MinDeltaElem = new MarketObjects.Chart();
+            public Chart MaxElem = new Chart();
+            public Chart MinElem = new Chart();
+            public Chart MaxDeltaElem = new Chart();
+            public Chart MinDeltaElem = new Chart();
             public long MaxVol
             {
                 get
@@ -160,7 +160,7 @@ namespace GraphicTools
                 preDataHVol.Add(CurrentHVol);
 
                 var list = this.CollectionCandles.ToArray();
-                var maxAll = new MarketObjects.Chart();
+                var maxAll = new Chart();
 
                 if (list.NotIsNull() && list.Count() > 0)
                 {
@@ -247,7 +247,7 @@ namespace GraphicTools
         /// <param name="prepHorV"></param>
         /// <param name="max"></param>
         /// <param name="countInBlock"></param>
-        private void PaintOneBlock(PrepareHorVol prepHorV, MarketObjects.Chart max, int countInBlock)
+        private void PaintOneBlock(PrepareHorVol prepHorV, Chart max, int countInBlock)
         {
             var canvas = Panel.GetGraphics;
             var canvasOnlyVol = PanelVolume.GetGraphics;
@@ -267,12 +267,12 @@ namespace GraphicTools
                 textMax.Paint(canvas, text, prepHorV.RectBlock.X, prepHorV.RectBlock.Y - size.Height);
             }
 
-            prepHorV.HorVolumes.ToArray().ForEach<MarketObjects.ChartVol>((hv) =>
+            prepHorV.HorVolumes.ToArray().ForEach<ChartFull>((hv) =>
             {
-                this.PaintLineHVol(canvas, prepHorV.RectBlock, max, new MarketObjects.Chart(), hv);
+                this.PaintLineHVol(canvas, prepHorV.RectBlock, max, new Chart(), hv);
                 if (PaintOnlyFirstBlock)
                 {
-                    this.PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, max, new MarketObjects.Chart(), hv, Color.Blue);
+                    this.PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, max, new Chart(), hv, Color.Blue);
                 }
             });
         }
@@ -291,7 +291,7 @@ namespace GraphicTools
                 if (priceY == hv.Price)
                 {
                     if (hv.Price == priceY) activeCandle.Description = (hv.VolBuy + hv.VolSell).ToString();
-                    activeCandle.CurHorVolume = new MarketObjects.ChartVol() { Price = priceY, VolBuy = hv.VolBuy, VolSell = hv.VolSell };
+                    activeCandle.CurHorVolume = new ChartFull() { Price = priceY, VolBuy = hv.VolBuy, VolSell = hv.VolSell };
                 }
             }
         }
@@ -355,7 +355,7 @@ namespace GraphicTools
             PrepDataHorVol.index1 = activeCandle1.dataCandle.Index;
             PrepDataHorVol.index2 = activeCandle2.dataCandle.Index;
 
-            PrepDataHorVol.MaxElem = new MarketObjects.Chart();
+            PrepDataHorVol.MaxElem = new Chart();
             if (PrepDataHorVol.NotIsNull())
             {
                 PrepDataHorVol.MaxElem = PrepDataHorVol.HorVolumes.MaxVolume;
@@ -363,10 +363,10 @@ namespace GraphicTools
                 PrepDataHorVol.MaxDeltaElem = PrepDataHorVol.HorVolumes.MaxDeltaVolume;
                 PrepDataHorVol.MinDeltaElem = PrepDataHorVol.HorVolumes.MinDeltaVolume;
             }
-            PrepDataHorVol.MaxElem = PrepDataHorVol.MaxElem.NotIsNull() ? PrepDataHorVol.MaxElem : new MarketObjects.Chart();
-            PrepDataHorVol.MinElem = PrepDataHorVol.MinElem.NotIsNull() ? PrepDataHorVol.MinElem : new MarketObjects.Chart();
-            PrepDataHorVol.MaxDeltaElem = PrepDataHorVol.MaxDeltaElem.NotIsNull() ? PrepDataHorVol.MaxDeltaElem : new MarketObjects.Chart();
-            PrepDataHorVol.MinDeltaElem = PrepDataHorVol.MinDeltaElem.NotIsNull() ? PrepDataHorVol.MinDeltaElem : new MarketObjects.Chart();
+            PrepDataHorVol.MaxElem = PrepDataHorVol.MaxElem.NotIsNull() ? PrepDataHorVol.MaxElem : new Chart();
+            PrepDataHorVol.MinElem = PrepDataHorVol.MinElem.NotIsNull() ? PrepDataHorVol.MinElem : new Chart();
+            PrepDataHorVol.MaxDeltaElem = PrepDataHorVol.MaxDeltaElem.NotIsNull() ? PrepDataHorVol.MaxDeltaElem : new Chart();
+            PrepDataHorVol.MinDeltaElem = PrepDataHorVol.MinDeltaElem.NotIsNull() ? PrepDataHorVol.MinDeltaElem : new Chart();
 
             PrepDataHorVol.LastCandle = activeCandle1.dataCandle;
             return true;
@@ -412,10 +412,10 @@ namespace GraphicTools
                 rectVol.Paint(canvas, rectPaint.X, Panel.Rect.Y, rectPaint.Width, Panel.Rect.Height);
 
                 //Получяаем максимальный гор. объем в свече или наборе свечей
-                PrepDataHorVol.HorVolumes.ToArray().ForEach<MarketObjects.ChartVol>((hv) =>
+                PrepDataHorVol.HorVolumes.ToArray().ForEach<ChartFull>((hv) =>
                 {
-                    this.PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
-                    this.PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv, Color.Blue);
+                    this.PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new Chart(), hv);
+                    this.PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new Chart(), hv, Color.Blue);
                     //this.PaintLineHVol(canvasDelta, PanelDelta.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, true);
                     PrepDataHorVol.SumBuyVol += hv.VolBuy;
                     PrepDataHorVol.SumSellVol += hv.VolSell;
@@ -473,9 +473,9 @@ namespace GraphicTools
                 rectVol.Paint(canvas, rectPaint.X, Panel.Rect.Y, rectPaint.Width, Panel.Rect.Height);
 
                 //Получяаем максимальный гор. объем в свече или наборе свечей
-                PrepDataHorVol.HorVolumes.ToArray().ForEach<MarketObjects.ChartVol>((hv) =>
+                PrepDataHorVol.HorVolumes.ToArray().ForEach<ChartFull>((hv) =>
                 {
-                    PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
+                    PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new Chart(), hv);
                     if (delta)
                     {
                         PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, null, true);
@@ -490,7 +490,7 @@ namespace GraphicTools
                         }
                     } else
                     {
-                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new MarketObjects.Chart(), hv);
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxElem, new Chart(), hv);
                     }
                     PrepDataHorVol.SumBuyVol += hv.VolBuy;
                     PrepDataHorVol.SumSellVol += hv.VolSell; 
@@ -526,7 +526,7 @@ namespace GraphicTools
         /// <summary>
         /// Рисует линию горизонтального объема
         /// </summary>
-        private int PaintLineHVol(Graphics canvas, RectangleF rect, MarketObjects.Chart maxElem, MarketObjects.Chart minElem, MarketObjects.ChartVol hv, Color? colorVol = null, bool isDelta = false)
+        private int PaintLineHVol(Graphics canvas, RectangleF rect, Chart maxElem, Chart minElem, ChartFull hv, Color? colorVol = null, bool isDelta = false)
         {
             var widthLayoutVolume = rect.Width;
             var value = hv.VolBuy + hv.VolSell;

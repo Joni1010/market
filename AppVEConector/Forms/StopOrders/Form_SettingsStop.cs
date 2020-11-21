@@ -9,13 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AppVEConector.Forms
+namespace AppVEConector.Forms.StopOrders
 {
 	public partial class Form_SettingsStop :Form
 	{
-		private new Form_LightOrders Parent;
-		private Form_LightOrders.PanelOrders Panel;
-		public Form_SettingsStop(Form_LightOrders parent, Form_LightOrders.PanelOrders panel)
+		private new ControlForFormStopOrders Parent;
+		private Form_LightOrders.PanelControl Panel;
+		public Form_SettingsStop(ControlForFormStopOrders parent, Form_LightOrders.PanelControl panel)
 		{
 			this.Parent = parent;
 			this.Panel = panel;

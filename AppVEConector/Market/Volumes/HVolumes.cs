@@ -1,7 +1,7 @@
-﻿using System;
+﻿using MarketObjects.Charts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Market.Volumes
 {
@@ -11,20 +11,20 @@ namespace Market.Volumes
     {
         private readonly object syncLock = new object();
         /// <summary> Коллекция горизонтальных объемов </summary>
-        private List<MarketObjects.ChartVol> Collection = new List<MarketObjects.ChartVol>();
+        private List<ChartFull> Collection = new List<ChartFull>();
         /// <summary> Максимальный объем Buy  </summary>
-        private MarketObjects.Chart MaxBuy = null;
+        private Chart MaxBuy = null;
         /// <summary> Максимальный объем Sell  </summary>
-        private MarketObjects.Chart MaxSell = null;
+        private Chart MaxSell = null;
         /// <summary> Максимальный горизонтальный объем из коллекции </summary>
-        public MarketObjects.Chart MaxVolume = null;
+        public Chart MaxVolume = null;
         /// <summary> Минимальный горизонтальный объем из коллекции </summary>
-		public MarketObjects.Chart MinVolume = null;
+		public Chart MinVolume = null;
 
         /// <summary> Максимальный горизонтальный объем из коллекции DELTA</summary>
-		public MarketObjects.Chart MaxDeltaVolume = null;
+		public Chart MaxDeltaVolume = null;
         /// <summary> Минимальный горизонтальный объем из коллекции DELTA</summary>
-		public MarketObjects.Chart MinDeltaVolume = null;
+		public Chart MinDeltaVolume = null;
 
         /// <summary> Кол-во элементов (цен) в коллекции  </summary>
         public int Count
@@ -46,7 +46,7 @@ namespace Market.Volumes
         }
         /// <summary> Возвращает массив </summary>
         /// <returns></returns>
-        public MarketObjects.ChartVol[] ToArray()
+        public ChartFull[] ToArray()
         {
             lock (syncLock)
             {
@@ -59,7 +59,7 @@ namespace Market.Volumes
             var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
             if (elem.IsNull())
             {
-                elem = new MarketObjects.ChartVol() { Price = price, VolBuy = 0, VolSell = 0 };
+                elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
                 lock (syncLock)
                 {
                     this.Collection.Add(elem);
@@ -68,27 +68,27 @@ namespace Market.Volumes
 
             if (MaxBuy.IsNull())
             {
-                MaxBuy = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy };
+                MaxBuy = new Chart() { Price = elem.Price, Volume = elem.VolBuy };
             }
             if (MaxSell.IsNull())
             {
-                MaxSell = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolSell };
+                MaxSell = new Chart() { Price = elem.Price, Volume = elem.VolSell };
             }
             if (MaxVolume.IsNull())
             {
-                MaxVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = -100000000 };
+                MaxVolume = new Chart() { Price = elem.Price, Volume = -100000000 };
             }
             if (MinVolume.IsNull())
             {
-                MinVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = 10000000 };
+                MinVolume = new Chart() { Price = elem.Price, Volume = 10000000 };
             }
             if (MaxDeltaVolume.IsNull())
             {
-                MaxDeltaVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = -100000000 };
+                MaxDeltaVolume = new Chart() { Price = elem.Price, Volume = -100000000 };
             }
             if (MinDeltaVolume.IsNull())
             {
-                MinDeltaVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = 10000000 };
+                MinDeltaVolume = new Chart() { Price = elem.Price, Volume = 10000000 };
             }
             if (elem.NotIsNull())
             {
@@ -136,7 +136,7 @@ namespace Market.Volumes
             var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
             if (elem.IsNull())
             {
-                elem = new MarketObjects.ChartVol() { Price = price, VolBuy = 0, VolSell = 0 };
+                elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
                 lock (syncLock)
                 {
                     this.Collection.Add(elem);
@@ -145,29 +145,29 @@ namespace Market.Volumes
 
             if (MaxBuy.IsNull())
             {
-                MaxBuy = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy };
+                MaxBuy = new Chart() { Price = elem.Price, Volume = elem.VolBuy };
             }
 
             if (MaxSell.IsNull())
             {
-                MaxSell = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolSell };
+                MaxSell = new Chart() { Price = elem.Price, Volume = elem.VolSell };
             }
 
             if (MaxVolume.IsNull())
             {
-                MaxVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
+                MaxVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
             }
             if (MinVolume.IsNull())
             {
-                MinVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
+                MinVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
             }
             if (MaxDeltaVolume.IsNull())
             {
-                MaxDeltaVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
+                MaxDeltaVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
             }
             if (MinDeltaVolume.IsNull())
             {
-                MinDeltaVolume = new MarketObjects.Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
+                MinDeltaVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
             }
             if (elem.NotIsNull())
             {
@@ -219,12 +219,12 @@ namespace Market.Volumes
             var list = this.ToArray();
             foreach (var elem in list)
             {
-                if (MaxBuy.IsNull()) MaxBuy = new MarketObjects.Chart();
-                if (MaxSell.IsNull()) MaxSell = new MarketObjects.Chart();
-                if (MaxVolume.IsNull()) MaxVolume = new MarketObjects.Chart();
-                if (MinVolume.IsNull()) MinVolume = new MarketObjects.Chart();
-                if (MaxDeltaVolume.IsNull()) MaxDeltaVolume = new MarketObjects.Chart();
-                if (MinDeltaVolume.IsNull()) MinDeltaVolume = new MarketObjects.Chart();
+                if (MaxBuy.IsNull()) MaxBuy = new Chart();
+                if (MaxSell.IsNull()) MaxSell = new Chart();
+                if (MaxVolume.IsNull()) MaxVolume = new Chart();
+                if (MinVolume.IsNull()) MinVolume = new Chart();
+                if (MaxDeltaVolume.IsNull()) MaxDeltaVolume = new Chart();
+                if (MinDeltaVolume.IsNull()) MinDeltaVolume = new Chart();
 
                 if (MaxBuy.Volume < elem.VolBuy)
                 {
@@ -262,7 +262,7 @@ namespace Market.Volumes
         /// <param name="price1"></param>
         /// <param name="price2"></param>
         /// <returns></returns>
-        public IEnumerable<MarketObjects.ChartVol> GetElementBetween(decimal price1, decimal price2)
+        public IEnumerable<ChartFull> GetElementBetween(decimal price1, decimal price2)
         {
             decimal tmp = 0;
             if (price1 > price2)
@@ -277,7 +277,7 @@ namespace Market.Volumes
         /// <summary> Возвращает объем по текущей цене </summary>
         /// <param name="price"></param>
         /// <returns></returns>
-        public MarketObjects.ChartVol GetVolume(decimal price)
+        public ChartFull GetVolume(decimal price)
         {
             var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
             if (elem != null) return elem;
