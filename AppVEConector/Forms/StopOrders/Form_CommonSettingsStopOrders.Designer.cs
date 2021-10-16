@@ -30,14 +30,14 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.comboBoxSearchSec = new System.Windows.Forms.ComboBox();
+            this.buttonAddSecInList = new System.Windows.Forms.Button();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.dataGridViewListSec = new System.Windows.Forms.DataGridView();
             this.ColumnSecClass = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelHeaderGrid = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.comboBoxSearchSec = new System.Windows.Forms.ComboBox();
-            this.buttonAddSecInList = new System.Windows.Forms.Button();
             this.buttonDelSec = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -79,6 +79,35 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(231, 216);
             this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(1, 1);
+            this.label1.Margin = new System.Windows.Forms.Padding(1);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(81, 20);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Инструмент";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxSearchSec
+            // 
+            this.comboBoxSearchSec.FormattingEnabled = true;
+            this.comboBoxSearchSec.Location = new System.Drawing.Point(85, 1);
+            this.comboBoxSearchSec.Margin = new System.Windows.Forms.Padding(1);
+            this.comboBoxSearchSec.Name = "comboBoxSearchSec";
+            this.comboBoxSearchSec.Size = new System.Drawing.Size(145, 21);
+            this.comboBoxSearchSec.TabIndex = 2;
+            // 
+            // buttonAddSecInList
+            // 
+            this.buttonAddSecInList.Location = new System.Drawing.Point(84, 22);
+            this.buttonAddSecInList.Margin = new System.Windows.Forms.Padding(0);
+            this.buttonAddSecInList.Name = "buttonAddSecInList";
+            this.buttonAddSecInList.Size = new System.Drawing.Size(102, 22);
+            this.buttonAddSecInList.TabIndex = 3;
+            this.buttonAddSecInList.Text = "Добавить >>";
+            this.buttonAddSecInList.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel3
             // 
@@ -139,35 +168,6 @@
             this.labelHeaderGrid.TabIndex = 1;
             this.labelHeaderGrid.Text = "Список инструментов";
             this.labelHeaderGrid.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // label1
-            // 
-            this.label1.Location = new System.Drawing.Point(1, 1);
-            this.label1.Margin = new System.Windows.Forms.Padding(1);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(81, 20);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Инструмент";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // comboBoxSearchSec
-            // 
-            this.comboBoxSearchSec.FormattingEnabled = true;
-            this.comboBoxSearchSec.Location = new System.Drawing.Point(84, 1);
-            this.comboBoxSearchSec.Margin = new System.Windows.Forms.Padding(1);
-            this.comboBoxSearchSec.Name = "comboBoxSearchSec";
-            this.comboBoxSearchSec.Size = new System.Drawing.Size(146, 21);
-            this.comboBoxSearchSec.TabIndex = 2;
-            // 
-            // buttonAddSecInList
-            // 
-            this.buttonAddSecInList.Location = new System.Drawing.Point(83, 22);
-            this.buttonAddSecInList.Margin = new System.Windows.Forms.Padding(0);
-            this.buttonAddSecInList.Name = "buttonAddSecInList";
-            this.buttonAddSecInList.Size = new System.Drawing.Size(102, 22);
-            this.buttonAddSecInList.TabIndex = 3;
-            this.buttonAddSecInList.Text = "Добавить >>";
-            this.buttonAddSecInList.UseVisualStyleBackColor = true;
             // 
             // buttonDelSec
             // 

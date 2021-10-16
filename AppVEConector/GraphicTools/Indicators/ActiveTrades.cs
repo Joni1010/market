@@ -26,6 +26,18 @@ namespace AppVEConector.GraphicTools.Indicators
             FastRedraw = true;
             Enable = enable;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public override bool IsEnable()
+        {
+            if (Enable && MinVolumeShow > 0)
+            {
+                return true;
+            }
+            return false;
+        }
 
         public override void EventInitStartIndicator()
         {
@@ -35,7 +47,7 @@ namespace AppVEConector.GraphicTools.Indicators
         public override void FastUpdate()
         {
             Panel.Clear();
-            if (MinVolumeShow == 0)
+            if (!IsEnable())
             {
                 return;
             }

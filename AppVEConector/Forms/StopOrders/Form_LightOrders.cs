@@ -11,6 +11,7 @@ using Managers;
 using AppVEConector.libs.Signal;
 using System.Windows.Threading;
 using Connector.Logs;
+using AppVEConector.settings;
 
 namespace AppVEConector.Forms.StopOrders
 {
@@ -21,71 +22,19 @@ namespace AppVEConector.Forms.StopOrders
         public Form_CommonSettingsStopOrders FormSettings = null;
 
         private int stepsHide = 0;
-        /// <summary>
-        /// Класс настроек
-        /// </summary>
-        public class SettingsForm : Settings
-        {
-            public const int COUNT_PANELS = 10;
-            [Serializable]
-            public class PositionForm
-            {
-                [Serializable]
-                public class ItemSec
-                {
-                    public string SecAndClass = "";
-                    public string Name = "";
-                }
-                public string[] StructPanels = null;
-                public int indexScreen = 0;
-                public int numberPosition = 0;
-                public List<ItemSec> ItemsSec = null;
-            }
-            /// <summary>
-            /// 
-            /// </summary>
-            protected override void init()
-            {
-                if (this.data.IsNull())
-                {
-                    this.data = new PositionForm();
-                }
-                if (Data.StructPanels.IsNull())
-                {
-                    Data.StructPanels = new string[COUNT_PANELS];
-                }
-                if (Data.ItemsSec.IsNull())
-                {
-                    Data.ItemsSec = new List<PositionForm.ItemSec>();
-                }
-            }
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="fileName"></param>
-            public SettingsForm(string fileName) : base(fileName)
-            {
-                
-            }
-            public PositionForm Data
-            {
-                set { this.data = value; }
-                get { return (PositionForm)this.data; }
-            }
-        }
-        /// <summary>
-        /// Сохраняемые настройки
-        /// </summary>
-        public SettingsForm Settings = null;
+
+        public SettingsLightOrders Settings = null;
+
+        
 
         public Form_LightOrders(MainForm parent)
         {
-            this.InitializeComponent();
+            InitializeComponent();
             var rootDir = Global.GetPathData();
             var filename = rootDir + "\\" + "lord_settings.dat";
-            Settings = new SettingsForm(filename);
-            this.Parent = parent;
-            this.searchAllElementsPanels(this);
+            Settings = SettingsLightOrders.New(filename);
+            Parent = parent;
+            searchAllElementsPanels(this);
         }
 
         private void Form_LightOrders_Load(object sender, EventArgs e)
@@ -117,7 +66,8 @@ namespace AppVEConector.Forms.StopOrders
             {
                 Qlog.CatchException(() =>
                 {
-                    Settings.Data.numberPosition++;
+                    var numPos = Settings.Get("numberPosition");
+                    Settings.Set("numberPosition", numPos + 1);
                     ChangeOrientation();
                 });
             };
@@ -155,7 +105,7 @@ namespace AppVEConector.Forms.StopOrders
                 }
             };
             Parent.OnTimer100ms += event100ms;
-           
+
             Action<DispatcherTimer> event1s = (timer) =>
             {
                 if (this.WindowState != FormWindowState.Minimized && this.TopMost)
@@ -176,7 +126,6 @@ namespace AppVEConector.Forms.StopOrders
                 }
                 Parent.OnTimer100ms -= event100ms;
                 Parent.OnTimer1s -= event1s;
-                Settings.Save();
             };
             updateAllComboBoxSec();
         }
@@ -194,7 +143,7 @@ namespace AppVEConector.Forms.StopOrders
 
                         ComboBox.ObjectCollection items = new ComboBox.ObjectCollection(pan.ComboboxSecurity);
                         items.Insert(0, " ");
-                        foreach (var itemSec in Settings.Data.ItemsSec)
+                        foreach (var itemSec in Settings.Get("ItemsSec"))
                         {
                             items.Add(itemSec.SecAndClass);
                         }
@@ -219,10 +168,11 @@ namespace AppVEConector.Forms.StopOrders
         /// <returns></returns>
         private Point getCoordinateForm()
         {
-            if (Settings.Data.numberPosition > 1)
+            var numPos = Settings.Get("numberPosition");
+            if (numPos > 1)
             {
-                Settings.Data.numberPosition = 0;
-                Settings.Data.indexScreen++;
+                Settings.Set("numberPosition", 0);
+                Settings.Set("indexScreen", Settings.Get("indexScreen") + 1);
             }
             var screen = GetScreen();
             var rectScreen = screen.Bounds;
@@ -231,12 +181,12 @@ namespace AppVEConector.Forms.StopOrders
             var top = 0;
             var left = 0;
 
-            if (Settings.Data.numberPosition == 0)
+            if (Settings.Get("numberPosition") == 0)
             {
                 top = this.Location.Y + (int)(heightScreen / 2) - (int)(this.Height / 2);
                 left = this.Location.X + widthScreen - this.Width;
             }
-            else if (Settings.Data.numberPosition == 1)
+            else if (Settings.Get("numberPosition") == 1)
             {
                 top = this.Location.Y + (int)(heightScreen / 2) - (int)(this.Height / 2);
                 left = this.Location.X + 0;
@@ -246,12 +196,12 @@ namespace AppVEConector.Forms.StopOrders
 
         private Screen GetScreen()
         {
-            if (Screen.AllScreens.Length <= Settings.Data.indexScreen)
+            if (Screen.AllScreens.Length <= Settings.Get("indexScreen"))
             {
-                Settings.Data.indexScreen = 0;
+                Settings.Set("indexScreen", 0);
             }
-            var screen = Screen.AllScreens[Settings.Data.indexScreen];
-            this.Location = screen.WorkingArea.Location;
+            var screen = Screen.AllScreens[Settings.Get("indexScreen")];
+            Location = screen.WorkingArea.Location;
             return screen;
         }
 
@@ -272,7 +222,9 @@ namespace AppVEConector.Forms.StopOrders
             {
                 if (pan.ComboboxSecurity.Text.Length > 1)
                 {
-                    Settings.Data.StructPanels[pan.Index] = pan.Index.ToString() + SPLITTER_INDEXDATA + pan.ComboboxSecurity.Text;
+                    string[] list = Settings.Get("StructPanels");
+                    list[pan.Index] = pan.Index.ToString() + SPLITTER_INDEXDATA + pan.ComboboxSecurity.Text;
+                    Settings.Set("StructPanels", list);
                 }
             }
             Settings.Save();
@@ -282,14 +234,15 @@ namespace AppVEConector.Forms.StopOrders
         /// </summary>
         private void LoadStructPanels()
         {
-            foreach (var line in Settings.Data.StructPanels)
+            string[] list = Settings.Get("StructPanels");
+            foreach (var line in list)
             {
                 if (!line.Empty())
                 {
                     if (line.Contains(SPLITTER_INDEXDATA))
                     {
                         var data = line.Split(SPLITTER_INDEXDATA);
-                        var panel = this.ListPanels.FirstOrDefault(p => p.Index == data[0].ToInt32());
+                        var panel = ListPanels.FirstOrDefault(p => p.Index == data[0].ToInt32());
                         if (panel.NotIsNull())
                         {
                             panel.ComboboxSecurity.Text = data[1];

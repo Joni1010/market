@@ -352,13 +352,13 @@ namespace GraphicTools
                 MaxValues.MinPrice = candleData.Low;
                 MaxValues.MinCandle = candleData;
             }
-            if (candleData.HorVolumes.HVolCollection.MaxVolume.NotIsNull())
+            /*if (candleData.HorVolumes.HVolCollection.MaxVolume.NotIsNull())
             {
                 if (MaxValues.MaxHorVolume.Volume < candleData.HorVolumes.HVolCollection.MaxVolume.Volume)
                 {
                     MaxValues.MaxHorVolume = candleData.HorVolumes.HVolCollection.MaxVolume;
                 }
-            }
+            }*/
 
             var dCandle = new CandleInfo()
             {

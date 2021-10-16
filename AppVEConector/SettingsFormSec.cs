@@ -1,17 +1,13 @@
 ﻿using AppVEConector.libs;
-using Connector.Logs;
 using MarketObjects;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppVEConector
 {
-    public class SettingsFormSec : Settings
+    public class SettingsFormSec 
     {
         [Serializable]
         public class SDataTF
@@ -26,7 +22,7 @@ namespace AppVEConector
             public int MovingAverage = 30;
         }
         [Serializable]
-        public class SData
+        public class SData : Settings
         {
             /// <summary>
             /// Code client
@@ -51,7 +47,7 @@ namespace AppVEConector
             /// <summary>
             /// 
             /// </summary>
-            public Dictionary<int, SDataTF> TimeFrame = new Dictionary<int, SDataTF>();
+            public Dictionary<int, SDataTF> timeFrame = new Dictionary<int, SDataTF>();
 
             /// <summary>
             /// Кол-во тиков контроля стопа
@@ -65,30 +61,108 @@ namespace AppVEConector
             /// Процент выхода из позиции
             /// </summary>
             public int PercentTakeOut = 0;
+            /// <summary>
+            /// Лимиты границ по объемам в дельте
+            /// </summary>
+            public long HVLimitsDeltaVolumes = 0;
+
+            public SData(string filename) : base(filename)
+            {
+                data = this;
+                load();
+            }
         }
         /// <summary>
-        /// Data
+        /// Хранилище настроек
         /// </summary>
-        //public SData Data = new SData();
-        public SData Data
+        protected SData Storage = null;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public dynamic Get(string varName)
         {
-            set { this.data = value; }
-            get { return (SData)this.data; }
+            return Storage.Get(varName);
         }
         /// <summary>
         /// 
         /// </summary>
-        protected override void init() {
-            if (data.IsNull())
+        /// <param name="name"></param>
+        /// <param name="value"></param>
+        public void Set(string name, object value)
+        {
+            Storage.Set(name, value);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="varName"></param>
+        /// <param name="value"></param>
+        public void SetTF(int timeframe, string varName, object value)
+        {
+            try
             {
-                data = new SData();
+                Storage.timeFrame[timeframe].GetType().GetField(varName).SetValue(Storage.timeFrame[timeframe], value);
+                Storage.save();
+                return;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeframe"></param>
+        /// <param name="varName"></param>
+        /// <param name="defValue"></param>
+        /// <returns></returns>
+        public dynamic GetTF(int timeframe, string varName)
+        {
+            try
+            {
+                return Storage.timeFrame[timeframe].GetType().GetField(varName).GetValue(Storage.timeFrame[timeframe]);
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
-        private SettingsFormSec(string fileName) : base(fileName)
+        /// <summary>
+        /// Инициализируем все time-frames
+        /// </summary>
+        /// <param name="timeFrames"></param>
+        public void InitTimeFrame(IEnumerable<int> timeFrames)
         {
-
+            timeFrames.ForEach<int>((tf) =>
+            {
+                CreateTimeFrame(tf);
+            });
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="timeFrame"></param>
+        private void CreateTimeFrame(int timeframe)
+        {
+            var tf = Storage.timeFrame.FirstOrDefault(t => t.Key == timeframe);
+            if (tf.IsNull() || tf.Value.IsNull())
+            {
+                Storage.timeFrame.Add(timeframe, new SDataTF());
+            }
+        }
+
+        protected SettingsFormSec(string filenameSettings)
+        {
+            Storage = new SData(filenameSettings);
+        }
+
         public static SettingsFormSec New(Securities sec)
         {
             var filename = getFilename(sec.ToString());
@@ -109,29 +183,6 @@ namespace AppVEConector
             var filename = dir + "set_" + secAndClass.Replace(':', '_') + ".dat";
             return filename;
         }
-        /// <summary>
-        /// Инициализируем все time-frames
-        /// </summary>
-        /// <param name="timeFrames"></param>
-        public void InitTimeFrame(IEnumerable<int> timeFrames)
-        {
-            timeFrames.ForEach<int>((tf) =>
-            {
-                CreateTimeFrame(tf);
-            });
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="timeFrame"></param>
-        private void CreateTimeFrame(int timeFrame)
-        {
-            var tf = Data.TimeFrame.FirstOrDefault(t => t.Key == timeFrame);
-            if (tf.IsNull() || tf.Value.IsNull())
-            {
-                Data.TimeFrame.Add(timeFrame, new SDataTF());
-            }
-        }
+        
     }
 }

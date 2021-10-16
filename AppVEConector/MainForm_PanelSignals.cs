@@ -41,7 +41,7 @@ namespace AppVEConector
                 var text = comboBoxSecSign.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.Securities.Where(el => el.Code.ToLower().Contains(text.ToLower()) ||
+                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
                         el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
                     if (listSec.Count() > 0)
                     {
@@ -266,10 +266,10 @@ namespace AppVEConector
                                         var trElem = DataTrading.Collection.FirstOrDefault(c => c.Security == sec);
                                         if (trElem.NotIsNull())
                                         {
-                                            var timeFrameCol = trElem.CollectionTimeFrames.FirstOrDefault(tf => tf.TimeFrame == sig.TimeFrame);
+                                            var timeFrameCol = trElem.StorageTF.GetTimeFrame(sig.TimeFrame);
                                             if (timeFrameCol.NotIsNull())
                                             {
-                                                var candleCur = timeFrameCol.FirstCandle;
+                                                var candleCur = timeFrameCol.Candles.FirstCandle;
                                                 if (candleCur.NotIsNull())
                                                 {
                                                     if (candleCur.Volume >= sig.Volume && sig.TimeAntiRepeat.GetDateTime() < DateTime.Now)
@@ -277,10 +277,12 @@ namespace AppVEConector
                                                         sig.TimeAntiRepeat.SetDateTime(DateTime.Now.AddMinutes(sig.TimeFrame));
                                                         SignalView.GSMSignaler.SendSignalCall();
                                                         if (!sig.Infinity) SignalView.GSMSignaler.RemoveSignal(sig);
-                                                        textBoxLogSign.Text = "Volume: " + sig.SecClass + " > " + sig.Volume.ToString() + " tf:" + sig.TimeFrame + " [" + DateTime.Now.ToString() + "] (" + sig.Comment + ")" +
+                                                        textBoxLogSign.Text = "[" + DateTime.Now.ToLongTimeString() + "] " +
+                                                        sec.ToString() + " Volume: "  + " > " + sig.Volume.ToString() + 
+                                                        " tf:" + sig.TimeFrame + " (" + sig.Comment + ")" +
                                                             "\r\n-------------------------------\r\n" +
                                                             textBoxLogSign.Text;
-                                                        Form_MessageSignal.Show(textBoxLogSign.Text);
+                                                        Form_MessageSignal.Show(textBoxLogSign.Text, sec.ToString());
                                                         Thread.Sleep(1);
                                                     }
                                                 }
@@ -308,7 +310,7 @@ namespace AppVEConector
                                         string msg = "Time: " + sig.DateTime.GetDateTime().ToShortTimeString() + " (" + sig.Comment + ")" +
                                             "\r\n-------------------------------\r\n";
                                         textBoxLogSign.Text = msg + textBoxLogSign.Text;
-                                        Form_MessageSignal.Show(msg, true);
+                                        Form_MessageSignal.Show(msg, "", true);
                                         Thread.Sleep(1);
                                     }
                                 }
@@ -323,10 +325,18 @@ namespace AppVEConector
                                 {
                                     bool signal = false;
                                     string cond = "";
+                                    decimal price = sec.LastPrice;
+                                    if (sec.LastTrade.NotIsNull())
+                                    {
+                                        if(sec.LastTrade.DateTrade.GetDateTime() > DateTime.Now.AddMinutes(-3))
+                                        {
+                                            price = sec.LastTrade.Price;
+                                        }
+                                    }
                                     switch (sig.Condition)
                                     {
                                         case SignalMarket.CondSignal.MoreOrEquals:
-                                            if (sec.LastPrice >= sig.Price)
+                                            if (price >= sig.Price)
                                             {
                                                 SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
@@ -334,7 +344,7 @@ namespace AppVEConector
                                             }
                                             break;
                                         case SignalMarket.CondSignal.More:
-                                            if (sec.LastPrice > sig.Price)
+                                            if (price > sig.Price)
                                             {
                                                 SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
@@ -342,7 +352,7 @@ namespace AppVEConector
                                             }
                                             break;
                                         case SignalMarket.CondSignal.LessOrEquals:
-                                            if (sec.LastPrice <= sig.Price)
+                                            if (price <= sig.Price)
                                             {
                                                 SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
@@ -350,7 +360,7 @@ namespace AppVEConector
                                             }
                                             break;
                                         case SignalMarket.CondSignal.Less:
-                                            if (sec.LastPrice < sig.Price)
+                                            if (price < sig.Price)
                                             {
                                                 SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
@@ -358,7 +368,7 @@ namespace AppVEConector
                                             }
                                             break;
                                         case SignalMarket.CondSignal.Equals:
-                                            if (sec.LastPrice < sig.Price)
+                                            if (price < sig.Price)
                                             {
                                                 SignalView.GSMSignaler.SendSignalCall();
                                                 signal = true;
@@ -368,11 +378,12 @@ namespace AppVEConector
                                     }
                                     if (signal)
                                     {
-                                        var msg = DateTime.Now.ToLongTimeString() + " -> " +
-                                            sec.Code + " " + cond + " " + sig.Price.ToString() + "(" + sig.Comment + ")" +
+                                        var msg = "[" + DateTime.Now.ToLongTimeString() + "] " +
+                                            sec.Shortname + " " +
+                                            cond + " " + sig.Price.ToString() + "(" + sig.Comment + ")" +
                                             "\r\n";
                                         textBoxLogSign.Text = msg + textBoxLogSign.Text;
-                                        Form_MessageSignal.Show(msg);
+                                        Form_MessageSignal.Show(msg, sec.ToString());
                                         SignalView.GSMSignaler.RemoveSignal(sig);
                                         Thread.Sleep(1);
                                     }

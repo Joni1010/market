@@ -6,181 +6,123 @@ using System.Linq;
 /// <summary>  Данные по свечкам.  </summary>
 namespace Market.Candles
 {
-    [Serializable]
-    public partial class CandleData
-    {
-        /// <summary> Время свечи </summary>
-        public DateTime Time;
-        public long Volume = 0;
-        public long VolumeBuy = 0;
-        public long VolumeSell = 0;
-
-        public decimal High = 0;
-        public decimal Low = 1000000;
-        public decimal Open = -1;
-        public decimal Close = 0;
-
-        /// <summary> id первой сделки </summary>       
-        public long FirstId = 0;
-        /// <summary> Id последней сделки </summary>
-        public long LastId = 0;
-
-        /// <summary> Время первой сделки </summary>
-        public DateTime FirstTime = new DateTime();
-        /// <summary> Время последней сделки </summary>
-        public DateTime LastTime = new DateTime();
-
-        /// <summary> Горизонтальные объемы для свечи </summary>
-        public TradeVolume HorVolumes = new TradeVolume();
-
-        /// <summary> Время последнего обновления </summary>
-        public DateTime _lastUpdate;
-        /// <summary> флаг, была ли свеча записана в файл. </summary>
-        public bool _write = false;
-
-        /// <summary> </summary>
-        private List<long> CollectionNumTrades = null;
-        /// <summary>
-        /// Кол-во сделок в свече
-        /// </summary>
-        public long CountTrade = 0;
-        public decimal InterestBuy = 0;
-        public decimal InterestSell = 0;
-        public long CountInterest = 0;
-        private DateTime _lastInterest;
-    }
-
-
     /// <summary> Класс хранимых данных свечки. </summary>
-    public partial class CandleData
+    [Serializable]
+    public class CandleData : Candle
     {
-        private readonly object syncLock = new object();
-        /// <summary> Возвращает кол-во сделок в коллекции по данной свечке </summary>
-        public long CountKeepTrades { get { return this.CollectionNumTrades.IsNull() ? 0 : this.CollectionNumTrades.Count; } }
-        /// <summary> Очищает хранилище сделок. </summary>
-        /// <returns>true - если очистка произведена, иначе false</returns>
-        public bool ClearKeepTrades()
-        {
-            if (this.CountKeepTrades > 0)
-            {
-                this.CollectionNumTrades.Clear();
-                return true;
-            }
-            return false;
-        }
+        /// <summary> Кол-во сделок в свече </summary>
+        private long CountTrades = 0;
+        /// <summary>
+        /// Список num сделок для контроля
+        /// </summary>
+        private List<long> controlTrades = null;
+        public delegate void EventCandle(CandleData candle);
 
-        /// <summary> Проверка уже записанной сделки в данную свечу </summary>
-        /// <param name="trade"></param>
-        /// <returns>true - если сделка уже записана </returns>
-        public bool ExistsTrade(Trade trade)
-        {
-            if (this.CollectionNumTrades.IsNull()) return false;
-            var num = this.CollectionNumTrades.FirstOrDefault(n => n == trade.Number);
-            if (num.NotIsNull() && num > 0) return true;
-            return false;
-        }
+        private readonly object syncLock = new object();
+
         /// <summary> Конструктор свечи</summary>
         /// <param name="time">Граничное время свечи</param>
         public CandleData(DateTime time)
         {
-            this.Time = time;
+            Time = time;
         }
-        /// <summary> Запись новой сделки в свечку. </summary>
-        /// <param name="trade">Новая сделка</param>
-        public void NewTrade(Trade trade, bool controlTrades = false)
+        /// <summary> Кол-во сделок в свече </summary>
+        /// <returns></returns>
+        public long GetCountTrades()
+        {
+            lock (syncLock)
+            {
+                return CountTrades;
+            }
+        }
+
+        /// <summary>
+        /// Запись новой сделки в свечку.
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="addForce">LДобавить сделку принудительно </param>
+        /// <returns></returns>
+        public bool NewTrade(Trade trade, bool addForce = false)
         {
             if (syncLock.IsNull())
             {
-                return;
+                return false;
             }
             lock (syncLock)
             {
-                //Open
-                if (this.FirstTime.Ticks > trade.DateTrade.GetDateTime().Ticks ||
-                    this.FirstTime.Ticks == 0 ||
-                    this.FirstTime.Ticks == trade.DateTrade.GetDateTime().Ticks)
+                if (OpenId < 0 || CloseId < 0)
                 {
-                    if (this.FirstTime.Ticks == trade.DateTrade.GetDateTime().Ticks)
+                    OpenId = CloseId = trade.Number;
+                }
+                else
+                {
+                    if (OpenId <= trade.Number && trade.Number <= CloseId && !addForce)
                     {
-                        if (this.FirstId > trade.Number)
-                        {
-                            this.FirstTime = trade.DateTrade.GetDateTime();
-                            this.Open = trade.Price;
-                            this.FirstId = trade.Number;
-                        }
+                        return false;
                     }
-                    else
-                    {
-                        this.FirstTime = trade.DateTrade.GetDateTime();
-                        this.Open = trade.Price;
-                        this.FirstId = trade.Number;
-                    }
+                }
+                //Open
+                if (OpenId >= trade.Number)
+                {
+                    Open = trade.Price;
+                    OpenId = trade.Number;
                 }
                 //Close
-                if (this.LastTime.Ticks < trade.DateTrade.GetDateTime().Ticks ||
-                        this.LastTime.Ticks == 0 ||
-                        this.LastTime.Ticks == trade.DateTrade.GetDateTime().Ticks)
+                if (CloseId <= trade.Number)
                 {
-                    if (this.LastTime.Ticks == trade.DateTrade.GetDateTime().Ticks)
-                    {
-                        if (this.LastId < trade.Number)
-                        {
-                            this.LastTime = trade.DateTrade.GetDateTime();
-                            this.Close = trade.Price;
-                            this.LastId = trade.Number;
-                        }
-                    }
-                    else
-                    {
-                        this.LastTime = trade.DateTrade.GetDateTime();
-                        this.Close = trade.Price;
-                        this.LastId = trade.Number;
-                    }
+                    Close = trade.Price;
+                    CloseId = trade.Number;
                 }
+                //High
+                if (High < trade.Price) { High = trade.Price; }
+                //Low
+                if (Low > trade.Price) { Low = trade.Price; }
 
-                if (this.High < trade.Price) this.High = trade.Price;
-                if (this.Low > trade.Price) this.Low = trade.Price;
+                CountTrades++;
 
-                this.Volume += trade.Volume;
-                this.CountTrade++;
-
-                if (this._lastInterest.AddSeconds(20) < DateTime.Now)
-                {
-                    this.InterestBuy += trade.Sec.Params.SumBidDepth;
-                    this.InterestSell += trade.Sec.Params.SumAskDepth;
-                    this.CountInterest++;
-                    _lastInterest = DateTime.Now;
-                }
                 //Считаем объемы отдельно
-                if (trade.IsSell()) this.VolumeSell += trade.Volume;
-                else this.VolumeBuy += trade.Volume;
-
-                AddHorVolumes(trade);
-
-                if (controlTrades)
+                if (trade.IsSell())
                 {
-                    if (CollectionNumTrades.IsNull()) CollectionNumTrades = new List<long>();
-                    CollectionNumTrades.Add(trade.Number);
+                    VolumeSell += trade.Volume;
                 }
-
-                _lastUpdate = DateTime.Now;
+                else
+                {
+                    VolumeBuy += trade.Volume;
+                }
+                if (controlTrades.NotIsNull())
+                {
+                    controlTrades.Add(trade.Number);
+                }
+                return true;
             }
         }
         /// <summary>
-        /// Возвращает коллекцию горизонтальных обьемов по величине собранных сделок
+        /// Проверяет событие новой свечи
         /// </summary>
         /// <returns></returns>
-        public TradeVolume GetHorVolumes()
+        public bool IsNewCandle()
         {
-            return HorVolumes;
+            return GetCountTrades() == 1 ? true : false;
         }
         /// <summary>
-        /// Добавление горизонтальных обьемов
+        /// 
         /// </summary>
-        /// <param name="trade"></param>
-        private void AddHorVolumes(Trade trade)
+        /// <param name="num"></param>
+        /// <returns></returns>
+        public bool CheckTrade(long num)
         {
-            HorVolumes.AddTrade(trade);
+            var found = controlTrades.FirstOrDefault(n => n == num);
+            return found > 0 ? true : false;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public void InitControl()
+        {
+            if (controlTrades.IsNull())
+            {
+                controlTrades = new List<long>();
+            }
         }
 
         /// <summary>  Расчет времени для свечи (граничной), по текущему времени.  </summary>

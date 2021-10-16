@@ -30,7 +30,8 @@ namespace AppVEConector
             {
                 if (comboBoxASLAccount.Items.Count == 0)
                 {
-                    comboBoxASLAccount.SetListValues(this.Trader.Objects.Clients.Select(c => c.Code).ToArray());
+                    comboBoxASLAccount.SetListValues(this.Trader.Objects.tClients.ToArray()
+                        .Select(c => c.Code).ToArray());
                 }
             };
             comboBoxASLSec.SetListValues(Global.GetWorkingListSec().ToArray());
@@ -40,7 +41,7 @@ namespace AppVEConector
                 var text = comboBoxASLSec.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.Securities.Where(el => el.Code.ToLower().Contains(text.ToLower()) ||
+                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
                         el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
                     if (listSec.Count() > 0)
                     {
@@ -50,6 +51,7 @@ namespace AppVEConector
                     }
                 }
                 comboBoxASLSec.Select(text.Length, 0);
+                AutoSLUpdateGrid();
             };
             comboBoxASLSec.KeyPress += (s, e) =>
             {
@@ -109,7 +111,9 @@ namespace AppVEConector
 
             AutoSLUpdateGrid();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void AutoSLUpdateGrid()
         {
             dataGridViewASLList.GuiAsync(() =>
@@ -138,7 +142,9 @@ namespace AppVEConector
                 }
             });
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void AutoSLUpdatePanel()
         {
             if (comboBoxASLSec.SelectedItem.NotIsNull())
@@ -158,7 +164,9 @@ namespace AppVEConector
                 }
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         private void AddSLControl()
         {
             if (StopLossSec.IsNull())
@@ -193,7 +201,10 @@ namespace AppVEConector
             ASLObject.Add(newControl);
             AutoSLUpdateGrid();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="text"></param>
         private void AutoSLLog(string text)
         {
             labelASLLog.GuiAsync(() =>
@@ -201,7 +212,9 @@ namespace AppVEConector
                 labelASLLog.Text = DateTime.Now.ToString() + ": " + text + "\r\n" + labelASLLog.Text;
             });
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public void AutoSLLoopControl()
         {
             if (TimeControl.AddSeconds(PERIOD_CONTROL_SEC) > DateTime.Now)
@@ -216,10 +229,10 @@ namespace AppVEConector
                     var sec = GetSecCodeAndClass(objControl.SecAndCode);
                     if (sec.NotIsNull())
                     {
-                        var pos = Trader.Objects.Positions.FirstOrDefault(p => p.Sec == sec);
+                        var pos = Trader.Objects.tPositions.SearchFirst(p => p.Sec == sec);
                         if (pos.NotIsNull())
                         {
-                            var stopLoss = Trader.Objects.StopOrders.Where(o => o.Sec == sec
+                            var stopLoss = Trader.Objects.tStopOrders.SearchAll(o => o.Sec == sec
                                && o.IsActive() && o.Comment.Contains(Define.STOP_LOSS)
                             );
                             var volume = pos.CurrentVolume;
@@ -248,7 +261,8 @@ namespace AppVEConector
                             }
                             else if (stopLoss.Count() == 0 && pos.CurrentVolume > 0)
                             {
-                                var allTrades = Trader.Objects.MyTrades.Where(t => t.Trade.Sec == sec).OrderByDescending(o => o.Trade.Number);
+                                var allTrades = Trader.Objects.tMyTrades.SearchAll(t => t.Trade.Sec == sec)
+                                    .OrderByDescending(o => o.Trade.Number);
                                 if (allTrades.NotIsNull())
                                 {
                                     decimal Price = 0;

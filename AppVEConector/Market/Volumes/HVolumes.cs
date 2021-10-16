@@ -1,4 +1,5 @@
-﻿using MarketObjects.Charts;
+﻿using MarketObjects;
+using MarketObjects.Charts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,302 +10,354 @@ namespace Market.Volumes
     [Serializable]
     public class HVolume
     {
+        /// <summary> Время свечи </summary>
+        public DateTime Time;
+        /// <summary> id первой сделки </summary>       
+        public long OpenId = -1;
+        /// <summary> Id последней сделки </summary>
+        public long CloseId = -1;
+
+        [Serializable]
+        public class Attr
+        {
+            public Chart Buy = null;
+            public Chart Sell = null;
+            public Chart Volume = null;
+            /// <summary> delta </summary>
+            public Chart DVolume = null;
+        }
+        const long MAX = 1000000000;
+        const long MIN = -1000000000;
         private readonly object syncLock = new object();
         /// <summary> Коллекция горизонтальных объемов </summary>
         private List<ChartFull> Collection = new List<ChartFull>();
-        /// <summary> Максимальный объем Buy  </summary>
-        private Chart MaxBuy = null;
-        /// <summary> Максимальный объем Sell  </summary>
-        private Chart MaxSell = null;
-        /// <summary> Максимальный горизонтальный объем из коллекции </summary>
-        public Chart MaxVolume = null;
-        /// <summary> Минимальный горизонтальный объем из коллекции </summary>
-		public Chart MinVolume = null;
-
-        /// <summary> Максимальный горизонтальный объем из коллекции DELTA</summary>
-		public Chart MaxDeltaVolume = null;
-        /// <summary> Минимальный горизонтальный объем из коллекции DELTA</summary>
-		public Chart MinDeltaVolume = null;
+        /// <summary> Максимальные значения </summary>
+        public Attr Min = new Attr();
+        /// <summary> Минимальные значения </summary>
+        public Attr Max = new Attr();
 
         /// <summary> Кол-во элементов (цен) в коллекции  </summary>
         public int Count
         {
-            get { return this.Collection.Count; }
+            get { lock (syncLock) { return Collection.Count; } }
         }
-        /// <summary> Конструктор </summary>
         public HVolume()
         {
-            this.Clear();
+            lock (syncLock)
+            {
+                Clear();
+            }
+        }
+        /// <summary> Конструктор </summary>
+        public HVolume(DateTime time)
+        {
+            lock (syncLock)
+            {
+                Time = time;
+                Clear();
+            }
         }
         /// <summary> Очистка коллекцию </summary>
         public void Clear()
         {
-            lock (syncLock)
-            {
-                this.Collection.Clear();
-            }
+            lock (syncLock) { Collection.Clear(); }
         }
         /// <summary> Возвращает массив </summary>
         /// <returns></returns>
         public ChartFull[] ToArray()
         {
-            lock (syncLock)
-            {
-                var array = this.Collection.ToArray();
-                return array;
-            }
+            lock (syncLock) { return Collection.ToArray(); }
         }
-        public void AddVolume(decimal price, long volumeBuy, long volumeSell)
+        /// <summary>
+        /// Добавление сделки
+        /// </summary>
+        /// <param name="trade"></param>
+        /// <param name="addForce"></param>
+        public void NewTrade(Trade trade, bool addForce=false)
         {
-            var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
-            if (elem.IsNull())
+            if (OpenId < 0 || CloseId < 0)
             {
-                elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
-                lock (syncLock)
+                OpenId = CloseId = trade.Number;
+            }
+            else
+            {
+                if (OpenId <= trade.Number && trade.Number <= CloseId && !addForce)
                 {
-                    this.Collection.Add(elem);
+                    return;
                 }
             }
+            //Open
+            if (OpenId >= trade.Number)
+            {
+                OpenId = trade.Number;
+            }
+            //Close
+            if (CloseId <= trade.Number)
+            {
+                CloseId = trade.Number;
+            }
+            Add(trade.Price, trade.Volume, trade.Direction == OrderDirection.Buy ? true : false);
+        }
 
-            if (MaxBuy.IsNull())
+        private void initMinMax(ChartFull elem)
+        {
+            if (Min.IsNull())
             {
-                MaxBuy = new Chart() { Price = elem.Price, Volume = elem.VolBuy };
+                Min = new Attr();
             }
-            if (MaxSell.IsNull())
+            if (Max.IsNull())
             {
-                MaxSell = new Chart() { Price = elem.Price, Volume = elem.VolSell };
+                Max = new Attr();
             }
-            if (MaxVolume.IsNull())
+            if (Max.Buy.IsNull())
             {
-                MaxVolume = new Chart() { Price = elem.Price, Volume = -100000000 };
+                Max.Buy = new Chart() { Price = elem.Price, Volume = elem.VolBuy };
             }
-            if (MinVolume.IsNull())
+            if (Max.Sell.IsNull())
             {
-                MinVolume = new Chart() { Price = elem.Price, Volume = 10000000 };
+                Max.Sell = new Chart() { Price = elem.Price, Volume = elem.VolSell };
             }
-            if (MaxDeltaVolume.IsNull())
+            if (Max.Volume.IsNull())
             {
-                MaxDeltaVolume = new Chart() { Price = elem.Price, Volume = -100000000 };
+                Max.Volume = new Chart() { Price = elem.Price, Volume = MIN };
             }
-            if (MinDeltaVolume.IsNull())
+            if (Min.Volume.IsNull())
             {
-                MinDeltaVolume = new Chart() { Price = elem.Price, Volume = 10000000 };
+                Min.Volume = new Chart() { Price = elem.Price, Volume = MAX };
             }
-            if (elem.NotIsNull())
+            if (Max.DVolume.IsNull())
             {
-                elem.VolBuy += volumeBuy;
-                elem.VolSell += volumeSell;
-                elem.CountBuy++;
-                elem.CountSell++;
-                if (MaxBuy.Volume < elem.VolBuy)
-                {
-                    MaxBuy.Price = elem.Price;
-                    MaxBuy.Volume = elem.VolBuy;
-                }
-                if (MaxSell.Volume < elem.VolSell)
-                {
-                    MaxSell.Price = elem.Price;
-                    MaxSell.Volume = elem.VolSell;
-                }
-                if (MaxVolume.Volume < elem.VolBuy + elem.VolSell)
-                {
-                    MaxVolume.Price = elem.Price;
-                    MaxVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                if (MinVolume.Volume > elem.VolBuy + elem.VolSell)
-                {
-                    MinVolume.Price = elem.Price;
-                    MinVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                if (MaxDeltaVolume.Volume < elem.VolBuy - elem.VolSell)
-                {
-                    MaxDeltaVolume.Price = elem.Price;
-                    MaxDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
-                }
-                if (MinDeltaVolume.Volume > elem.VolBuy - elem.VolSell)
-                {
-                    MinDeltaVolume.Price = elem.Price;
-                    MinDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
-                }
+                Max.DVolume = new Chart() { Price = elem.Price, Volume = MIN };
+            }
+            if (Min.DVolume.IsNull())
+            {
+                Min.DVolume = new Chart() { Price = elem.Price, Volume = MAX };
             }
         }
         /// <summary> Добавляем цену и объем в коллекцию </summary>
+        public void Add(decimal price, long volumeBuy, long volumeSell)
+        {
+            lock (syncLock)
+            {
+                var elem = Collection.FirstOrDefault(e => e.Price == price);
+                if (elem.IsNull())
+                {
+                    elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
+                    lock (syncLock)
+                    {
+                        this.Collection.Add(elem);
+                    }
+                }
+                initMinMax(elem);
+                if (elem.NotIsNull())
+                {
+                    elem.VolBuy += volumeBuy;
+                    elem.VolSell += volumeSell;
+                    elem.CountBuy += volumeBuy > 0 ? 1 : 0;
+                    elem.CountSell += volumeSell > 0 ? 1 : 0;
+                    if (Max.Buy.Volume < elem.VolBuy)
+                    {
+                        Max.Buy.Price = elem.Price;
+                        Max.Buy.Volume = elem.VolBuy;
+                    }
+                    if (Max.Sell.Volume < elem.VolSell)
+                    {
+                        Max.Sell.Price = elem.Price;
+                        Max.Sell.Volume = elem.VolSell;
+                    }
+                    if (Max.Volume.Volume < elem.VolBuy + elem.VolSell)
+                    {
+                        Max.Volume.Price = elem.Price;
+                        Max.Volume.Volume = elem.VolBuy + elem.VolSell;
+                    }
+                    if (Min.Volume.Volume > elem.VolBuy + elem.VolSell)
+                    {
+                        Min.Volume.Price = elem.Price;
+                        Min.Volume.Volume = elem.VolBuy + elem.VolSell;
+                    }
+                    if (Max.DVolume.Volume < elem.VolBuy - elem.VolSell)
+                    {
+                        Max.DVolume.Price = elem.Price;
+                        Max.DVolume.Volume = elem.VolBuy - elem.VolSell;
+                    }
+                    if (Min.DVolume.Volume > elem.VolBuy - elem.VolSell)
+                    {
+                        Min.DVolume.Price = elem.Price;
+                        Min.DVolume.Volume = elem.VolBuy - elem.VolSell;
+                    }
+                }
+            }
+        }
+
+        /// <summary> Добавляем цену и объем в коллекцию </summary>
         /// <param name="price"></param>
         /// <param name="volume"></param>
-        public void AddVolume(decimal price, long volume, bool isBuy)
+        public void Add(decimal price, long volume, bool isBuy)
         {
-            var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
-            if (elem.IsNull())
+            lock (syncLock)
             {
-                elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
-                lock (syncLock)
+                var elem = Collection.FirstOrDefault(e => e.Price == price);
+                if (elem.IsNull())
                 {
-                    this.Collection.Add(elem);
+                    elem = new ChartFull() { Price = price, VolBuy = 0, VolSell = 0 };
+                    Collection.Add(elem);
                 }
-            }
-
-            if (MaxBuy.IsNull())
-            {
-                MaxBuy = new Chart() { Price = elem.Price, Volume = elem.VolBuy };
-            }
-
-            if (MaxSell.IsNull())
-            {
-                MaxSell = new Chart() { Price = elem.Price, Volume = elem.VolSell };
-            }
-
-            if (MaxVolume.IsNull())
-            {
-                MaxVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
-            }
-            if (MinVolume.IsNull())
-            {
-                MinVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy + elem.VolSell };
-            }
-            if (MaxDeltaVolume.IsNull())
-            {
-                MaxDeltaVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
-            }
-            if (MinDeltaVolume.IsNull())
-            {
-                MinDeltaVolume = new Chart() { Price = elem.Price, Volume = elem.VolBuy - elem.VolSell };
-            }
-            if (elem.NotIsNull())
-            {
-                if (isBuy)
+                initMinMax(elem);
+                if (elem.NotIsNull())
                 {
-                    elem.VolBuy += volume;
-                    elem.CountSell++;
-                    if (MaxBuy.Volume < elem.VolBuy)
+                    if (isBuy)
                     {
-                        MaxBuy.Price = elem.Price;
-                        MaxBuy.Volume = elem.VolBuy;
+                        elem.VolBuy += volume;
+                        elem.CountSell++;
+                        if (Max.Buy.Volume < elem.VolBuy)
+                        {
+                            Max.Buy.Price = elem.Price;
+                            Max.Buy.Volume = elem.VolBuy;
+                        }
+                    }
+                    else
+                    {
+                        elem.VolSell += volume;
+                        elem.CountSell++;
+                        if (Max.Sell.Volume < elem.VolSell)
+                        {
+                            Max.Sell.Price = elem.Price;
+                            Max.Sell.Volume = elem.VolSell;
+                        }
+                    }
+                    if (Max.Volume.Volume < elem.VolBuy + elem.VolSell)
+                    {
+                        Max.Volume.Price = elem.Price;
+                        Max.Volume.Volume = elem.VolBuy + elem.VolSell;
+                    }
+                    if (Min.Volume.Volume > elem.VolBuy + elem.VolSell)
+                    {
+                        Min.Volume.Price = elem.Price;
+                        Min.Volume.Volume = elem.VolBuy + elem.VolSell;
+                    }
+                    if (Max.DVolume.Volume < elem.VolBuy - elem.VolSell)
+                    {
+                        Max.DVolume.Price = elem.Price;
+                        Max.DVolume.Volume = elem.VolBuy - elem.VolSell;
+                    }
+                    if (Min.DVolume.Volume > elem.VolBuy - elem.VolSell)
+                    {
+                        Min.DVolume.Price = elem.Price;
+                        Min.DVolume.Volume = elem.VolBuy - elem.VolSell;
                     }
                 }
-                else
+            }
+        }
+        /*
+                public void RecalculateMaxMinVolumes()
                 {
-                    elem.VolSell += volume;
-                    elem.CountSell++;
-                    if (MaxSell.Volume < elem.VolSell)
+                    var list = this.ToArray();
+                    foreach (var elem in list)
                     {
-                        MaxSell.Price = elem.Price;
-                        MaxSell.Volume = elem.VolSell;
+                        if (MaxBuy.IsNull()) MaxBuy = new Chart();
+                        if (MaxSell.IsNull()) MaxSell = new Chart();
+                        if (MaxVolume.IsNull()) MaxVolume = new Chart();
+                        if (MinVolume.IsNull()) MinVolume = new Chart();
+                        if (MaxDeltaVolume.IsNull()) MaxDeltaVolume = new Chart();
+                        if (MinDeltaVolume.IsNull()) MinDeltaVolume = new Chart();
+
+                        if (MaxBuy.Volume < elem.VolBuy)
+                        {
+                            MaxBuy.Price = elem.Price;
+                            MaxBuy.Volume = elem.VolBuy;
+                        }
+                        if (MaxSell.Volume < elem.VolSell)
+                        {
+                            MaxSell.Price = elem.Price;
+                            MaxSell.Volume = elem.VolSell;
+                        }
+                        if (MaxVolume.Volume < elem.VolBuy + elem.VolSell)
+                        {
+                            MaxVolume.Price = elem.Price;
+                            MaxVolume.Volume = elem.VolBuy + elem.VolSell;
+                        }
+                        if (MinVolume.Volume > elem.VolBuy + elem.VolSell)
+                        {
+                            MinVolume.Price = elem.Price;
+                            MinVolume.Volume = elem.VolBuy + elem.VolSell;
+                        }
+                        if (MaxDeltaVolume.Volume < elem.VolBuy - elem.VolSell)
+                        {
+                            MaxDeltaVolume.Price = elem.Price;
+                            MaxDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
+                        }
+                        if (MinDeltaVolume.Volume > elem.VolBuy - elem.VolSell)
+                        {
+                            MinDeltaVolume.Price = elem.Price;
+                            MinDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
+                        }
                     }
-                }
-                if (MaxVolume.Volume < elem.VolBuy + elem.VolSell)
-                {
-                    MaxVolume.Price = elem.Price;
-                    MaxVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                if (MinVolume.Volume > elem.VolBuy + elem.VolSell)
-                {
-                    MinVolume.Price = elem.Price;
-                    MinVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                /*if (MaxDeltaVolume.Volume < elem.VolBuy - elem.VolSell)
-                {
-                    MaxDeltaVolume.Price = elem.Price;
-                    MaxDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
-                }
-                if (MinDeltaVolume.Volume > elem.VolBuy - elem.VolSell)
-                {
-                    MinDeltaVolume.Price = elem.Price;
-                    MinDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
                 }*/
-            }
-        }
 
-        public void RecalculateMaxMinVolumes()
-        {
-            var list = this.ToArray();
-            foreach (var elem in list)
-            {
-                if (MaxBuy.IsNull()) MaxBuy = new Chart();
-                if (MaxSell.IsNull()) MaxSell = new Chart();
-                if (MaxVolume.IsNull()) MaxVolume = new Chart();
-                if (MinVolume.IsNull()) MinVolume = new Chart();
-                if (MaxDeltaVolume.IsNull()) MaxDeltaVolume = new Chart();
-                if (MinDeltaVolume.IsNull()) MinDeltaVolume = new Chart();
-
-                if (MaxBuy.Volume < elem.VolBuy)
-                {
-                    MaxBuy.Price = elem.Price;
-                    MaxBuy.Volume = elem.VolBuy;
-                }
-                if (MaxSell.Volume < elem.VolSell)
-                {
-                    MaxSell.Price = elem.Price;
-                    MaxSell.Volume = elem.VolSell;
-                }
-                if (MaxVolume.Volume < elem.VolBuy + elem.VolSell)
-                {
-                    MaxVolume.Price = elem.Price;
-                    MaxVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                if (MinVolume.Volume > elem.VolBuy + elem.VolSell)
-                {
-                    MinVolume.Price = elem.Price;
-                    MinVolume.Volume = elem.VolBuy + elem.VolSell;
-                }
-                if (MaxDeltaVolume.Volume < elem.VolBuy - elem.VolSell)
-                {
-                    MaxDeltaVolume.Price = elem.Price;
-                    MaxDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
-                }
-                if (MinDeltaVolume.Volume > elem.VolBuy - elem.VolSell)
-                {
-                    MinDeltaVolume.Price = elem.Price;
-                    MinDeltaVolume.Volume = elem.VolBuy - elem.VolSell;
-                }
-            }
-        }
-        /// <summary>  Получить список элементов между двумя ценами </summary>
-        /// <param name="price1"></param>
-        /// <param name="price2"></param>
+        /// <summary>
+        /// Получить список элементов между двумя ценами
+        /// </summary>
+        /// <param name="priceHigh"></param>
+        /// <param name="priceLow"></param>
         /// <returns></returns>
-        public IEnumerable<ChartFull> GetElementBetween(decimal price1, decimal price2)
+        public ChartFull[] Between(decimal priceHigh, decimal priceLow)
         {
-            decimal tmp = 0;
-            if (price1 > price2)
+            lock (syncLock)
             {
-                tmp = price1;
-                price1 = price2;
-                price2 = tmp;
+                return Collection.Where(e => e.Price <= priceHigh && e.Price >= priceLow).ToArray();
             }
-            return this.ToArray().Where(e => e.Price >= price1 && e.Price <= price2);
         }
 
-        /// <summary> Возвращает объем по текущей цене </summary>
+        /// <summary> Возвращает из коллекции по цене </summary>
         /// <param name="price"></param>
         /// <returns></returns>
-        public ChartFull GetVolume(decimal price)
+        public ChartFull GetElement(decimal price)
         {
-            var elem = this.ToArray().FirstOrDefault(e => e.Price == price);
-            if (elem != null) return elem;
-            return null;
+            lock (syncLock)
+            {
+                return Collection.FirstOrDefault(e => e.Price == price);
+            }
         }
 
         /// <summary> Возвращает сумму всех объемов </summary>
         /// <returns></returns>
-        public decimal GetSumAllVolume(bool isBuy)
+        public decimal Sum(bool isBuy)
         {
-            if (isBuy) return this.ToArray().Sum(e => e.VolBuy);
-            else return this.ToArray().Sum(e => e.VolSell);
+            lock (syncLock)
+            {
+                if (isBuy) return Collection.Sum(e => e.VolBuy);
+                else return Collection.Sum(e => e.VolSell);
+            }
+        }
+        /// <summary> Возвращает сумму всех объемов </summary>
+        /// <returns></returns>
+        public decimal Sum()
+        {
+            lock (syncLock)
+            {
+                return Collection.Sum(e => e.VolBuy + e.VolSell);
+            }
         }
         /// <summary> Возвращает сумму объемов между 2мя ценами </summary>
         /// <returns></returns>
-        public decimal GetSumVolumeBetween(decimal price1, decimal price2, bool isBuy)
+        public long SumBetween(decimal priceHigh, decimal priceLow, bool isBuy)
         {
-            decimal tmp = 0;
-            if (price1 > price2)
+            var list = Between(priceHigh, priceLow);
+            if (list.NotIsNull() && list.Length > 0)
             {
-                tmp = price1;
-                price1 = price2;
-                price2 = tmp;
+                if (isBuy) return list.Sum(e => e.VolBuy);
+                else return list.Sum(e => e.VolSell);
             }
-            var list = this.GetElementBetween(price1, price2);
-            if (isBuy) return list != null ? list.Sum(e => e.VolBuy) : 0;
-            else return list != null ? list.Sum(e => e.VolSell) : 0;
+            return 0;
+        }
+        public long SumBetween(decimal priceHigh, decimal priceLow)
+        {
+            var list = Between(priceHigh, priceLow);
+            if (list.NotIsNull() && list.Length > 0)
+            {
+                return list.Sum(e => e.VolBuy + e.VolSell);
+            }
+            return 0;
         }
     }
 }

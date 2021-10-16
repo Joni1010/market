@@ -19,14 +19,14 @@ namespace Market.Volumes
 		/// <param name="volume"></param>
         protected void AddBuy(decimal price, long volume)
         {
-            this.HVolCollection.AddVolume(price, volume, true);
+            this.HVolCollection.Add(price, volume, true);
             this.SumBuy += volume;
         }
 
         /// <summary> Добавляет объем Sell</summary>
         protected void AddSell(decimal price, long volume)
         {
-            this.HVolCollection.AddVolume(price, volume, false);
+            this.HVolCollection.Add(price, volume, false);
             this.SumSell += volume;
         }
     }

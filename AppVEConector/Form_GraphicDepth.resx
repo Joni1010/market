@@ -174,7 +174,7 @@
   <metadata name="DepthSell.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="DepthVol.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="DepthPrice.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="DepthBuy.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -317,7 +317,7 @@
   <data name="диапазондельтаToolStripMenuItem.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAADr0AAA69AUf7kK0AAAB8SURBVDhPxZNhCoAgDEY9SL+i43TWoGN0mC7gxLUZynRF
+        YQUAAAAJcEhZcwAADrwAAA68AZW8ckkAAAB8SURBVDhPxZNhCoAgDEY9SL+i43TWoGN0mC7gxLUZynRF
         CaIPXoQfrs9AAwDI1mKtReccGu894na8Ou9rUuWECc8y+CvxOUA2UC2I/g2iISfGNEg5oQac05IpMyXR
         7gjll6Nqk5Ro+xPHN2BrGvCNvAcInq53XOMN+TvgBW8HY5WWpOr9AAAAAElFTkSuQmCC
 </value>

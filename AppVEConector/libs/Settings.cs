@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace AppVEConector.libs
 {
+    [Serializable]
     public abstract class Settings
     {
+        /// <summary>
+        /// Имя файла храниния настроек
+        /// </summary>
         protected string filename = "";
         /// <summary>
         /// Locker
@@ -26,60 +30,81 @@ namespace AppVEConector.libs
         /// <param name="fileName"></param>
         protected Settings(string fileName)
         {
-            this.filename = fileName;
+            filename = fileName;
             if (!filename.Empty())
             {
-                this.Load();
+                load();
             }
-            this.init();
         }
+
         /// <summary>
-        /// 
+        /// Установка значения настройки по ее названию
         /// </summary>
-        protected abstract void init();
+        public void Set(string varName, object value)
+        {
+            try
+            {
+                data.GetType().GetField(varName).SetValue(data, value);
+                save();
+                return;
+            }
+            catch (Exception)
+            {
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Получение значения настройки по ее названию
+        /// </summary>
+        public dynamic Get(string varName)
+        {
+            try
+            {
+                return data.GetType().GetField(varName).GetValue(data);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Сериализация и загрузка объекта в файл.
         /// </summary>
-        public void Save()
+        public bool save()
         {
-            Qlog.CatchException(() =>
+            if (data.NotIsNull())
             {
-                if (this.data.NotIsNull())
+                Stream stream = File.Open(filename, FileMode.Create);
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                lock (syncLock)
                 {
-                    Stream stream = File.Open(this.filename, FileMode.Create);
-                    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    lock (syncLock)
-                    {
-                        binaryFormatter.Serialize(stream, this.data);
-                    }
-                    stream.Close();
-                    return true;
+                    binaryFormatter.Serialize(stream, data);
                 }
-                return false;
-            }, "");
+                stream.Close();
+                return true;
+            }
+            return false;
         }
         /// <summary>
         /// Загрузка и сериализация объекта из файла.
         /// </summary>
-        public void Load()
+        protected bool load()
         {
-            Qlog.CatchException(() =>
+            if (File.Exists(filename))
             {
-                if (File.Exists(filename))
+                Stream stream = File.Open(filename, FileMode.Open);
+                stream.Position = 0;
+                var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                lock (syncLock)
                 {
-                    Stream stream = File.Open(this.filename, FileMode.Open);
-                    stream.Position = 0;
-                    var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    lock (syncLock)
-                    {
-                        this.data = binaryFormatter.Deserialize(stream);
-                    }
-                    stream.Close();
-                    return true;
+                    data = binaryFormatter.Deserialize(stream);
                 }
-                return false;
-            }, "");
+                stream.Close();
+                return true;
+            }
+            return false;
         }
     }
 }

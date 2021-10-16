@@ -233,7 +233,7 @@ namespace AppVEConector
                         MThread.InitThread(() =>
                         {
                             decimal number = Convert.ToDecimal(row.Cells[2].Value.ToString());
-                            var sec = Trader.Objects.Securities.FirstOrDefault(s => s == row.Cells[3].Value);
+                            var sec = Trader.Objects.tSecurities.SearchFirst(s => s == row.Cells[3].Value);
                             if (sec != null) Trader.CancelOrder(sec, number);
                         });
                     }

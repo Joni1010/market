@@ -1,4 +1,6 @@
-﻿using System;
+﻿using AppVEConector.settings;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
@@ -32,7 +34,7 @@ namespace AppVEConector.Forms.StopOrders
                 var text = comboBoxSearchSec.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.Securities.Where(el => el.Code.ToLower().Contains(text.ToLower()) ||
+                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
                         el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
                     if (listSec.Count() > 0)
                     {
@@ -47,10 +49,10 @@ namespace AppVEConector.Forms.StopOrders
                 if (comboBoxSearchSec.SelectedItem.NotIsNull())
                 {
                     var secAndClass = comboBoxSearchSec.SelectedItem.ToString();
-                    var sec = Trader.Objects.Securities.FirstOrDefault(se => se.ToString() == secAndClass);
+                    var sec = Trader.Objects.tSecurities.SearchFirst(se => se.ToString() == secAndClass);
                     if (sec.NotIsNull())
                     {
-                        ParentForm.Settings.Data.ItemsSec.Add(new Form_LightOrders.SettingsForm.PositionForm.ItemSec()
+                        ParentForm.Settings.Get("ItemsSec").Add(new SettingsLightOrders.SettingsForm.ItemSec()
                         {
                             SecAndClass = sec.ToString(),
                             Name = sec.Shortname
@@ -71,8 +73,10 @@ namespace AppVEConector.Forms.StopOrders
                     {
                         if (row.Tag.NotIsNull())
                         {
-                            var itemSec = (Form_LightOrders.SettingsForm.PositionForm.ItemSec)row.Tag;
-                            ParentForm.Settings.Data.ItemsSec.RemoveAll(i => i.SecAndClass == itemSec.SecAndClass);
+                            var itemSec = (SettingsLightOrders.SettingsForm.ItemSec)row.Tag;
+                            List<SettingsLightOrders.SettingsForm.ItemSec> list = ParentForm.Settings.Get("ItemsSec");
+                            list.RemoveAll(i => i.SecAndClass == itemSec.SecAndClass);
+                            ParentForm.Settings.Save();
                         }
                     }
                     updateGridListSec();
@@ -84,9 +88,9 @@ namespace AppVEConector.Forms.StopOrders
         {
             dataGridViewListSec.ClearSelection();
             dataGridViewListSec.Rows.Clear();
-            if (ParentForm.Settings.Data.ItemsSec.Count > 0)
+            if (ParentForm.Settings.Get("ItemsSec").Count > 0)
             {
-                foreach (var itemSec in ParentForm.Settings.Data.ItemsSec) {
+                foreach (var itemSec in ParentForm.Settings.Get("ItemsSec")) {
                     var row = (DataGridViewRow)dataGridViewListSec.Rows[0].Clone();
                     row.Cells[0].Value = itemSec.SecAndClass;
                     row.Cells[1].Value = itemSec.Name;

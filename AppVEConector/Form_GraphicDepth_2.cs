@@ -121,12 +121,5 @@ namespace AppVEConector
             });
             this.ShowTransReply("Signal set by price: " + cross.Price.ToString());
         }
-
-        private void ToolStripMenuItemAutoSize_Click(object sender, EventArgs e)
-        {
-            ToolStripMenuItemAutoSize.Checked = !ToolStripMenuItemAutoSize.Checked;
-            GraphicStock.AutoScaling(ToolStripMenuItemAutoSize.Checked);
-            checkBoxAutoSizePrice.Checked = ToolStripMenuItemAutoSize.Checked;
-        }
     }
 }

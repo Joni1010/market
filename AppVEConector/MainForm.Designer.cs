@@ -35,12 +35,13 @@ namespace AppVEConector
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.подключитьсяToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.дополнительноToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItemArbitration = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemSpeedOrders = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemSign = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemTestSign = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemSignCall = new System.Windows.Forms.ToolStripMenuItem();
+            this.арбитражToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPageStopOrders = new System.Windows.Forms.TabPage();
             this.splitContainerMainOrders = new System.Windows.Forms.SplitContainer();
             this.splitContainerTablesStopOrders = new System.Windows.Forms.SplitContainer();
@@ -343,7 +344,7 @@ namespace AppVEConector
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.настройкиToolStripMenuItem,
-            this.дополнительноToolStripMenuItem});
+            this.ToolStripMenuItemArbitration});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(933, 24);
@@ -365,15 +366,16 @@ namespace AppVEConector
             this.подключитьсяToolStripMenuItem.Text = "Подключиться";
             this.подключитьсяToolStripMenuItem.Click += new System.EventHandler(this.ConnectToolStripMenuItem_Click);
             // 
-            // дополнительноToolStripMenuItem
+            // ToolStripMenuItemArbitration
             // 
-            this.дополнительноToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItemArbitration.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.ToolStripMenuItem11,
             this.ToolStripMenuItemSpeedOrders,
-            this.ToolStripMenuItemSign});
-            this.дополнительноToolStripMenuItem.Name = "дополнительноToolStripMenuItem";
-            this.дополнительноToolStripMenuItem.Size = new System.Drawing.Size(107, 20);
-            this.дополнительноToolStripMenuItem.Text = "Дополнительно";
+            this.ToolStripMenuItemSign,
+            this.арбитражToolStripMenuItem});
+            this.ToolStripMenuItemArbitration.Name = "ToolStripMenuItemArbitration";
+            this.ToolStripMenuItemArbitration.Size = new System.Drawing.Size(107, 20);
+            this.ToolStripMenuItemArbitration.Text = "Дополнительно";
             // 
             // ToolStripMenuItem11
             // 
@@ -411,6 +413,13 @@ namespace AppVEConector
             this.ToolStripMenuItemSignCall.Size = new System.Drawing.Size(200, 22);
             this.ToolStripMenuItemSignCall.Text = "Тест вызова";
             this.ToolStripMenuItemSignCall.Click += new System.EventHandler(this.ToolStripMenuItemSignCall_Click);
+            // 
+            // арбитражToolStripMenuItem
+            // 
+            this.арбитражToolStripMenuItem.Name = "арбитражToolStripMenuItem";
+            this.арбитражToolStripMenuItem.Size = new System.Drawing.Size(165, 22);
+            this.арбитражToolStripMenuItem.Text = "Арбитраж";
+            this.арбитражToolStripMenuItem.Click += new System.EventHandler(this.арбитражToolStripMenuItem_Click);
             // 
             // tabPageStopOrders
             // 
@@ -961,6 +970,7 @@ namespace AppVEConector
             this.ColumnClient.Frozen = true;
             this.ColumnClient.HeaderText = "Счет";
             this.ColumnClient.Name = "ColumnClient";
+            this.ColumnClient.ReadOnly = true;
             // 
             // Code
             // 
@@ -1004,7 +1014,7 @@ namespace AppVEConector
             // Orders
             // 
             this.Orders.Frozen = true;
-            this.Orders.HeaderText = "Заявки";
+            this.Orders.HeaderText = "Заявки B/S";
             this.Orders.Name = "Orders";
             this.Orders.ReadOnly = true;
             // 
@@ -2611,9 +2621,10 @@ namespace AppVEConector
             // labelASLInfo
             // 
             this.labelASLInfo.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelASLInfo.Location = new System.Drawing.Point(134, 125);
+            this.labelASLInfo.Location = new System.Drawing.Point(132, 126);
+            this.labelASLInfo.Margin = new System.Windows.Forms.Padding(1);
             this.labelASLInfo.Name = "labelASLInfo";
-            this.labelASLInfo.Size = new System.Drawing.Size(183, 128);
+            this.labelASLInfo.Size = new System.Drawing.Size(187, 126);
             this.labelASLInfo.TabIndex = 9;
             this.labelASLInfo.Text = "info";
             // 
@@ -2622,9 +2633,10 @@ namespace AppVEConector
             this.labelASLLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tableLayoutPanel27.SetColumnSpan(this.labelASLLog, 2);
             this.labelASLLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelASLLog.Location = new System.Drawing.Point(3, 272);
+            this.labelASLLog.Location = new System.Drawing.Point(1, 273);
+            this.labelASLLog.Margin = new System.Windows.Forms.Padding(1);
             this.labelASLLog.Name = "labelASLLog";
-            this.labelASLLog.Size = new System.Drawing.Size(314, 131);
+            this.labelASLLog.Size = new System.Drawing.Size(318, 129);
             this.labelASLLog.TabIndex = 10;
             // 
             // comboBoxASLAccount
@@ -2768,7 +2780,7 @@ namespace AppVEConector
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem подключитьсяToolStripMenuItem;
         private ToolStripStatusLabel toolStripStatusLabel1;
-		private ToolStripMenuItem дополнительноToolStripMenuItem;
+		private ToolStripMenuItem ToolStripMenuItemArbitration;
 		private ToolStripMenuItem ToolStripMenuItem11;
 		private TabPage tabPageStopOrders;
 		private SplitContainer splitContainerMainOrders;
@@ -2966,6 +2978,7 @@ namespace AppVEConector
         private DataGridViewTextBoxColumn Orders;
         private DataGridViewTextBoxColumn PosVarMargin;
         private DataGridViewButtonColumn BtnGetDepth;
+        private ToolStripMenuItem арбитражToolStripMenuItem;
     }
 }
 

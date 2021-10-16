@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Linq;
 using static GraphicTools.GCandles;
 using MarketObjects.Charts;
+using Market.Base;
 
 namespace GraphicTools
 {
@@ -21,6 +22,8 @@ namespace GraphicTools
 
         public ViewPanel Panel = null;
         public ViewPanel PanelVolume = null;
+
+        public TimeFrame CurrTimeFrame = null;
 
         public GHorVol(BaseParams param)
         {
@@ -177,7 +180,7 @@ namespace GraphicTools
                             return;
                         }
                     }
-                    foreach (var can in list)
+                   /* foreach (var can in list)
                     {
                         if (can.NotIsNull())
                         {
@@ -224,7 +227,7 @@ namespace GraphicTools
                             CurrentHVol.HorVolumes = new HVolume();
                             preDataHVol.Add(CurrentHVol);
                         }
-                    }
+                    }*/
                 }
                 PaintOnlyFirstBlock = true;
                 foreach (var elVol in preDataHVol)
@@ -282,9 +285,10 @@ namespace GraphicTools
         /// </summary>
         /// <param name="crossLine"></param>
         /// <param name="activeCandle"></param>
-        public void GetValueVolume(Point crossLine, GCandles.CandleInfo activeCandle)
+        /*public void GetValueVolume(Point crossLine, GCandles.CandleInfo activeCandle)
         {
             decimal priceY = GMath.GetValueFromCoordinate(Panel.Rect.Height, Panel.Params.MaxPrice, Panel.Params.MinPrice, crossLine.Y, Panel.Params.CountFloat);
+            Curr
             var hv = activeCandle.Candle.GetHorVolumes().HVolCollection.ToArray().FirstOrDefault(v => v.Price == priceY);
             if (hv.NotIsNull())
             {
@@ -294,7 +298,7 @@ namespace GraphicTools
                     activeCandle.CurHorVolume = new ChartFull() { Price = priceY, VolBuy = hv.VolBuy, VolSell = hv.VolSell };
                 }
             }
-        }
+        }*/
         /// <summary>
         /// Обработчик каждой свечки
         /// </summary>
@@ -312,15 +316,19 @@ namespace GraphicTools
                     activeCandle2.dataCandle = dataCandle;
                 }
             }
-            if (activeCandle1.NotIsNull() && activeCandle2.NotIsNull())
+            if (activeCandle1.NotIsNull() && activeCandle2.NotIsNull() && CurrTimeFrame.NotIsNull())
             {
                 if (dataCandle.Index <= activeCandle1.dataCandle.Index && dataCandle.Index >= activeCandle2.dataCandle.Index)
                 {
-                    foreach (var curVol in dataCandle.Candle.GetHorVolumes().HVolCollection.ToArray())
+                    var hVol = CurrTimeFrame.HVolumes.GetCandle(dataCandle.Candle.Time);
+                    if (hVol.NotIsNull())
                     {
-                        if (curVol.Price < Panel.Params.MaxPrice && curVol.Price > Panel.Params.MinPrice)
+                        foreach (var curVol in hVol.ToArray())
                         {
-                            PrepDataHorVol.HorVolumes.AddVolume(curVol.Price, curVol.VolBuy, curVol.VolSell);
+                            if (curVol.Price < Panel.Params.MaxPrice && curVol.Price > Panel.Params.MinPrice)
+                            {
+                                PrepDataHorVol.HorVolumes.Add(curVol.Price, curVol.VolBuy, curVol.VolSell);
+                            }
                         }
                     }
                 }
@@ -358,10 +366,10 @@ namespace GraphicTools
             PrepDataHorVol.MaxElem = new Chart();
             if (PrepDataHorVol.NotIsNull())
             {
-                PrepDataHorVol.MaxElem = PrepDataHorVol.HorVolumes.MaxVolume;
-                PrepDataHorVol.MinElem = PrepDataHorVol.HorVolumes.MinVolume;
-                PrepDataHorVol.MaxDeltaElem = PrepDataHorVol.HorVolumes.MaxDeltaVolume;
-                PrepDataHorVol.MinDeltaElem = PrepDataHorVol.HorVolumes.MinDeltaVolume;
+                PrepDataHorVol.MaxElem = PrepDataHorVol.HorVolumes.Max.Volume;
+                PrepDataHorVol.MinElem = PrepDataHorVol.HorVolumes.Min.Volume;
+                PrepDataHorVol.MaxDeltaElem = PrepDataHorVol.HorVolumes.Max.DVolume;
+                PrepDataHorVol.MinDeltaElem = PrepDataHorVol.HorVolumes.Min.DVolume;
             }
             PrepDataHorVol.MaxElem = PrepDataHorVol.MaxElem.NotIsNull() ? PrepDataHorVol.MaxElem : new Chart();
             PrepDataHorVol.MinElem = PrepDataHorVol.MinElem.NotIsNull() ? PrepDataHorVol.MinElem : new Chart();
@@ -436,7 +444,7 @@ namespace GraphicTools
             }
         }
 
-        public void PaintHorVolByPeriodCandleDelta(bool alwaysUpdate = false, bool delta = false)
+        public void PaintHorVolByPeriodCandleDelta(bool alwaysUpdate = false, bool delta = false, long limitBorder = 0)
         {
             lock (_lockPaint)
             {
@@ -478,7 +486,24 @@ namespace GraphicTools
                     PaintLineHVol(canvas, rectPaint, PrepDataHorVol.MaxElem, new Chart(), hv);
                     if (delta)
                     {
-                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, PrepDataHorVol.MaxDeltaElem, PrepDataHorVol.MinDeltaElem, hv, null, true);
+                        Chart maxDelta, minDelta = null;
+                        if (limitBorder > 0)
+                        {
+                            maxDelta = new Chart() {
+                                Price = PrepDataHorVol.MaxDeltaElem.Price,
+                                Volume = PrepDataHorVol.MaxDeltaElem.Volume > limitBorder ? PrepDataHorVol.MaxDeltaElem.Volume : limitBorder
+                            };
+                            minDelta = new Chart()
+                            {
+                                Price = PrepDataHorVol.MinDeltaElem.Price,
+                                Volume = PrepDataHorVol.MinDeltaElem.Volume < limitBorder * -1 ? PrepDataHorVol.MinDeltaElem.Volume : limitBorder * -1
+                            };
+                        } else
+                        {
+                            maxDelta = PrepDataHorVol.MaxDeltaElem;
+                            minDelta = PrepDataHorVol.MinDeltaElem;
+                        }
+                        PaintLineHVol(canvasOnlyVol, PanelVolume.Rect.Rectangle, maxDelta, minDelta, hv, null, true);
                         var d = hv.VolBuy - hv.VolSell;
                         if (d > 0)
                         {

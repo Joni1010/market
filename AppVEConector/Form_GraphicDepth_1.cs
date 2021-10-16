@@ -16,6 +16,7 @@ using QuikConnector.libs;
 using QuikConnector.MarketObjects;
 using AppVEConector.libs.Signal;
 using MarketObjects.Charts;
+using Market.Base;
 
 namespace AppVEConector
 {
@@ -38,20 +39,16 @@ namespace AppVEConector
         /// <summary> Кол-во свечей на графике (Масштаб) </summary>
         private int CountCandleInGraphic = 50;
 
-        /// <summary> Значение текущего тайм-фрейма (в минутах) </summary>
-        private int CurrentTimeFrameValue
-        {
-            get { return SettingsDepth.Data.CurrentTimeFrame == 0 ? 1 : SettingsDepth.Data.CurrentTimeFrame; }
-            set { SettingsDepth.Data.CurrentTimeFrame = value; }
-        }
-
-        /// <summary> Текущего тайм-фрейм </summary>
-        private CandleCollection CurrentTimeFrame
+        /// <summary> Текущий тайм-фрейм </summary>
+        private TimeFrame CurrentTimeFrame
         {
             get
             {
-                if (this.TrElement.CollectionTimeFrames.Count == 0) return null;
-                return this.TrElement.CollectionTimeFrames.FirstOrDefault(tf => tf.TimeFrame == this.CurrentTimeFrameValue);
+                if (TrElement.StorageTF.Count == 0)
+                {
+                    return null;
+                }
+                return TrElement.StorageTF.GetTimeFrame(TimeFrameUse.Value);
             }
         }
 
@@ -59,14 +56,6 @@ namespace AppVEConector
         private DataGridViewRow[] ArraySell = null;
         /// <summary> Наполнитель стакана ПОКУПКА. Сбрасывается при новом стакане.</summary>
         private DataGridViewRow[] ArrayBuy = null;
-
-
-        public Form_Strategy_morePrev FormStrategy = null;
-
-        /// <summary>
-        /// Все настройки, которые необходимо хранить.
-        /// </summary>
-        private SettingsFormSec SettingsDepth = null;
 
         class StructClickDepth
         {
@@ -103,51 +92,41 @@ namespace AppVEConector
         /// <summary> Инициализация панели очистки сделок за определенную дату </summary>
         private void InitPanelClearCharts()
         {
-            DateMarket dateStart = new DateMarket();
-            DateMarket dateEnd = new DateMarket();
-
+            dateTimePickerClearChartsStart.Value = DateTime.Now;
+            dateTimePickerClearChartsEnd.Value = DateTime.Now;
             dateTimePickerClearChartsStart.ValueChanged += (s, e) =>
             {
-                this.labelClearStart.Text = dateTimePickerClearChartsStart.Value.ToShortDateString() + " " +
-                dateTimePickerClearChartsStart.Value.ToShortTimeString();
+                if (dateTimePickerClearChartsStart.Value > dateTimePickerClearChartsEnd.Value)
+                {
+                    dateTimePickerClearChartsStart.Value = dateTimePickerClearChartsEnd.Value;
+                }
             };
             dateTimePickerClearChartsEnd.ValueChanged += (s, e) =>
             {
-                this.labelClearEnd.Text = dateTimePickerClearChartsEnd.Value.ToShortDateString() + " " +
-                dateTimePickerClearChartsEnd.Value.ToShortTimeString();
+                if (dateTimePickerClearChartsStart.Value > dateTimePickerClearChartsEnd.Value)
+                {
+                    dateTimePickerClearChartsEnd.Value = dateTimePickerClearChartsStart.Value;
+                }
             };
-
-            dateStart.SetDateTime(DateTime.Now.AddDays(-1));
-            dateStart.SetHour(0).SetMinute(0).SetSecond(0);
-            dateTimePickerClearChartsStart.Value = dateStart.GetDateTime();
-
-            dateEnd.SetDateTime(DateTime.Now);
-            dateEnd.SetHour(23).SetMinute(59).SetSecond(59);
-            dateTimePickerClearChartsEnd.Value = dateEnd.GetDateTime();
 
             buttonClearCandle.Click += (s, e) =>
             {
+
                 var dateClearStart = dateTimePickerClearChartsStart.Value;
                 var dateClearEnd = dateTimePickerClearChartsEnd.Value;
+
                 var result = MessageBox.Show(this, "Удалить сделки за " + dateClearStart.ToLongDateString() + " - " + dateClearEnd.ToLongDateString(), "Удаление котировок?",
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
                 if (result == DialogResult.OK)
                 {
-                    this.DeleteCharts(dateClearStart, dateClearEnd);
+                    var dStart = new DateMarket(dateClearStart);
+                    dStart.SetHour(0).SetMinute(0).SetSecond(0);
+                    var dEnd = new DateMarket(dateClearEnd);
+                    dEnd.SetHour(23).SetMinute(59).SetSecond(59);
+                    DeleteCharts(dStart.GetDateTime(), dEnd.GetDateTime());
                 }
             };
-
-            ComboBox.ObjectCollection itemsField = new ComboBox.ObjectCollection(comboBoxLoadField);
-            itemsField.Add("Price");
-            itemsField.Add("Volume");
-            comboBoxLoadField.DataSource = itemsField;
-
-            ComboBox.ObjectCollection itemsOper = new ComboBox.ObjectCollection(comboBoxLoadOper);
-            itemsOper.Add("*");
-            itemsOper.Add("/");
-            comboBoxLoadOper.DataSource = itemsOper;
-
         }
 
         private void InitAllPanels()
@@ -167,7 +146,7 @@ namespace AppVEConector
             this.SetHead(Securities);
             //Загружаем настройки по инструменту
             //SettingsDepth.ReloadSecurity(Securities.ToString());
-            SettingsDepth.InitTimeFrame(TrElement.CollectionTimeFrames.Select(t => t.TimeFrame));
+            SettingsDepth.InitTimeFrame(StorageTimeFrames.TIME_FRAMES);
 
             //Инициализация всех панелей
             InitAllPanels();
@@ -183,12 +162,12 @@ namespace AppVEConector
             numericUpDownStopPrice.InitSecurity(Securities);
             numericUpDownStopPrice.Value = 0;
             //Дата эксписрациия стоп заявки
-            dateTimePickerStopOrder.Value = DateTime.Now.AddDays(SettingsDepth.Data.CountDaysForStopOrder);
+            dateTimePickerStopOrder.Value = DateTime.Now.AddDays(SettingsDepth.Get("CountDaysForStopOrder"));
             //Получаем значение последней стоп-заявки
             if (LastStopOrder.NotIsNull())
             {
                 numericUpDownStopPrice.Value = LastStopOrder.ConditionPrice;
-                dateTimePickerStopOrder.Value = DateTime.Now.AddDays(SettingsDepth.Data.CountDaysForStopOrder);
+                dateTimePickerStopOrder.Value = DateTime.Now.AddDays(SettingsDepth.Get("CountDaysForStopOrder"));
             }
 
             //Настройки графика
@@ -197,9 +176,17 @@ namespace AppVEConector
             this.GraphicStock.SetObjectPaint(this.pictureBoxGraphic);
 
             this.GraphicStock.Init(Securities);
-            this.GraphicStock.DataSourceTimeFrame = this.CurrentTimeFrame;
+            this.GraphicStock.TimeFrame = CurrentTimeFrame;
             this.GraphicStock.DataSourceLevels = this.Levels.ObjectCollection;
             this.GraphicStock.ResetActiveCandles();
+
+            GraphicStock.OnNotFullGraphic += (curValue, all) =>
+            {
+                if (all - curValue > 5)
+                {
+                    CurrentTimeFrame.Candles.Load();
+                }
+            };
             UpdateGraphic();
 
             InitGraphicSignals();
@@ -223,11 +210,6 @@ namespace AppVEConector
             this.ArraySell = null;
             this.ArrayBuy = null;
 
-            //Code client
-            comboBoxCodeClient.SelectedIndex = comboBoxCodeClient.FindStringExact(SettingsDepth.Data.CodeClient);
-            //Кол-во видимых свечей
-            this.CountCandleInGraphic = SettingsDepth.Data.TimeFrame[CurrentTimeFrameValue].CountVisibleCandle;
-
             EventAnyOrder(null, true);
 
             pictureBoxGraphic.Refresh();
@@ -247,8 +229,8 @@ namespace AppVEConector
         {
             if (this.checkBoxCancelStop.Checked)
             {
-                var pos = this.Trader.Objects.Positions.FirstOrDefault(p => p.Sec.Code == Securities.Code);
-                var stopLoss = this.Trader.Objects.StopOrders.FirstOrDefault(so => so.Sec.Code == Securities.Code && so.IsActive());
+                var pos = this.Trader.Objects.tPositions.SearchFirst(p => p.Sec.Code == Securities.Code);
+                var stopLoss = this.Trader.Objects.tStopOrders.SearchFirst(so => so.Sec.Code == Securities.Code && so.IsActive());
                 if (pos.NotIsNull() && stopLoss.NotIsNull())
                 {
                     if (pos.CurrentVolume == 0)
@@ -274,25 +256,26 @@ namespace AppVEConector
             }
             if (comboBoxCodeClient.SelectedItem.NotIsNull())
             {
-                var listPortf = Trader.Objects.Portfolios.Where(p => p.Account.AccClasses.FirstOrDefault(c => c == Securities.Class).NotIsNull() &&
+                var listPortf = Trader.Objects.tPortfolios
+                    .SearchAll(p => p.Account.AccClasses.FirstOrDefault(c => c == Securities.Class).NotIsNull() &&
                         p.Client.Code == comboBoxCodeClient.SelectedItem.ToString());
-                if (SettingsDepth.Data.TypeClientLimit >= 0)
+                if (TypeClientLimit.Value >= 0)
                 {
-                    listPortf = listPortf.Where(p => p.LimitKind == SettingsDepth.Data.TypeClientLimit);
+                    listPortf = listPortf.Where(p => p.LimitKind == TypeClientLimit.Value).ToArray();
                 }
                 if (listPortf.Count() > 0)
                 {
                     Portfolio = listPortf.First();
                 }
             }
-            if (SettingsDepth.Data.CodeClient.Empty())
+            if (ClientCode.Value.Empty())
             {
-                Position = Trader.Objects.Positions.FirstOrDefault(s => s.Sec == Securities);
+                Position = Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities);
             }
             else
             {
-                Position = Trader.Objects.Positions.FirstOrDefault(s => s.Sec == Securities
-                    && s.Client.Code == SettingsDepth.Data.CodeClient);
+                Position = Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities
+                    && s.Client.Code == ClientCode.Value);
             }
             ThreadInfo = MThread.InitThread(() =>
             {
@@ -305,24 +288,24 @@ namespace AppVEConector
                     Info.CurrentPrice = Securities.LastPrice;
                 }
                 //orders
-                var orders = this.Trader.Objects.Orders.Where(so => so.Sec.Code == Securities.Code && so.IsActive());
-                var ordB = orders.Where(o => o.IsBuy());
-                var ordS = orders.Where(o => o.IsSell());
+                var orders = this.Trader.Objects.tOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive()).ToArray();
+                var ordB = orders.Where(o => o.IsBuy()).ToArray();
+                var ordS = orders.Where(o => o.IsSell()).ToArray();
                 Info.CountOrderBuy = ordB.Count();
                 Info.CountOrderSell = ordS.Count();
                 Info.CountVolumeBuy = ordB.Sum(o => o.Balance);
                 Info.CountVolumeSell = ordS.Sum(o => o.Balance);
 
-                var stopOrdersActive = this.Trader.Objects.StopOrders.Where(so => so.Sec.Code == Securities.Code && so.IsActive());
+                var stopOrdersActive = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive());
                 if (stopOrdersActive.NotIsNull())
                 {
-                    var soBuy = stopOrdersActive.Where(so => so.IsBuy());
-                    var soSell = stopOrdersActive.Where(so => so.IsSell());
-                    var soOrderBuy = soBuy.Where(so => so.Comment.Contains(Define.STOP_LIMIT));
-                    var soOrderSell = soSell.Where(so => so.Comment.Contains(Define.STOP_LIMIT));
+                    var soBuy = stopOrdersActive.Where(so => so.IsBuy()).ToArray();
+                    var soSell = stopOrdersActive.Where(so => so.IsSell()).ToArray();
+                    var soOrderBuy = soBuy.Where(so => so.Comment.Contains(Define.STOP_LIMIT)).ToArray();
+                    var soOrderSell = soSell.Where(so => so.Comment.Contains(Define.STOP_LIMIT)).ToArray();
 
-                    var soLimitBuy = soBuy.Where(so => so.Comment.Contains(Define.STOP_LOSS));
-                    var soLimitSell = soSell.Where(so => so.Comment.Contains(Define.STOP_LOSS));
+                    var soLimitBuy = soBuy.Where(so => so.Comment.Contains(Define.STOP_LOSS)).ToArray();
+                    var soLimitSell = soSell.Where(so => so.Comment.Contains(Define.STOP_LOSS)).ToArray();
 
                     //sLimit
                     Info.CountStopLimitOrderBuy = soLimitBuy.Count();
@@ -346,14 +329,16 @@ namespace AppVEConector
                         var stopOrder = stopOrdersActive.FirstOrDefault(so => so.IsActive());
                         if (stopOrder.NotIsNull()
                             && Securities.LastTrade.NotIsNull()
-                            && Securities.Params.MinPriceStep > 0)
+                            && Securities.Params.MinPriceStep > 0
+                            && Position.NotIsNull())
                         {
                             var priceStop = stopOrder.ConditionPrice;
                             decimal gapPrice = priceStop > Info.CurrentPrice ? priceStop - Info.CurrentPrice : Info.CurrentPrice - priceStop;
                             decimal result = (gapPrice / Securities.Params.MinPriceStep) * Securities.Params.StepPrice;
                             decimal countLots = Position.CurrentVolume;
                             Info.ForecastSum = result * countLots;
-                        } else
+                        }
+                        else
                         {
                             Info.ForecastSum = 0;
                         }
@@ -472,165 +457,138 @@ namespace AppVEConector
             return quote;
         }
 
-        /// <summary> Сумма объема в стакане, 0 - bid, 1 - ask</summary>
-        public long[] CountInDepth = new long[2];
         /// <summary> Обновление стакана </summary>
         public void UpdateDepth()
         {
-            if (TrElement.NotIsNull())
+            if (TrElement.IsNull())
             {
-                var quote = Securities.GetQuote();
-                if (quote.IsNull())
-                {
-                    quote = createQuote(numericUpDownStepDepth.Value);
-                }
-                int countS = 20;
-                int countB = 20;
-                var QuoteBid = quote.Bid.ToArray();
-                var QuoteAsk = quote.Ask.ToArray();
-                int countInDepthSell = QuoteAsk.Length;
-                int countInDepthBuy = QuoteBid.Length;
-
-                if (ArraySell.IsNull() && countInDepthSell > 0)
-                {
-                    ArraySell = new DataGridViewRow[countS];
-                    for (int i = countS - 1; i >= 0; i--)
-                    {
-                        var k = dataGridViewDepth.Rows.Add();
-                        ArraySell[i] = dataGridViewDepth.Rows[k];
-                        ArraySell[i].Cells[2].Style.BackColor = Color.LightCoral;
-                    }
-
-                }
-                if (ArrayBuy.IsNull() && countInDepthBuy > 0)
-                {
-                    ArrayBuy = new DataGridViewRow[countB];
-                    for (int i = 0; i < countB; i++)
-                    {
-                        var k = dataGridViewDepth.Rows.Add();
-                        ArrayBuy[i] = dataGridViewDepth.Rows[k];
-                        ArrayBuy[i].Cells[2].Style.BackColor = Color.LightGreen;
-                    }
-                }
-                CountInDepth[0] = 0;
-                CountInDepth[1] = 0;
-                MThread.InitThread(() =>
-                {
-                    //Синхронизуируем между потоками
-                    dataGridViewDepth.GuiAsync(() =>
-                    {
-                        if (ArraySell.NotIsNull())
-                        {
-                            //Наполняем Sell
-                            for (int i = 0; i < countS; i++)
-                            {
-                                if (countInDepthSell <= i && ArraySell[i].NotIsNull())
-                                {
-                                    ArraySell[i].Cells[0].Value = "";
-                                    ArraySell[i].Cells[1].Value = "";
-                                    ArraySell[i].Cells[2].Value = "";
-                                    ArraySell[i].Cells[3].Value = "";
-                                    ArraySell[i].Cells[1].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
-                                }
-                                else
-                                {
-                                    if (QuoteAsk[i].IsNull())
-                                    {
-                                        continue;
-                                    }
-                                    decimal Price = QuoteAsk[i].Price;
-                                    int Volume = QuoteAsk[i].Volume;
-                                    CountInDepth[1] += Volume;
-                                    decimal SumVol = Trader.Objects.Orders.ToArray()
-                                        .Where(o => o.Sec == Securities && o.Price == Price && o.IsActive())
-                                        .Sum(o => o.Volume);
-
-                                    ArraySell[i].Cells[2].Value = Price.ToString();
-                                    if (SumVol > 0)
-                                    {
-                                        ArraySell[i].Cells[2].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
-                                        ArraySell[i].Cells[1].Value = Volume.ToString() + " (" + SumVol.ToString() + ")";
-                                    }
-                                    else
-                                    {
-                                        ArraySell[i].Cells[2].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
-                                        ArraySell[i].Cells[1].Value = Volume.ToString();
-                                    }
-                                    ArraySell[i].Cells[1].Tag = new StructClickDepth()
-                                    {
-                                        Flag = "sell",
-                                        Price = Price,
-                                        Volume = Volume,
-                                    };
-                                    ArraySell[i].Cells[3].Tag = new StructClickDepth()
-                                    {
-                                        Flag = "buy",
-                                        Price = Price,
-                                        Volume = Volume,
-                                    };
-                                }
-                            }
-                        }
-                        if (ArrayBuy.NotIsNull())
-                        {
-                            //Наполняем Buy
-                            for (int i = 0; i < countB; i++)
-                            {
-                                if (countInDepthBuy <= i && ArrayBuy[i].NotIsNull())
-                                {
-                                    ArrayBuy[i].Cells[0].Value = "";
-                                    ArrayBuy[i].Cells[1].Value = "";
-                                    ArrayBuy[i].Cells[2].Value = "";
-                                    ArrayBuy[i].Cells[3].Value = "";
-                                    ArrayBuy[i].Cells[3].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
-                                }
-                                else
-                                {
-                                    if (QuoteBid[countInDepthBuy - i - 1].IsNull())
-                                    {
-                                        continue;
-                                    }
-                                    decimal Price = QuoteBid[countInDepthBuy - i - 1].Price;
-                                    int Volume = QuoteBid[countInDepthBuy - i - 1].Volume;
-                                    CountInDepth[0] += Volume;
-                                    decimal VolSum = Trader.Objects.Orders.ToArray().Where(o => o.Sec == Securities && o.Price == Price && o.IsActive()).Sum(o => o.Volume);
-
-                                    ArrayBuy[i].Cells[1].Tag = new StructClickDepth()
-                                    {
-                                        Flag = "sell",
-                                        Price = Price,
-                                        Volume = Volume,
-                                    };
-                                    ArrayBuy[i].Cells[2].Value = Price.ToString();
-
-                                    if (VolSum > 0)
-                                    {
-                                        ArrayBuy[i].Cells[2].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Bold);
-                                        ArrayBuy[i].Cells[3].Value = Volume.ToString() + " (" + VolSum.ToString() + ")";
-                                    }
-                                    else
-                                    {
-                                        ArrayBuy[i].Cells[2].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
-                                        ArrayBuy[i].Cells[3].Value = Volume.ToString();
-                                    }
-                                    ArrayBuy[i].Cells[1].Tag = new StructClickDepth()
-                                    {
-                                        Flag = "sell",
-                                        Price = Price,
-                                        Volume = Volume,
-                                    };
-                                    ArrayBuy[i].Cells[3].Tag = new StructClickDepth()
-                                    {
-                                        Flag = "buy",
-                                        Price = Price,
-                                        Volume = Volume,
-                                    };
-                                }
-                            }
-                        }
-                    });
-                });
+                return;
             }
+            int count = 20;
+            var orders = Trader.Objects.tOrders
+                .SearchAll(o => o.Sec == TrElement.Security && o.Status == OrderStatus.ACTIVE);
+
+            var ordersBuy = orders.Where(o => o.Direction == OrderDirection.Buy)
+                .OrderByDescending(o => o.Price).ToArray();
+            var ordersSell = orders.Where(o => o.Direction == OrderDirection.Sell)
+                .OrderBy(o => o.Price).ToArray();
+
+            var pricesBuy = ordersBuy.Select(o => o.Price).Take(count).ToArray();
+            var pricesSell = ordersSell.Select(o => o.Price).Take(count).ToArray();
+
+            if (ArraySell.IsNull())
+            {
+                ArraySell = new DataGridViewRow[count];
+                for (int i = count - 1; i >= 0; i--)
+                {
+                    var k = dataGridViewDepth.Rows.Add();
+                    ArraySell[i] = dataGridViewDepth.Rows[k];
+                    ArraySell[i].Cells[0].Value = "";
+                    ArraySell[i].Cells[1].Value = "";
+                    ArraySell[i].Cells[2].Value = "";
+                    ArraySell[i].Cells[3].Value = "";
+                    ArraySell[i].Cells[2].Style.BackColor = Color.LightCoral;
+                    ArraySell[i].Cells[1].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
+                }
+
+            }
+            if (ArrayBuy.IsNull())
+            {
+                ArrayBuy = new DataGridViewRow[count];
+                for (int i = 0; i < count; i++)
+                {
+                    var k = dataGridViewDepth.Rows.Add();
+                    ArrayBuy[i] = dataGridViewDepth.Rows[k];
+                    ArrayBuy[i].Cells[0].Value = "";
+                    ArrayBuy[i].Cells[1].Value = "";
+                    ArrayBuy[i].Cells[2].Value = "";
+                    ArrayBuy[i].Cells[3].Value = "";
+                    ArrayBuy[i].Cells[2].Style.BackColor = Color.LightGreen;
+                    ArrayBuy[i].Cells[1].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
+                }
+            }
+            MThread.InitThread(() =>
+            {
+                //Синхронизуируем между потоками
+                dataGridViewDepth.GuiAsync(() =>
+                {
+                    if (ArraySell.NotIsNull())
+                    {
+                        //Наполняем Sell
+                        for (int i = 0; i < ArraySell.Length; i++)
+                        {
+                            var row = ArraySell[i];
+                            if (pricesSell.Length <= i)
+                            {
+                                ArraySell[i].Cells[2].Value = "";
+                                ArraySell[i].Cells[1].Value = "";
+                                ArraySell[i].Cells[1].Tag = null;
+                                ArraySell[i].Cells[3].Tag = null;
+                                continue;
+                            }
+                            var ordersByPrice = ordersSell.Where(o => o.Price == pricesSell[i]).ToArray();
+                            var volOrders = ordersByPrice.Sum(o => o.Balance);
+                            
+                            decimal Price = pricesSell[i];
+                            int Volume = volOrders;
+                            int countOrd = ordersByPrice.Count();
+
+                            ArraySell[i].Cells[2].Value = Price.ToString();
+                            ArraySell[i].Cells[1].Value = countOrd.ToString() + " (" +Volume.ToString() + ")";
+                            ArraySell[i].Cells[1].Tag = new StructClickDepth()
+                            {
+                                Flag = "sell",
+                                Price = Price,
+                                Volume = Volume,
+                            };
+                            ArraySell[i].Cells[3].Tag = new StructClickDepth()
+                            {
+                                Flag = "buy",
+                                Price = Price,
+                                Volume = Volume,
+                            };
+                        }
+                    }
+                    if (ArrayBuy.NotIsNull())
+                    {
+                        //Наполняем Buy
+                        for (int i = 0; i < ArrayBuy.Length; i++)
+                        {
+                            var row = ArrayBuy[i];
+                            if (pricesBuy.Length <= i)
+                            {
+                                ArraySell[i].Cells[2].Value = "";
+                                ArraySell[i].Cells[1].Value = "";
+                                ArraySell[i].Cells[1].Tag = null;
+                                ArraySell[i].Cells[3].Tag = null;
+                                continue;
+                            }
+                            var ordersByPrice = ordersBuy.Where(o => o.Price == pricesBuy[i]).ToArray();
+                            var volOrders = ordersByPrice.Sum(o => o.Balance);
+
+                            decimal Price = pricesBuy[i];
+                            int Volume = volOrders;
+                            int countOrd = ordersByPrice.Count();
+
+                            ArrayBuy[i].Cells[2].Value = Price.ToString();
+                            ArrayBuy[i].Cells[3].Value = countOrd.ToString() + " (" + Volume.ToString() + ")";
+                          
+                            ArrayBuy[i].Cells[1].Tag = new StructClickDepth()
+                            {
+                                Flag = "sell",
+                                Price = Price,
+                                Volume = Volume,
+                            };
+                            ArrayBuy[i].Cells[3].Tag = new StructClickDepth()
+                            {
+                                Flag = "buy",
+                                Price = Price,
+                                Volume = Volume,
+                            };
+                        }
+                    }
+                });
+            });
         }
 
         /// <summary> Обновление сообщения </summary>
@@ -701,8 +659,8 @@ namespace AppVEConector
             }
             if (nativeOrders)
             {
-                var actOrders = Trader.Objects.Orders.ToArray().Where(o => o.Sec.Code == Securities.Code && o.IsActive());
-                var actStOrd = Trader.Objects.StopOrders.ToArray().Where(o => o.Sec.Code == Securities.Code && o.IsActive());
+                var actOrders = Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
+                var actStOrd = Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
                 EventNewOrder(actOrders);
                 EventNewStopOrder(actStOrd);
                 ActionAllActiveOrders(actOrders, actStOrd);
@@ -805,7 +763,7 @@ namespace AppVEConector
             {
                 if (CurrentTimeFrame.NotIsNull())
                 {
-                    if (GraphicStock.ActiveTrades.NotIsNull())
+                    if (GraphicStock.ActiveTrades.NotIsNull() && GraphicStock.ActiveTrades.IsEnable())
                     {
                         GraphicStock.ActiveTrades.ListTrades = TrElement.LastTrades
                         .OrderByDescending(t => t.Number)
@@ -829,14 +787,13 @@ namespace AppVEConector
             }
             pictureBoxGraphic.GuiAsync(() =>
             {
-                var timeFrame = this.CurrentTimeFrame;
-                if (timeFrame.NotIsNull())
+                if (CurrentTimeFrame.NotIsNull())
                 {
-                    int index = GetIndexFirstCandle(timeFrame);
+                    int index = GetIndexFirstCandle(CurrentTimeFrame);
                     GraphicStock.IndexFirstCandle = index;
                     GraphicStock.CountVisibleCandles = this.CountCandleInGraphic;
 
-                    GraphicStock.Redraw();
+                    GraphicStock.Paint();
                     pictureBoxGraphic.Refresh();
                 }
             });
@@ -872,7 +829,7 @@ namespace AppVEConector
                 Volume = volume,
                 ConditionPrice = Price,
                 DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value),
-                ClientCode = SettingsDepth.Data.CodeClient,
+                ClientCode = ClientCode.Value,
                 Comment = Define.STOP_LOSS
             };
 
@@ -901,7 +858,7 @@ namespace AppVEConector
             });
             MThread.InitThread(() =>
             {
-                var cancelOrders = this.Trader.Objects.StopOrders.Where(so => so.Sec == Securities
+                var cancelOrders = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities
                             && so.IsActive() && so.Comment.Contains(Define.STOP_LOSS));
                 if (cancelOrders.NotIsNull())
                 {
@@ -912,7 +869,7 @@ namespace AppVEConector
                 if (checkSet)
                 {
                     Thread.Sleep(10000);
-                    var allStopOrders = this.Trader.Objects.StopOrders.Where(so => so.Sec == Securities && so.IsActive());
+                    var allStopOrders = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities && so.IsActive());
                     if (allStopOrders.NotIsNull())
                     {
                         if (allStopOrders.Count() == 0)
@@ -930,11 +887,6 @@ namespace AppVEConector
         public void EventNewMyTrade(MyTrade mytrade)
         {
             if (mytrade.Trade.Sec != Securities) return;
-
-            if (this.FormStrategy.NotIsNull())
-            {
-                this.FormStrategy.CheckMyTrade(mytrade);
-            }
         }
     }// end class
 }

@@ -301,14 +301,14 @@ namespace AppVEConector
 			if (panelGraph.Graphic.IsNull()) return;
 			//try
 			var valTF = this.GetCurrentTimeFrame(panelGraph);
-			var timeFrame = panelGraph.TrElement.CollectionTimeFrames.FirstOrDefault(tf => tf.TimeFrame == valTF);
+			var timeFrame = panelGraph.TrElement.StorageTF.GetTimeFrame(valTF);
 			if (!timeFrame.IsNull())
 			{
 				int index = 0;// GetIndexFirstCandle(timeFrame);
 
 				//Orders
 				List<Chart> orders = new List<Chart>();
-				var allOrd = this.Trader.Objects.Orders.ToArray().Where(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
+				var allOrd = this.Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allOrd)
 				{
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
@@ -316,7 +316,7 @@ namespace AppVEConector
 					if (ch != null) ch.Volume += vol;
 					else orders.Add(new Chart() { Price = o.Price, Volume = vol });
 				}
-				var allStOrd = this.Trader.Objects.StopOrders.ToArray().Where(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
+				var allStOrd = this.Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allStOrd)
 				{
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
@@ -355,7 +355,7 @@ namespace AppVEConector
 					{
 						if (!el[0].Empty() && !el[1].Empty())
 						{
-							var sec = Trader.Objects.Securities.FirstOrDefault(s => s.Code == el[0] && s.Class.Code == el[1]);
+							var sec = Trader.Objects.tSecurities.SearchFirst(s => s.Code == el[0] && s.Class.Code == el[1]);
 							if (sec.NotIsNull()) list.Add(sec);
 
 						}
