@@ -9,6 +9,9 @@ namespace Market.Volumes
         public long SumBuy = 0;
 		/// <summary> Сумма объемов на продажу </summary>
 		public long SumSell = 0;
+        /// <summary>
+        /// Коллекция гор. обьемов
+        /// </summary>
 		public HVolume HVolCollection = new HVolume();
 
 		/// <summary> Добавляет объем Buy</summary>
@@ -16,14 +19,14 @@ namespace Market.Volumes
 		/// <param name="volume"></param>
         protected void AddBuy(decimal price, long volume)
         {
-            this.HVolCollection.AddVolume(price, volume, true);
+            this.HVolCollection.Add(price, volume, true);
             this.SumBuy += volume;
         }
 
         /// <summary> Добавляет объем Sell</summary>
         protected void AddSell(decimal price, long volume)
         {
-            this.HVolCollection.AddVolume(price, volume, false);
+            this.HVolCollection.Add(price, volume, false);
             this.SumSell += volume;
         }
     }

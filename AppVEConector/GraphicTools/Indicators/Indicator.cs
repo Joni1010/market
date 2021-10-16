@@ -51,6 +51,14 @@ namespace AppVEConector.GraphicTools.Indicators
             Panel = new ViewPanel(mainPanel.Params);
             Panel.Rect = mainPanel.Rect;
         }
+        /// <summary>
+        /// Возвращает активен ли индикатор(true) или нет(false)
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsEnable()
+        {
+            return Enable;
+        }
 
         /// <summary>
         /// Инициализация старта идикатора

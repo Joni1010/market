@@ -22,16 +22,16 @@ namespace AppVEConector
             numericUpDownMCTakeProfitTiks.InitWheelDecimal(0, 1000, 1, 0);
 
             //Получаем сохраненные данные
-            numericUpDownMCStopTiks.Value = SettingsDepth.Data.TiksControlStop;
-            numericUpDownMCTakeProfitTiks.Value = SettingsDepth.Data.TiksControlTake;
+            numericUpDownMCStopTiks.Value = SettingsDepth.Get("TiksControlStop");
+            numericUpDownMCTakeProfitTiks.Value = SettingsDepth.Get("TiksControlTake");
 
             numericUpDownMCStopTiks.ValueChanged += (s, e) =>
             {
-                SettingsDepth.Data.TiksControlStop = (int)numericUpDownMCStopTiks.Value;
+                SettingsDepth.Set("TiksControlStop", (int)numericUpDownMCStopTiks.Value);
             };
             numericUpDownMCTakeProfitTiks.ValueChanged += (s, e) =>
             {
-                SettingsDepth.Data.TiksControlTake = (int)numericUpDownMCTakeProfitTiks.Value;
+                SettingsDepth.Set("TiksControlTake", (int)numericUpDownMCTakeProfitTiks.Value);
             };
             //ВЫставляем флажок на сохраненном проценте
             foreach (var percent in PERCENT)
@@ -39,13 +39,13 @@ namespace AppVEConector
                 var objRadio = GetRadioButtonByPercent(percent);
                 if (objRadio.NotIsNull())
                 {
-                    if (percent == SettingsDepth.Data.PercentTakeOut)
+                    if (percent == SettingsDepth.Get("PercentTakeOut"))
                     {
                         objRadio.Checked = true;
                     }
                     objRadio.CheckedChanged += (s, e) =>
                     {
-                        SettingsDepth.Data.PercentTakeOut = percent;
+                        SettingsDepth.Set("PercentTakeOut", percent);
                     };
                 }
             }
@@ -167,7 +167,7 @@ namespace AppVEConector
                 Sec = Securities,
                 Volume = position < 0 ? position * -1 : position,
                 DateExpiry = DateMarket.ExtractDateTime(DateTime.Now.AddDays(1)),
-                ClientCode = SettingsDepth.Data.CodeClient,
+                ClientCode = ClientCode.Value,
                 Comment = Define.STOP_CONTROL
             };
             if (position > 0)
@@ -195,7 +195,7 @@ namespace AppVEConector
                 Sec = Securities,
                 Volume = percentPosition,
                 Comment = Define.STOP_CONTROL,
-                ClientCode = SettingsDepth.Data.CodeClient,
+                ClientCode = ClientCode.Value,
                 DateExpiry = DateMarket.ExtractDateTime(DateTime.Now.AddDays(1))
             };
             if (isBuy)
@@ -275,7 +275,7 @@ namespace AppVEConector
         {
             if (position != 0)
             {
-                return Trader.Objects.MyTrades.LastOrDefault(t => t.Trade.Sec == Securities);
+                return Trader.Objects.tMyTrades.ToArray().LastOrDefault(t => t.Trade.Sec == Securities);
             }
             /*if (position > 0)
             {
@@ -289,14 +289,14 @@ namespace AppVEConector
         }
         private IEnumerable<StopOrder> GetStopOrdersForControl()
         {
-            return Trader.Objects.StopOrders.Where(o => o.Sec == Securities
+            return Trader.Objects.tStopOrders.SearchAll(o => o.Sec == Securities
                 && o.IsActive() && o.Comment.Contains(Define.STOP_CONTROL)
             );
         }
 
         private Position GetPositionForControl()
         {
-            return Trader.Objects.Positions.FirstOrDefault(p => p.Sec == Securities);
+            return Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
         }
         /// <summary>
         /// Получение процент позиции, от общей позиции

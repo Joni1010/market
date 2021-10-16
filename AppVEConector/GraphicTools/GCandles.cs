@@ -5,6 +5,7 @@ using GraphicTools.Base;
 using GraphicTools.Shapes;
 using Market.Candles;
 using System;
+using MarketObjects.Charts;
 
 namespace GraphicTools
 {
@@ -56,9 +57,9 @@ namespace GraphicTools
             /// <summary> Индекс свечи </summary>
             public int Index = -1;
             /// <summary> Текущий горизонтальный объем </summary>
-            public MarketObjects.ChartVol CurHorVolume = null;
+            public ChartFull CurHorVolume = null;
             /// <summary> Максимальный горизонтальный объем </summary>
-            public MarketObjects.Chart MaxHorVolume = new MarketObjects.Chart();
+            public Chart MaxHorVolume = new Chart();
             /// <summary> Описание </summary>
             public string Description = "";
             /// <summary>
@@ -83,7 +84,7 @@ namespace GraphicTools
             public decimal MinPrice = 10000000;
             public CandleData MaxCandle = null;
             public CandleData MinCandle = null;
-            public MarketObjects.Chart MaxHorVolume = new MarketObjects.Chart();
+            public Chart MaxHorVolume = new Chart();
         }
         /// <summary>  Максимальные значения </summary>
         public MaxData MaxValues = new MaxData();
@@ -213,7 +214,7 @@ namespace GraphicTools
             if (!OnBeforePaintCandle.IsNull())
                 OnBeforePaintCandle();
 
-            List<MarketObjects.Chart> HVolume = new List<MarketObjects.Chart>();
+            List<Chart> HVolume = new List<Chart>();
             int index = 1;
             Count = CollectionCandle.Count();
             CollectionCandle.ForEach<CandleData>((candleData) =>
@@ -351,13 +352,13 @@ namespace GraphicTools
                 MaxValues.MinPrice = candleData.Low;
                 MaxValues.MinCandle = candleData;
             }
-            if (candleData.HorVolumes.HVolCollection.MaxVolume.NotIsNull())
+            /*if (candleData.HorVolumes.HVolCollection.MaxVolume.NotIsNull())
             {
                 if (MaxValues.MaxHorVolume.Volume < candleData.HorVolumes.HVolCollection.MaxVolume.Volume)
                 {
                     MaxValues.MaxHorVolume = candleData.HorVolumes.HVolCollection.MaxVolume;
                 }
-            }
+            }*/
 
             var dCandle = new CandleInfo()
             {

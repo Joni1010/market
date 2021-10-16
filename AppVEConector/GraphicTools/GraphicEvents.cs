@@ -27,11 +27,11 @@ namespace GraphicTools
         {
             this.OnResize += (rect) =>
             {
-                this.Redraw();
+                this.Paint();
             };
             System.Action<decimal, decimal, decimal> EventRefrech = (cur, max, min) =>
             {
-                this.Redraw();
+                this.Paint();
             };
             this.OnReachLimitPrice += EventRefrech;
 
@@ -52,7 +52,7 @@ namespace GraphicTools
             this.OnCandleRightClick += (coord, cand) =>
             {
                 ActiveCandles.ActiveCandle1 = new SelectCandle() { dataCandle = null };
-                this.Redraw();
+                this.Paint();
             };
 
             this.OnCandleMove += (cross, candle) =>
@@ -67,7 +67,7 @@ namespace GraphicTools
         {
             System.Action<decimal, decimal, decimal> EventRefrech = (cur, max, min) =>
             {
-                this.Redraw();
+                this.Paint();
             };
             Candels.OnReachMinMax += EventRefrech;
             Volumes.OnReachLimitValues += EventRefrech;
@@ -185,7 +185,7 @@ namespace GraphicTools
             }
             if (refresh)
             {
-                Redraw();
+                Paint();
             }
         }
 
@@ -206,7 +206,7 @@ namespace GraphicTools
                 {
                     if (onEvent.NotIsNull())
                         onEvent(first);
-                    if (refresh) this.Redraw();
+                    if (refresh) this.Paint();
                     return;
                 }
             }
@@ -218,7 +218,7 @@ namespace GraphicTools
                 {
                     if (onEvent.NotIsNull())
                         onEvent(last);
-                    if (refresh) this.Redraw();
+                    if (refresh) this.Paint();
                     return;
                 }
             }
@@ -253,7 +253,7 @@ namespace GraphicTools
             }
             if (refresh)
             {
-                Redraw();
+                Paint();
             }
         }
     }

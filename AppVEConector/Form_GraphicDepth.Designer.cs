@@ -78,11 +78,10 @@
             this.dataGridViewDepth = new System.Windows.Forms.DataGridView();
             this.DepthVolume = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DepthSell = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DepthVol = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DepthPrice = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DepthBuy = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelLock = new System.Windows.Forms.Panel();
             this.labelLock = new System.Windows.Forms.Label();
-            this.buttonSignals = new System.Windows.Forms.Button();
             this.panelOrder = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.comboBoxTypeClientLimit = new System.Windows.Forms.ComboBox();
@@ -100,7 +99,6 @@
             this.tableLayoutPanel10 = new System.Windows.Forms.TableLayoutPanel();
             this.labelStopOrders = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
-            this.buttonExitPos = new System.Windows.Forms.Button();
             this.buttonCancelStopOrders = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.numericUpDownStopPrice = new System.Windows.Forms.NumericUpDown();
@@ -112,7 +110,7 @@
             this.tableLayoutPanel9 = new System.Windows.Forms.TableLayoutPanel();
             this.label15 = new System.Windows.Forms.Label();
             this.labelStopLimitOrders = new System.Windows.Forms.Label();
-            this.numericUpDownStepDepth = new System.Windows.Forms.NumericUpDown();
+            this.buttonExitPos = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel20 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -182,28 +180,28 @@
             this.tabPageHistory = new System.Windows.Forms.TabPage();
             this.groupBoxStopOrd = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
-            this.buttonClearAllCandle = new System.Windows.Forms.Button();
-            this.dateTimePickerClearChartsEnd = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePickerClearChartsStart = new System.Windows.Forms.DateTimePicker();
-            this.buttonClearCandle = new System.Windows.Forms.Button();
-            this.labelClearStart = new System.Windows.Forms.Label();
-            this.labelClearEnd = new System.Windows.Forms.Label();
-            this.buttonRecalculVol = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.groupBoxLoadFromFiles = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel14 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLoadTicks = new System.Windows.Forms.Button();
+            this.buttonStopLoadHistory = new System.Windows.Forms.Button();
             this.tableLayoutPanel13 = new System.Windows.Forms.TableLayoutPanel();
-            this.comboBoxLoadOper = new System.Windows.Forms.ComboBox();
-            this.comboBoxLoadField = new System.Windows.Forms.ComboBox();
-            this.textBoxLoadValue = new System.Windows.Forms.TextBox();
+            this.checkBoxDivVolumeLot = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel12 = new System.Windows.Forms.TableLayoutPanel();
             this.label17 = new System.Windows.Forms.Label();
+            this.progressBalLoadHistory = new System.Windows.Forms.ProgressBar();
             this.labelStatusLoad = new System.Windows.Forms.Label();
             this.tableLayoutPanel11 = new System.Windows.Forms.TableLayoutPanel();
             this.buttonLoadSec = new System.Windows.Forms.Button();
             this.buttonSaveSec = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.dateTimePickerClearChartsStart = new System.Windows.Forms.DateTimePicker();
+            this.dateTimePickerClearChartsEnd = new System.Windows.Forms.DateTimePicker();
+            this.buttonClearCandle = new System.Windows.Forms.Button();
+            this.groupBoxHistoryTrade = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel24 = new System.Windows.Forms.TableLayoutPanel();
+            this.buttonGetPortionHistoryTrades = new System.Windows.Forms.Button();
+            this.numericUpDownHistoryTradesSlice = new System.Windows.Forms.NumericUpDown();
             this.tabPageSettings = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel15 = new System.Windows.Forms.TableLayoutPanel();
             this.checkBoxAutoSizePrice = new System.Windows.Forms.CheckBox();
@@ -214,6 +212,8 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel16 = new System.Windows.Forms.TableLayoutPanel();
             this.checkBoxIndHVEnable = new System.Windows.Forms.CheckBox();
+            this.numericUpDownMinMacsHorVol = new System.Windows.Forms.NumericUpDown();
+            this.label25 = new System.Windows.Forms.Label();
             this.labelForecastStop = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
@@ -268,7 +268,6 @@
             this.tableLayoutPanel10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStopPrice)).BeginInit();
             this.tableLayoutPanel9.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStepDepth)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tableLayoutPanel20.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -294,18 +293,22 @@
             this.tabPageHistory.SuspendLayout();
             this.groupBoxStopOrd.SuspendLayout();
             this.tableLayoutPanel6.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.tableLayoutPanel8.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.groupBoxLoadFromFiles.SuspendLayout();
             this.tableLayoutPanel14.SuspendLayout();
             this.tableLayoutPanel13.SuspendLayout();
             this.tableLayoutPanel12.SuspendLayout();
             this.tableLayoutPanel11.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.tableLayoutPanel8.SuspendLayout();
+            this.groupBoxHistoryTrade.SuspendLayout();
+            this.tableLayoutPanel24.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHistoryTradesSlice)).BeginInit();
             this.tabPageSettings.SuspendLayout();
             this.tableLayoutPanel15.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMAPeriod)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.tableLayoutPanel16.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinMacsHorVol)).BeginInit();
             this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel22.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -852,9 +855,7 @@
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 57F));
             this.tableLayoutPanel3.Controls.Add(this.panelGridDepth, 0, 2);
             this.tableLayoutPanel3.Controls.Add(this.checkBoxLockDepth, 3, 0);
-            this.tableLayoutPanel3.Controls.Add(this.buttonSignals, 2, 0);
             this.tableLayoutPanel3.Controls.Add(this.panelOrder, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.numericUpDownStepDepth, 0, 0);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -908,7 +909,7 @@
             this.dataGridViewDepth.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.DepthVolume,
             this.DepthSell,
-            this.DepthVol,
+            this.DepthPrice,
             this.DepthBuy});
             this.dataGridViewDepth.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewDepth.Location = new System.Drawing.Point(0, 0);
@@ -940,14 +941,14 @@
             this.DepthSell.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.DepthSell.Width = 70;
             // 
-            // DepthVol
+            // DepthPrice
             // 
-            this.DepthVol.Frozen = true;
-            this.DepthVol.HeaderText = "Объем";
-            this.DepthVol.Name = "DepthVol";
-            this.DepthVol.ReadOnly = true;
-            this.DepthVol.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.DepthVol.Width = 60;
+            this.DepthPrice.Frozen = true;
+            this.DepthPrice.HeaderText = "Proce";
+            this.DepthPrice.Name = "DepthPrice";
+            this.DepthPrice.ReadOnly = true;
+            this.DepthPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.DepthPrice.Width = 60;
             // 
             // DepthBuy
             // 
@@ -980,18 +981,6 @@
             this.labelLock.TabIndex = 0;
             this.labelLock.Text = "LOCK";
             this.labelLock.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // buttonSignals
-            // 
-            this.buttonSignals.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonSignals.Location = new System.Drawing.Point(163, 0);
-            this.buttonSignals.Margin = new System.Windows.Forms.Padding(0);
-            this.buttonSignals.Name = "buttonSignals";
-            this.buttonSignals.Size = new System.Drawing.Size(54, 20);
-            this.buttonSignals.TabIndex = 21;
-            this.buttonSignals.Text = "Signals";
-            this.buttonSignals.UseVisualStyleBackColor = true;
-            this.buttonSignals.Click += new System.EventHandler(this.buttonSignals_Click);
             // 
             // panelOrder
             // 
@@ -1026,7 +1015,6 @@
             this.tableLayoutPanel1.Controls.Add(this.labelOrdersSell, 3, 0);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel10, 4, 1);
-            this.tableLayoutPanel1.Controls.Add(this.buttonExitPos, 4, 3);
             this.tableLayoutPanel1.Controls.Add(this.buttonCancelStopOrders, 4, 6);
             this.tableLayoutPanel1.Controls.Add(this.label4, 0, 5);
             this.tableLayoutPanel1.Controls.Add(this.numericUpDownStopPrice, 1, 5);
@@ -1036,6 +1024,7 @@
             this.tableLayoutPanel1.Controls.Add(this.dateTimePickerStopOrder, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.buttonCreateStopOrder, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel9, 4, 5);
+            this.tableLayoutPanel1.Controls.Add(this.buttonExitPos, 4, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -1235,7 +1224,7 @@
             this.labelStopOrders.Name = "labelStopOrders";
             this.labelStopOrders.Size = new System.Drawing.Size(52, 24);
             this.labelStopOrders.TabIndex = 2;
-            this.labelStopOrders.Text = "0 / 0";
+            this.labelStopOrders.Text = "00 / 00";
             this.labelStopOrders.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label16
@@ -1249,19 +1238,6 @@
             this.label16.TabIndex = 1;
             this.label16.Text = "SO:";
             this.label16.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // buttonExitPos
-            // 
-            this.buttonExitPos.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.buttonExitPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.buttonExitPos.Location = new System.Drawing.Point(194, 70);
-            this.buttonExitPos.Margin = new System.Windows.Forms.Padding(0);
-            this.buttonExitPos.Name = "buttonExitPos";
-            this.buttonExitPos.Size = new System.Drawing.Size(79, 23);
-            this.buttonExitPos.TabIndex = 1;
-            this.buttonExitPos.Text = "0";
-            this.buttonExitPos.UseVisualStyleBackColor = true;
-            this.buttonExitPos.Click += new System.EventHandler(this.buttonExitPos_Click);
             // 
             // buttonCancelStopOrders
             // 
@@ -1408,19 +1384,17 @@
             this.labelStopLimitOrders.Text = "0 / 0";
             this.labelStopLimitOrders.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // numericUpDownStepDepth
+            // buttonExitPos
             // 
-            this.numericUpDownStepDepth.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.numericUpDownStepDepth.Location = new System.Drawing.Point(1, 1);
-            this.numericUpDownStepDepth.Margin = new System.Windows.Forms.Padding(1);
-            this.numericUpDownStepDepth.Name = "numericUpDownStepDepth";
-            this.numericUpDownStepDepth.Size = new System.Drawing.Size(69, 20);
-            this.numericUpDownStepDepth.TabIndex = 22;
-            this.numericUpDownStepDepth.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.buttonExitPos.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.buttonExitPos.Location = new System.Drawing.Point(194, 48);
+            this.buttonExitPos.Margin = new System.Windows.Forms.Padding(0);
+            this.buttonExitPos.Name = "buttonExitPos";
+            this.buttonExitPos.Size = new System.Drawing.Size(79, 22);
+            this.buttonExitPos.TabIndex = 1;
+            this.buttonExitPos.Text = "0";
+            this.buttonExitPos.UseVisualStyleBackColor = true;
+            this.buttonExitPos.Click += new System.EventHandler(this.buttonExitPos_Click);
             // 
             // tabPage2
             // 
@@ -2226,11 +2200,11 @@
             // 
             this.groupBoxStopOrd.BackColor = System.Drawing.Color.WhiteSmoke;
             this.groupBoxStopOrd.Controls.Add(this.tableLayoutPanel6);
-            this.groupBoxStopOrd.Dock = System.Windows.Forms.DockStyle.Top;
+            this.groupBoxStopOrd.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxStopOrd.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.groupBoxStopOrd.Location = new System.Drawing.Point(0, 0);
             this.groupBoxStopOrd.Name = "groupBoxStopOrd";
-            this.groupBoxStopOrd.Size = new System.Drawing.Size(280, 558);
+            this.groupBoxStopOrd.Size = new System.Drawing.Size(280, 750);
             this.groupBoxStopOrd.TabIndex = 0;
             this.groupBoxStopOrd.TabStop = false;
             this.groupBoxStopOrd.Text = "Загрузка котировок";
@@ -2239,148 +2213,38 @@
             // 
             this.tableLayoutPanel6.ColumnCount = 2;
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel6.Controls.Add(this.groupBox1, 0, 3);
-            this.tableLayoutPanel6.Controls.Add(this.buttonRecalculVol, 0, 5);
-            this.tableLayoutPanel6.Controls.Add(this.groupBox2, 0, 4);
+            this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel6.Controls.Add(this.groupBoxLoadFromFiles, 0, 4);
             this.tableLayoutPanel6.Controls.Add(this.tableLayoutPanel11, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.groupBox1, 0, 1);
+            this.tableLayoutPanel6.Controls.Add(this.groupBoxHistoryTrade, 0, 2);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
             this.tableLayoutPanel6.RowCount = 7;
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 27F));
-            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 96F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 49F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 47F));
+            this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(274, 539);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(274, 731);
             this.tableLayoutPanel6.TabIndex = 0;
             // 
-            // groupBox1
+            // groupBoxLoadFromFiles
             // 
-            this.groupBox1.Controls.Add(this.tableLayoutPanel8);
-            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(1, 75);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(1);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(252, 94);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Удаление сделок за период";
-            // 
-            // tableLayoutPanel8
-            // 
-            this.tableLayoutPanel8.ColumnCount = 2;
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Controls.Add(this.buttonClearAllCandle, 0, 2);
-            this.tableLayoutPanel8.Controls.Add(this.dateTimePickerClearChartsEnd, 0, 1);
-            this.tableLayoutPanel8.Controls.Add(this.dateTimePickerClearChartsStart, 0, 0);
-            this.tableLayoutPanel8.Controls.Add(this.buttonClearCandle, 1, 2);
-            this.tableLayoutPanel8.Controls.Add(this.labelClearStart, 1, 0);
-            this.tableLayoutPanel8.Controls.Add(this.labelClearEnd, 1, 1);
-            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 16);
-            this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
-            this.tableLayoutPanel8.RowCount = 3;
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(246, 75);
-            this.tableLayoutPanel8.TabIndex = 2;
-            // 
-            // buttonClearAllCandle
-            // 
-            this.buttonClearAllCandle.Location = new System.Drawing.Point(1, 45);
-            this.buttonClearAllCandle.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonClearAllCandle.Name = "buttonClearAllCandle";
-            this.buttonClearAllCandle.Size = new System.Drawing.Size(90, 20);
-            this.buttonClearAllCandle.TabIndex = 9;
-            this.buttonClearAllCandle.Text = "Очистить все";
-            this.buttonClearAllCandle.UseVisualStyleBackColor = true;
-            this.buttonClearAllCandle.Click += new System.EventHandler(this.buttonClearAllCandle_Click);
-            // 
-            // dateTimePickerClearChartsEnd
-            // 
-            this.dateTimePickerClearChartsEnd.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePickerClearChartsEnd.Location = new System.Drawing.Point(1, 23);
-            this.dateTimePickerClearChartsEnd.Margin = new System.Windows.Forms.Padding(1);
-            this.dateTimePickerClearChartsEnd.Name = "dateTimePickerClearChartsEnd";
-            this.dateTimePickerClearChartsEnd.Size = new System.Drawing.Size(121, 20);
-            this.dateTimePickerClearChartsEnd.TabIndex = 2;
-            // 
-            // dateTimePickerClearChartsStart
-            // 
-            this.dateTimePickerClearChartsStart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dateTimePickerClearChartsStart.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-            this.dateTimePickerClearChartsStart.Location = new System.Drawing.Point(1, 1);
-            this.dateTimePickerClearChartsStart.Margin = new System.Windows.Forms.Padding(1);
-            this.dateTimePickerClearChartsStart.Name = "dateTimePickerClearChartsStart";
-            this.dateTimePickerClearChartsStart.Size = new System.Drawing.Size(121, 20);
-            this.dateTimePickerClearChartsStart.TabIndex = 0;
-            // 
-            // buttonClearCandle
-            // 
-            this.buttonClearCandle.Location = new System.Drawing.Point(124, 45);
-            this.buttonClearCandle.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonClearCandle.Name = "buttonClearCandle";
-            this.buttonClearCandle.Size = new System.Drawing.Size(121, 20);
-            this.buttonClearCandle.TabIndex = 1;
-            this.buttonClearCandle.Text = "Очистить";
-            this.buttonClearCandle.UseVisualStyleBackColor = true;
-            // 
-            // labelClearStart
-            // 
-            this.labelClearStart.AutoSize = true;
-            this.labelClearStart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelClearStart.Location = new System.Drawing.Point(124, 1);
-            this.labelClearStart.Margin = new System.Windows.Forms.Padding(1);
-            this.labelClearStart.Name = "labelClearStart";
-            this.labelClearStart.Size = new System.Drawing.Size(121, 20);
-            this.labelClearStart.TabIndex = 7;
-            this.labelClearStart.Text = "0";
-            this.labelClearStart.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelClearEnd
-            // 
-            this.labelClearEnd.AutoSize = true;
-            this.labelClearEnd.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelClearEnd.Location = new System.Drawing.Point(124, 23);
-            this.labelClearEnd.Margin = new System.Windows.Forms.Padding(1);
-            this.labelClearEnd.Name = "labelClearEnd";
-            this.labelClearEnd.Size = new System.Drawing.Size(121, 20);
-            this.labelClearEnd.TabIndex = 8;
-            this.labelClearEnd.Text = "0";
-            this.labelClearEnd.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // buttonRecalculVol
-            // 
-            this.buttonRecalculVol.Location = new System.Drawing.Point(1, 510);
-            this.buttonRecalculVol.Margin = new System.Windows.Forms.Padding(1);
-            this.buttonRecalculVol.Name = "buttonRecalculVol";
-            this.buttonRecalculVol.Size = new System.Drawing.Size(252, 19);
-            this.buttonRecalculVol.TabIndex = 4;
-            this.buttonRecalculVol.Text = "Пересчитать обьемы";
-            this.buttonRecalculVol.UseVisualStyleBackColor = true;
-            this.buttonRecalculVol.Click += new System.EventHandler(this.buttonRecalculVol_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.tableLayoutPanel14);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(1, 171);
-            this.groupBox2.Margin = new System.Windows.Forms.Padding(1);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(252, 337);
-            this.groupBox2.TabIndex = 8;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Загрузка сделок из файлов";
+            this.groupBoxLoadFromFiles.Controls.Add(this.tableLayoutPanel14);
+            this.groupBoxLoadFromFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBoxLoadFromFiles.Location = new System.Drawing.Point(1, 180);
+            this.groupBoxLoadFromFiles.Margin = new System.Windows.Forms.Padding(1);
+            this.groupBoxLoadFromFiles.Name = "groupBoxLoadFromFiles";
+            this.groupBoxLoadFromFiles.Size = new System.Drawing.Size(262, 520);
+            this.groupBoxLoadFromFiles.TabIndex = 8;
+            this.groupBoxLoadFromFiles.TabStop = false;
+            this.groupBoxLoadFromFiles.Text = "Загрузка сделок из файла";
             // 
             // tableLayoutPanel14
             // 
@@ -2388,6 +2252,7 @@
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel14.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel14.Controls.Add(this.buttonLoadTicks, 0, 0);
+            this.tableLayoutPanel14.Controls.Add(this.buttonStopLoadHistory, 1, 0);
             this.tableLayoutPanel14.Controls.Add(this.tableLayoutPanel13, 0, 1);
             this.tableLayoutPanel14.Controls.Add(this.tableLayoutPanel12, 0, 2);
             this.tableLayoutPanel14.Controls.Add(this.labelStatusLoad, 0, 3);
@@ -2399,23 +2264,33 @@
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 213F));
-            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 18F));
+            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 431F));
+            this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.tableLayoutPanel14.Size = new System.Drawing.Size(246, 318);
+            this.tableLayoutPanel14.Size = new System.Drawing.Size(256, 501);
             this.tableLayoutPanel14.TabIndex = 2;
             // 
             // buttonLoadTicks
             // 
-            this.tableLayoutPanel14.SetColumnSpan(this.buttonLoadTicks, 2);
             this.buttonLoadTicks.Location = new System.Drawing.Point(1, 1);
             this.buttonLoadTicks.Margin = new System.Windows.Forms.Padding(1);
             this.buttonLoadTicks.Name = "buttonLoadTicks";
-            this.buttonLoadTicks.Size = new System.Drawing.Size(244, 20);
+            this.buttonLoadTicks.Size = new System.Drawing.Size(126, 20);
             this.buttonLoadTicks.TabIndex = 1;
-            this.buttonLoadTicks.Text = " Загрузить сделки из файла";
+            this.buttonLoadTicks.Text = "Обзор";
             this.buttonLoadTicks.UseVisualStyleBackColor = true;
             this.buttonLoadTicks.Click += new System.EventHandler(this.buttonLoadTicks_Click);
+            // 
+            // buttonStopLoadHistory
+            // 
+            this.buttonStopLoadHistory.Location = new System.Drawing.Point(129, 1);
+            this.buttonStopLoadHistory.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonStopLoadHistory.Name = "buttonStopLoadHistory";
+            this.buttonStopLoadHistory.Size = new System.Drawing.Size(126, 20);
+            this.buttonStopLoadHistory.TabIndex = 4;
+            this.buttonStopLoadHistory.Text = "Остановить загрузку";
+            this.buttonStopLoadHistory.UseVisualStyleBackColor = true;
+            this.buttonStopLoadHistory.Click += new System.EventHandler(this.buttonStopLoadHistory_Click);
             // 
             // tableLayoutPanel13
             // 
@@ -2424,9 +2299,7 @@
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel13.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel13.Controls.Add(this.comboBoxLoadOper, 1, 0);
-            this.tableLayoutPanel13.Controls.Add(this.comboBoxLoadField, 0, 0);
-            this.tableLayoutPanel13.Controls.Add(this.textBoxLoadValue, 2, 0);
+            this.tableLayoutPanel13.Controls.Add(this.checkBoxDivVolumeLot, 0, 0);
             this.tableLayoutPanel13.Location = new System.Drawing.Point(0, 22);
             this.tableLayoutPanel13.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel13.Name = "tableLayoutPanel13";
@@ -2435,48 +2308,30 @@
             this.tableLayoutPanel13.Size = new System.Drawing.Size(246, 22);
             this.tableLayoutPanel13.TabIndex = 7;
             // 
-            // comboBoxLoadOper
+            // checkBoxDivVolumeLot
             // 
-            this.comboBoxLoadOper.Dock = System.Windows.Forms.DockStyle.Left;
-            this.comboBoxLoadOper.FormattingEnabled = true;
-            this.comboBoxLoadOper.Location = new System.Drawing.Point(82, 0);
-            this.comboBoxLoadOper.Margin = new System.Windows.Forms.Padding(0);
-            this.comboBoxLoadOper.Name = "comboBoxLoadOper";
-            this.comboBoxLoadOper.Size = new System.Drawing.Size(62, 21);
-            this.comboBoxLoadOper.TabIndex = 1;
-            // 
-            // comboBoxLoadField
-            // 
-            this.comboBoxLoadField.Dock = System.Windows.Forms.DockStyle.Left;
-            this.comboBoxLoadField.FormattingEnabled = true;
-            this.comboBoxLoadField.Location = new System.Drawing.Point(0, 0);
-            this.comboBoxLoadField.Margin = new System.Windows.Forms.Padding(0);
-            this.comboBoxLoadField.Name = "comboBoxLoadField";
-            this.comboBoxLoadField.Size = new System.Drawing.Size(68, 21);
-            this.comboBoxLoadField.TabIndex = 0;
-            // 
-            // textBoxLoadValue
-            // 
-            this.textBoxLoadValue.Dock = System.Windows.Forms.DockStyle.Left;
-            this.textBoxLoadValue.Location = new System.Drawing.Point(164, 0);
-            this.textBoxLoadValue.Margin = new System.Windows.Forms.Padding(0);
-            this.textBoxLoadValue.Name = "textBoxLoadValue";
-            this.textBoxLoadValue.Size = new System.Drawing.Size(81, 20);
-            this.textBoxLoadValue.TabIndex = 2;
+            this.checkBoxDivVolumeLot.AutoSize = true;
+            this.tableLayoutPanel13.SetColumnSpan(this.checkBoxDivVolumeLot, 2);
+            this.checkBoxDivVolumeLot.Location = new System.Drawing.Point(3, 3);
+            this.checkBoxDivVolumeLot.Name = "checkBoxDivVolumeLot";
+            this.checkBoxDivVolumeLot.Size = new System.Drawing.Size(142, 16);
+            this.checkBoxDivVolumeLot.TabIndex = 0;
+            this.checkBoxDivVolumeLot.Text = "Делить обьем на лоты";
+            this.checkBoxDivVolumeLot.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel12
             // 
             this.tableLayoutPanel12.ColumnCount = 2;
             this.tableLayoutPanel14.SetColumnSpan(this.tableLayoutPanel12, 2);
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 37.40157F));
-            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 62.59843F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 45F));
+            this.tableLayoutPanel12.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel12.Controls.Add(this.label17, 0, 0);
+            this.tableLayoutPanel12.Controls.Add(this.progressBalLoadHistory, 1, 0);
             this.tableLayoutPanel12.Location = new System.Drawing.Point(0, 44);
             this.tableLayoutPanel12.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel12.Name = "tableLayoutPanel12";
             this.tableLayoutPanel12.RowCount = 1;
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel12.Size = new System.Drawing.Size(246, 20);
             this.tableLayoutPanel12.TabIndex = 6;
             // 
@@ -2487,10 +2342,17 @@
             this.label17.Location = new System.Drawing.Point(1, 1);
             this.label17.Margin = new System.Windows.Forms.Padding(1);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(90, 18);
+            this.label17.Size = new System.Drawing.Size(43, 18);
             this.label17.TabIndex = 6;
             this.label17.Text = "Status:";
             this.label17.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // progressBalLoadHistory
+            // 
+            this.progressBalLoadHistory.Location = new System.Drawing.Point(48, 3);
+            this.progressBalLoadHistory.Name = "progressBalLoadHistory";
+            this.progressBalLoadHistory.Size = new System.Drawing.Size(195, 14);
+            this.progressBalLoadHistory.TabIndex = 7;
             // 
             // labelStatusLoad
             // 
@@ -2500,7 +2362,7 @@
             this.labelStatusLoad.Location = new System.Drawing.Point(1, 67);
             this.labelStatusLoad.Margin = new System.Windows.Forms.Padding(1);
             this.labelStatusLoad.Name = "labelStatusLoad";
-            this.labelStatusLoad.Size = new System.Drawing.Size(244, 211);
+            this.labelStatusLoad.Size = new System.Drawing.Size(254, 429);
             this.labelStatusLoad.TabIndex = 5;
             this.labelStatusLoad.Text = "0";
             // 
@@ -2518,12 +2380,12 @@
             this.tableLayoutPanel11.RowCount = 1;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 22F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(254, 22);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(264, 22);
             this.tableLayoutPanel11.TabIndex = 9;
             // 
             // buttonLoadSec
             // 
-            this.buttonLoadSec.Location = new System.Drawing.Point(127, 0);
+            this.buttonLoadSec.Location = new System.Drawing.Point(132, 0);
             this.buttonLoadSec.Margin = new System.Windows.Forms.Padding(0);
             this.buttonLoadSec.Name = "buttonLoadSec";
             this.buttonLoadSec.Size = new System.Drawing.Size(127, 22);
@@ -2542,6 +2404,132 @@
             this.buttonSaveSec.Text = "Save";
             this.buttonSaveSec.UseVisualStyleBackColor = true;
             this.buttonSaveSec.Click += new System.EventHandler(this.buttonSaveSec_Click);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.tableLayoutPanel8);
+            this.groupBox1.Location = new System.Drawing.Point(1, 23);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(1);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(252, 47);
+            this.groupBox1.TabIndex = 3;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Удаление сделок за период";
+            // 
+            // tableLayoutPanel8
+            // 
+            this.tableLayoutPanel8.ColumnCount = 3;
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel8.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tableLayoutPanel8.Controls.Add(this.dateTimePickerClearChartsStart, 0, 0);
+            this.tableLayoutPanel8.Controls.Add(this.dateTimePickerClearChartsEnd, 1, 0);
+            this.tableLayoutPanel8.Controls.Add(this.buttonClearCandle, 2, 0);
+            this.tableLayoutPanel8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel8.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel8.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel8.Name = "tableLayoutPanel8";
+            this.tableLayoutPanel8.RowCount = 1;
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(246, 28);
+            this.tableLayoutPanel8.TabIndex = 2;
+            // 
+            // dateTimePickerClearChartsStart
+            // 
+            this.dateTimePickerClearChartsStart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dateTimePickerClearChartsStart.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerClearChartsStart.Location = new System.Drawing.Point(1, 1);
+            this.dateTimePickerClearChartsStart.Margin = new System.Windows.Forms.Padding(1);
+            this.dateTimePickerClearChartsStart.Name = "dateTimePickerClearChartsStart";
+            this.dateTimePickerClearChartsStart.Size = new System.Drawing.Size(91, 20);
+            this.dateTimePickerClearChartsStart.TabIndex = 0;
+            // 
+            // dateTimePickerClearChartsEnd
+            // 
+            this.dateTimePickerClearChartsEnd.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePickerClearChartsEnd.Location = new System.Drawing.Point(94, 1);
+            this.dateTimePickerClearChartsEnd.Margin = new System.Windows.Forms.Padding(1);
+            this.dateTimePickerClearChartsEnd.Name = "dateTimePickerClearChartsEnd";
+            this.dateTimePickerClearChartsEnd.Size = new System.Drawing.Size(91, 20);
+            this.dateTimePickerClearChartsEnd.TabIndex = 2;
+            // 
+            // buttonClearCandle
+            // 
+            this.buttonClearCandle.Location = new System.Drawing.Point(187, 1);
+            this.buttonClearCandle.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonClearCandle.Name = "buttonClearCandle";
+            this.buttonClearCandle.Size = new System.Drawing.Size(58, 23);
+            this.buttonClearCandle.TabIndex = 1;
+            this.buttonClearCandle.Text = "Удалить";
+            this.buttonClearCandle.UseVisualStyleBackColor = true;
+            // 
+            // groupBoxHistoryTrade
+            // 
+            this.groupBoxHistoryTrade.Controls.Add(this.tableLayoutPanel24);
+            this.groupBoxHistoryTrade.Location = new System.Drawing.Point(1, 72);
+            this.groupBoxHistoryTrade.Margin = new System.Windows.Forms.Padding(1);
+            this.groupBoxHistoryTrade.Name = "groupBoxHistoryTrade";
+            this.groupBoxHistoryTrade.Size = new System.Drawing.Size(262, 45);
+            this.groupBoxHistoryTrade.TabIndex = 11;
+            this.groupBoxHistoryTrade.TabStop = false;
+            this.groupBoxHistoryTrade.Text = "Сделки из терминала";
+            // 
+            // tableLayoutPanel24
+            // 
+            this.tableLayoutPanel24.ColumnCount = 2;
+            this.tableLayoutPanel24.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 34.375F));
+            this.tableLayoutPanel24.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 65.625F));
+            this.tableLayoutPanel24.Controls.Add(this.buttonGetPortionHistoryTrades, 1, 0);
+            this.tableLayoutPanel24.Controls.Add(this.numericUpDownHistoryTradesSlice, 0, 0);
+            this.tableLayoutPanel24.Dock = System.Windows.Forms.DockStyle.Top;
+            this.tableLayoutPanel24.Location = new System.Drawing.Point(3, 16);
+            this.tableLayoutPanel24.Margin = new System.Windows.Forms.Padding(1);
+            this.tableLayoutPanel24.Name = "tableLayoutPanel24";
+            this.tableLayoutPanel24.RowCount = 1;
+            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.tableLayoutPanel24.Size = new System.Drawing.Size(256, 23);
+            this.tableLayoutPanel24.TabIndex = 10;
+            // 
+            // buttonGetPortionHistoryTrades
+            // 
+            this.buttonGetPortionHistoryTrades.Location = new System.Drawing.Point(89, 1);
+            this.buttonGetPortionHistoryTrades.Margin = new System.Windows.Forms.Padding(1);
+            this.buttonGetPortionHistoryTrades.Name = "buttonGetPortionHistoryTrades";
+            this.buttonGetPortionHistoryTrades.Size = new System.Drawing.Size(166, 21);
+            this.buttonGetPortionHistoryTrades.TabIndex = 1;
+            this.buttonGetPortionHistoryTrades.Text = "Загрузить историю";
+            this.buttonGetPortionHistoryTrades.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownHistoryTradesSlice
+            // 
+            this.numericUpDownHistoryTradesSlice.Increment = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDownHistoryTradesSlice.Location = new System.Drawing.Point(1, 1);
+            this.numericUpDownHistoryTradesSlice.Margin = new System.Windows.Forms.Padding(1);
+            this.numericUpDownHistoryTradesSlice.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numericUpDownHistoryTradesSlice.Minimum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            this.numericUpDownHistoryTradesSlice.Name = "numericUpDownHistoryTradesSlice";
+            this.numericUpDownHistoryTradesSlice.Size = new System.Drawing.Size(86, 20);
+            this.numericUpDownHistoryTradesSlice.TabIndex = 2;
+            this.numericUpDownHistoryTradesSlice.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
             // 
             // tabPageSettings
             // 
@@ -2574,9 +2562,9 @@
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 87F));
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
-            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 83F));
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 138F));
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel15.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 9F));
             this.tableLayoutPanel15.Size = new System.Drawing.Size(280, 750);
@@ -2648,10 +2636,10 @@
             this.tableLayoutPanel15.SetColumnSpan(this.groupBox3, 2);
             this.groupBox3.Controls.Add(this.tableLayoutPanel16);
             this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(0, 271);
+            this.groupBox3.Location = new System.Drawing.Point(0, 216);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(0);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(280, 83);
+            this.groupBox3.Size = new System.Drawing.Size(280, 138);
             this.groupBox3.TabIndex = 34;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Горизонтальный обьем";
@@ -2662,6 +2650,8 @@
             this.tableLayoutPanel16.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel16.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel16.Controls.Add(this.checkBoxIndHVEnable, 0, 1);
+            this.tableLayoutPanel16.Controls.Add(this.numericUpDownMinMacsHorVol, 1, 2);
+            this.tableLayoutPanel16.Controls.Add(this.label25, 0, 2);
             this.tableLayoutPanel16.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel16.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel16.Margin = new System.Windows.Forms.Padding(0);
@@ -2670,9 +2660,9 @@
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
+            this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel16.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel16.Size = new System.Drawing.Size(274, 64);
+            this.tableLayoutPanel16.Size = new System.Drawing.Size(274, 119);
             this.tableLayoutPanel16.TabIndex = 0;
             // 
             // checkBoxIndHVEnable
@@ -2685,6 +2675,35 @@
             this.checkBoxIndHVEnable.TabIndex = 32;
             this.checkBoxIndHVEnable.Text = "Показать гор. на каждой свечке";
             this.checkBoxIndHVEnable.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDownMinMacsHorVol
+            // 
+            this.numericUpDownMinMacsHorVol.Location = new System.Drawing.Point(138, 53);
+            this.numericUpDownMinMacsHorVol.Margin = new System.Windows.Forms.Padding(1);
+            this.numericUpDownMinMacsHorVol.Maximum = new decimal(new int[] {
+            1000000000,
+            0,
+            0,
+            0});
+            this.numericUpDownMinMacsHorVol.Name = "numericUpDownMinMacsHorVol";
+            this.numericUpDownMinMacsHorVol.Size = new System.Drawing.Size(101, 20);
+            this.numericUpDownMinMacsHorVol.TabIndex = 33;
+            this.numericUpDownMinMacsHorVol.Value = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+            // 
+            // label25
+            // 
+            this.label25.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label25.Location = new System.Drawing.Point(3, 55);
+            this.label25.Margin = new System.Windows.Forms.Padding(3);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(131, 20);
+            this.label25.TabIndex = 26;
+            this.label25.Text = "Лимиты по дельте";
+            this.label25.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelForecastStop
             // 
@@ -2858,7 +2877,6 @@
             this.ToolStripMenuItemAutoSize.Name = "ToolStripMenuItemAutoSize";
             this.ToolStripMenuItemAutoSize.Size = new System.Drawing.Size(153, 22);
             this.ToolStripMenuItemAutoSize.Text = "Авто масштаб";
-            this.ToolStripMenuItemAutoSize.Click += new System.EventHandler(this.ToolStripMenuItemAutoSize_Click);
             // 
             // toolStripSeparator2
             // 
@@ -3006,7 +3024,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStopPrice)).EndInit();
             this.tableLayoutPanel9.ResumeLayout(false);
             this.tableLayoutPanel9.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownStepDepth)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tableLayoutPanel20.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
@@ -3035,10 +3052,7 @@
             this.tabPageHistory.ResumeLayout(false);
             this.groupBoxStopOrd.ResumeLayout(false);
             this.tableLayoutPanel6.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.tableLayoutPanel8.ResumeLayout(false);
-            this.tableLayoutPanel8.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
+            this.groupBoxLoadFromFiles.ResumeLayout(false);
             this.tableLayoutPanel14.ResumeLayout(false);
             this.tableLayoutPanel14.PerformLayout();
             this.tableLayoutPanel13.ResumeLayout(false);
@@ -3046,6 +3060,11 @@
             this.tableLayoutPanel12.ResumeLayout(false);
             this.tableLayoutPanel12.PerformLayout();
             this.tableLayoutPanel11.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.tableLayoutPanel8.ResumeLayout(false);
+            this.groupBoxHistoryTrade.ResumeLayout(false);
+            this.tableLayoutPanel24.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownHistoryTradesSlice)).EndInit();
             this.tabPageSettings.ResumeLayout(false);
             this.tableLayoutPanel15.ResumeLayout(false);
             this.tableLayoutPanel15.PerformLayout();
@@ -3053,6 +3072,7 @@
             this.groupBox3.ResumeLayout(false);
             this.tableLayoutPanel16.ResumeLayout(false);
             this.tableLayoutPanel16.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMinMacsHorVol)).EndInit();
             this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel4.PerformLayout();
             this.tableLayoutPanel22.ResumeLayout(false);
@@ -3109,10 +3129,6 @@
         private System.Windows.Forms.HScrollBar hScrollGraphic;
         private System.Windows.Forms.PictureBox pictureBoxGraphic;
         private System.Windows.Forms.Label labelPriceStep;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DepthVolume;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DepthSell;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DepthVol;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DepthBuy;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Label label12;
@@ -3152,19 +3168,13 @@
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel10;
 		private System.Windows.Forms.Label labelStopOrders;
 		private System.Windows.Forms.Label label16;
-		private System.Windows.Forms.Button buttonSignals;
-		private System.Windows.Forms.Button buttonRecalculVol;
+		private System.Windows.Forms.Button buttonStopLoadHistory;
 		private System.Windows.Forms.Label labelStatusLoad;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel12;
 		private System.Windows.Forms.Label label17;
 		private System.Windows.Forms.DateTimePicker dateTimePickerClearChartsEnd;
-		private System.Windows.Forms.Label labelClearStart;
-		private System.Windows.Forms.Label labelClearEnd;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel13;
-		private System.Windows.Forms.ComboBox comboBoxLoadField;
-		private System.Windows.Forms.ComboBox comboBoxLoadOper;
-		private System.Windows.Forms.TextBox textBoxLoadValue;
-		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.GroupBox groupBoxLoadFromFiles;
 		private System.Windows.Forms.TableLayoutPanel tableLayoutPanel14;
         private System.Windows.Forms.Label labelForecastStop;
         private System.Windows.Forms.Label label18;
@@ -3211,7 +3221,6 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel11;
         private System.Windows.Forms.Button buttonLoadSec;
         private System.Windows.Forms.Button buttonSaveSec;
-        private System.Windows.Forms.Button buttonClearAllCandle;
         private System.Windows.Forms.CheckBox checkBoxAutoSizePrice;
         private System.Windows.Forms.ToolStripMenuItem toolStripGraphicStopOrder;
         private System.Windows.Forms.ToolStripMenuItem масштабToolStripMenuItem;
@@ -3243,7 +3252,6 @@
         private System.Windows.Forms.RadioButton radioButtonPercentTake30;
         private System.Windows.Forms.Button buttonACPriceUp;
         private System.Windows.Forms.Button buttonACPriceDown;
-        private System.Windows.Forms.NumericUpDown numericUpDownStepDepth;
         private System.Windows.Forms.NumericUpDown numericUpDownTradeVolControl;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ToolStripMenuItem диапазондельтаToolStripMenuItem;
@@ -3276,5 +3284,17 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnSec;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnValue;
         private System.Windows.Forms.DataGridViewTextBoxColumn ColumnCondition;
+        private System.Windows.Forms.ProgressBar progressBalLoadHistory;
+        private System.Windows.Forms.CheckBox checkBoxDivVolumeLot;
+        private System.Windows.Forms.Button buttonGetPortionHistoryTrades;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DepthVolume;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DepthSell;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DepthPrice;
+        private System.Windows.Forms.DataGridViewTextBoxColumn DepthBuy;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel24;
+        private System.Windows.Forms.NumericUpDown numericUpDownHistoryTradesSlice;
+        private System.Windows.Forms.GroupBox groupBoxHistoryTrade;
+        private System.Windows.Forms.NumericUpDown numericUpDownMinMacsHorVol;
+        private System.Windows.Forms.Label label25;
     }
 }

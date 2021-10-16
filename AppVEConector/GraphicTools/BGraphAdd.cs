@@ -3,8 +3,10 @@ using AppVEConector.GraphicTools.Indicators;
 using GraphicTools.Base;
 using GraphicTools.Shapes;
 using Managers;
+using Market.Base;
 using Market.Candles;
 using MarketObjects;
+using MarketObjects.Charts;
 using QuikConnector.MarketObjects;
 using QuikControl;
 using System;
@@ -22,7 +24,7 @@ namespace GraphicTools.Extension
         /// <summary>
         /// Source timeframe
         /// </summary>
-        public object DataSourceTimeFrame = null;
+        public TimeFrame TimeFrame = null;
 
         /// <summary>
         /// Набор индикаторов
@@ -64,6 +66,7 @@ namespace GraphicTools.Extension
         public GHorVol GHorVolumes = null;
         /// <summary> Тип рисования горизонтального объема. </summary>
         protected int TypeHorVolume = 0;
+        protected long limitHorVol = 0;
 
         /// <summary> Уровни заявок </summary>
         protected LevelsOrders LevelsOrders = null;
@@ -78,6 +81,12 @@ namespace GraphicTools.Extension
 
         /// <summary> Добытие достижения лимитов Max Min по цене </summary>
         protected event System.Action<decimal, decimal, decimal> OnReachLimitPrice;
+
+        public delegate void eventCountCandle(int current, int length);
+        /// <summary>
+        /// Событие если график не полностью заполнен свечами
+        /// </summary>
+        public event eventCountCandle OnNotFullGraphic;
 
         /// <summary>
         /// Активные свечи
@@ -372,11 +381,11 @@ namespace GraphicTools.Extension
             {
                 if (Levels.TypeLevel == LevelsFree.TYPE_LEVELS.Vector)
                 {
-                    Levels.CallEventNewLevel(new LevelsFree.DoubleLevel()
-                    {
-                        DateLeft = new DateMarket(ActiveCandles.ActiveCandle2.dataCandle.Candle.Time),
-                        Top = GMath.GetValueFromCoordinate(Candels.Panel.Rect.Height, Candels.Panel.Params.MaxPrice, Candels.Panel.Params.MinPrice, point.Y, Candels.Panel.Params.CountFloat)
-                    });
+                     Levels.CallEventNewLevel(new LevelsFree.DoubleLevel()
+                     {
+                         DateLeft = new DateMarket(ActiveCandles.ActiveCandle2.dataCandle.Candle.Time),
+                         Top = GMath.GetValueFromCoordinate(Candels.Panel.Rect.Height, Candels.Panel.Params.MaxPrice, Candels.Panel.Params.MinPrice, point.Y, Candels.Panel.Params.CountFloat)
+                     });
                 }
                 else if (Levels.TypeLevel == LevelsFree.TYPE_LEVELS.Rectangle)
                 {
@@ -468,13 +477,6 @@ namespace GraphicTools.Extension
                     //Объемы
                     Volumes.CollectionLevels.Insert(index, new Chart() { Volume = candle.Volume });
                     if (Volumes.Max < candle.Volume) Volumes.Max = candle.Volume;
-
-                    //Interest
-                    long deltaInterest = 0;
-                    if (candle.CountInterest > 0)
-                    {
-                        deltaInterest = (long)((candle.InterestBuy - candle.InterestSell) / candle.CountInterest);
-                    }
                 }
 
                 Indicators.ForEach((ind) =>
@@ -524,7 +526,6 @@ namespace GraphicTools.Extension
         /// <param name="graphic">Полотно</param>
         protected void PaintAll()
         {
-            GetCollectionCandles();
             if (!Candels.IssetCollection()) return;
             GetMinMax();
             //Отрисовка свечей в приоритете
@@ -558,19 +559,12 @@ namespace GraphicTools.Extension
             foreach (var dCandle in Candels.AllDataPaintedCandle.ToArray())
             {
                 dCandle.PrevCandleInfo = LastCandle;
-
                 Volumes.PaintByCandle(dCandle);
-
                 GHorVolumes.EachCandle(dCandle);
-
                 Levels.PaintByCandle(dCandle, leftCandle, rightCandle, Candels.AllDataPaintedCandle.Count);
-
                 Indicators.ForEach((ind) =>
                 {
-                    if (ind is Indicator)
-                    {
-                        ((Indicator)ind).EachFullCandle(dCandle);
-                    }
+                    if (ind is Indicator) { ((Indicator)ind).EachFullCandle(dCandle); }
                 });
                 LastCandle = dCandle;
             }
@@ -584,8 +578,6 @@ namespace GraphicTools.Extension
                 ThreadPaintHotVol.Abort();
                 ThreadPaintHotVol = null;
             }
-
-
             if (ThreadPaintHotVol.IsNull())
             {
                 ThreadPaintHotVol = MThread.InitThread(() =>
@@ -604,7 +596,7 @@ namespace GraphicTools.Extension
                     }
                     else if (TypeHorVolume == 5)
                     {
-                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, true);
+                        GHorVolumes.PaintHorVolByPeriodCandleDelta(false, true, limitHorVol);
                     }
                     else if (TypeHorVolume == 4)
                     {
@@ -613,7 +605,6 @@ namespace GraphicTools.Extension
                     ThreadPaintHotVol = null;
                 });
             }
-
             ToCanvas();
         }
 
@@ -687,17 +678,25 @@ namespace GraphicTools.Extension
         /// <summary>
         /// Получает коолекцию свечек для отрисовки
         /// </summary>
-        private void GetCollectionCandles()
+        protected void GetCollectionCandles()
         {
-            if (DataSourceTimeFrame is CandleCollection)
+            if (TimeFrame.NotIsNull())
             {
-                var tFrame = (CandleCollection)DataSourceTimeFrame;
-                if (tFrame.Count > 0)
+                if (TimeFrame.Candles.Count > 0)
                 {
-                    Candels.CurrentTimeFrame = tFrame.TimeFrame;
-                    Candels.CollectionCandle = tFrame.CollectionArray.Skip(IndexFirstCandle);
+                    GHorVolumes.CurrTimeFrame = TimeFrame;
+                    Candels.CurrentTimeFrame = TimeFrame.Period;
+                    Candels.CollectionCandle = TimeFrame.Candles.Collection.Skip(IndexFirstCandle);
                     Candels.CountPaintCandle = CountVisibleCandles;
                     Candels.Count = Candels.CollectionCandle.Count();
+                    //Событие если график заполне не полностью
+                    if (Candels.Count < CountVisibleCandles)
+                    {
+                        if (OnNotFullGraphic.NotIsNull())
+                        {
+                            OnNotFullGraphic(Candels.Count, CountVisibleCandles);
+                        }
+                    }
                 }
             }
         }

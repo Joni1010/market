@@ -1,9 +1,9 @@
 ﻿
 using AppVEConector.libs.Signal;
+using Market.AppTools;
 using System.Collections.Generic;
 
 using System.Windows.Forms;
-using TradingLib;
 
 namespace AppVEConector
 {

@@ -12,7 +12,7 @@ using System.Threading;
 namespace Market.Candles
 {
     /// <summary>  Класс коллекции данных по свечекам, за определнный тайм-фрейм. </summary>
-    public class CandleCollection
+    public class CandleCollection11
     {
         [Serializable]
         private class KeepCollection
@@ -32,10 +32,6 @@ namespace Market.Candles
         public event EventCandle OnNewCandle;
         /// <summary> Событие появления новой исторической свечи </summary>
         public event EventCandle OnNewOldCandle;
-        /// <summary>
-        /// Период из кол-ва свечей после которого, очищать сделки в свечи.
-        /// </summary>
-        const int PERIOD_AFTER_CLEAR_TRADE = 300;
 
         /// <summary>
         /// Возвращает коллекцию
@@ -62,7 +58,7 @@ namespace Market.Candles
         //public bool WasReadHistory = false;
 
         /// <summary> Флаг определяющий контроль за сделками, для избежания дубликатов </summary>
-        public bool ControlTrades = false;
+        //public bool ControlTrades = false;
 
         /// <summary> Запись коллекции в сериализованном виде. </summary>
         /// <param name="filename"></param>
@@ -110,10 +106,11 @@ namespace Market.Candles
 				}*/
             }, filename, () => { return; });
         }
+        
 
         /// <summary> Конструктор </summary>
         /// <param name="timeFrame">Кол-во минут</param>
-        public CandleCollection(int timeFrame)
+        public CandleCollection11(int timeFrame)
         {
             this.TimeFrame = timeFrame;
         }
@@ -206,7 +203,7 @@ namespace Market.Candles
         /// <summary> Получает i-элемент с конца</summary>
         /// <param name="i"></param>
         /// <returns></returns>
-        public CandleData GetElementFromEnd(int i)
+        /*public CandleData GetElementFromEnd(int i)
         {
             lock (syncLock)
             {
@@ -217,7 +214,7 @@ namespace Market.Candles
                 }
                 return this.Collection.Count > 0 ? this.Collection.ElementAt(i) : null;
             }
-        }
+        }*/
 
         //**************************************************************
 
@@ -264,14 +261,14 @@ namespace Market.Candles
             if (candle.IsNull()) return false;
             lock (syncLock)
             {
-                candle.ClearKeepTrades();
+                //candle.ClearKeepTrades();
                 var res = this.Collection.Remove(candle);
                 this.TimeLastUpdateCollection = DateTime.Now;
                 return res;
             }
         }
 
-        private CandleData lastExistsCandle = null;
+        /*private CandleData lastExistsCandle = null;
         /// <summary> Проверка наличия данной сделки в тайм фрейме. </summary>
         /// <param name="trade"></param>
         /// <returns></returns>
@@ -298,15 +295,16 @@ namespace Market.Candles
                 }
                 return res;
             }
-        }
+        }*/
         /// <summary>
         /// Очистка хранимых сделок. (от дубликатов)
         /// </summary>
         /// <param name="candle"></param>
-        public void ClearHistoryTrade(CandleData candle)
+        /*public void ClearHistoryTrade(CandleData candle)
         {
             lock (syncLock)
             {
+                
                 var candlesClear = this.Collection.Skip(PERIOD_AFTER_CLEAR_TRADE).Where(c => c.CountKeepTrades > 0 && c._lastUpdate < DateTime.Now.AddDays(-2));
                 if (candlesClear.NotIsNull())
                 {
@@ -315,8 +313,9 @@ namespace Market.Candles
                         c.ClearKeepTrades();
                     }
                 }
+                
             }
-        }
+        }*/
 
         private CandleData LastFindCandle = null;
         /// <summary> Добавить новую сделку в свечку с соответствущим временем. </summary>
@@ -326,7 +325,6 @@ namespace Market.Candles
         {
             if (trade.IsNull()) return false;
             DateTime time = CandleData.GetTimeCandle(trade.DateTrade.GetDateTime(), this.TimeFrame);
-
             if (this.Count > 0)
             {
                 lock (syncLock)
@@ -335,7 +333,7 @@ namespace Market.Candles
                     {
                         if (LastFindCandle.Time == time)
                         {
-                            LastFindCandle.NewTrade(trade, this.ControlTrades);
+                            LastFindCandle.NewTrade(trade);
                             TimeLastUpdateCollection = DateTime.Now;
                             return true;
                         }
@@ -343,7 +341,7 @@ namespace Market.Candles
                     LastFindCandle = this.Collection.FirstOrDefault(c => c.Time == time);
                     if (LastFindCandle.NotIsNull())
                     {
-                        LastFindCandle.NewTrade(trade, this.ControlTrades);
+                        LastFindCandle.NewTrade(trade);
                         TimeLastUpdateCollection = DateTime.Now;
                         return true;
                     }
@@ -352,7 +350,7 @@ namespace Market.Candles
                         //свеча отсутствует
                         this.AddNewCandle(time);
                         LastFindCandle = this.FirstCandle;
-                        LastFindCandle.NewTrade(trade, this.ControlTrades);
+                        LastFindCandle.NewTrade(trade);
 
                         //Сортируем по времени
                         this.ObjCollection.Collection = this.Collection.OrderByDescending(c => c.Time).ToList();
@@ -376,7 +374,7 @@ namespace Market.Candles
                 {
                     //Добавляем первую свечку в коллекцию
                     this.AddNewCandle(time);
-                    this.FirstCandle.NewTrade(trade, this.ControlTrades);
+                    this.FirstCandle.NewTrade(trade);
 
                     if (!OnNewCandle.IsNull() && !history)
                         OnNewCandle(this.TimeFrame, this.FirstCandle);

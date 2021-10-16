@@ -42,7 +42,7 @@ namespace AppVEConector
 
         Thread threadStrategy = null;
         bool showLog = false;
-        private void EventStartegy()
+        private void EventStrategy()
         {
             if (checkBoxFGActivate.Checked)
             {
@@ -79,13 +79,13 @@ namespace AppVEConector
                                         var now = DateTime.Now;
                                         if (strategy.TimeLastAction < now.AddSeconds(strategy.StepTime * -1))
                                         {
-                                            var tf = elem.CollectionTimeFrames.FirstOrDefault(t => t.TimeFrame == strategy.TimeFrame);
+                                            var tf = elem.StorageTF.GetTimeFrame(strategy.TimeFrame);
                                             strategy.Security = elem.Security;
                                             strategy.BeforeAction(() =>
                                             {
 
                                             });
-                                            var log = strategy.ActionCollection(tf.CollectionArray.ToArray());
+                                            var log = strategy.ActionCollection(tf.Candles.Collection);
                                             strategy.TimeLastAction = now;
                                             if (!log.Empty())
                                             {
@@ -103,7 +103,7 @@ namespace AppVEConector
                     if (showLog)
                     {
                         showLog = false;
-                        Form_MessageSignal.Show(this.FastGapLog);
+                        Form_MessageSignal.Show(this.FastGapLog, null);
                         textBoxFGLog.Text = this.FastGapLog;
                     }
                 }

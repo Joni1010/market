@@ -22,6 +22,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -31,6 +32,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="QuikConnector">
@@ -54,10 +56,25 @@
     <Compile Include="AutoStopLoss.cs" />
     <Compile Include="AutoOrders.cs" />
     <Compile Include="Extension.cs" />
-    <Compile Include="Forms\Form_SettingsStop.cs">
+    <Compile Include="Forms\Form_Arbitration.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form_SettingsStop.Designer.cs">
+    <Compile Include="Forms\Form_Arbitration.Designer.cs">
+      <DependentUpon>Form_Arbitration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StopOrders\ControlForFormStopOrders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StopOrders\Form_CommonSettingsStopOrders.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StopOrders\Form_CommonSettingsStopOrders.Designer.cs">
+      <DependentUpon>Form_CommonSettingsStopOrders.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\StopOrders\Form_SettingsStop.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\StopOrders\Form_SettingsStop.Designer.cs">
       <DependentUpon>Form_SettingsStop.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_CopySecurity.cs">
@@ -76,6 +93,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_GraphicDepth_3.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_GraphicDepth_Settings.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_GraphicDepth_Signals.cs">
@@ -110,6 +130,7 @@
     <Compile Include="libs\BaseInfoMarket.cs" />
     <Compile Include="libs\Kliring.cs" />
     <Compile Include="libs\Signal\SignalView.cs" />
+    <Compile Include="libs\VarSynch.cs" />
     <Compile Include="MainForm_AutoStopLoss.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,6 +140,10 @@
     <Compile Include="MainForm_AutoOrders.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Market\Base\BaseBlock.cs" />
+    <Compile Include="Market\Base\BlockTime.cs" />
+    <Compile Include="Market\Base\ElementTF.cs" />
+    <Compile Include="Market\Candles\Candle.cs" />
     <Compile Include="Market\Candles\CandleData.cs" />
     <Compile Include="Market\Candles\CandleDataCollection.cs" />
     <Compile Include="Customs.cs" />
@@ -143,10 +168,10 @@
     <Compile Include="Form_GraphicDepth_1.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form_LightOrders.cs">
+    <Compile Include="Forms\StopOrders\Form_LightOrders.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Form_LightOrders.Designer.cs">
+    <Compile Include="Forms\StopOrders\Form_LightOrders.Designer.cs">
       <DependentUpon>Form_LightOrders.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_ManyGraphics.cs">
@@ -180,6 +205,11 @@
     <Compile Include="GraphicTools\Extension\GRightValue.cs" />
     <Compile Include="GraphicTools\Extension\GTimeFrame.cs" />
     <Compile Include="GraphicTools\Extension\GVerLevel.cs" />
+    <Compile Include="Market\Candles\CandlesBlock.cs" />
+    <Compile Include="Market\Candles\StorageTimeFrames.cs" />
+    <Compile Include="Market\Base\TimeFrame.cs" />
+    <Compile Include="Market\Candles\CandlesTF.cs" />
+    <Compile Include="Market\Volumes\HVolumeBlock.cs" />
     <Compile Include="Market\Volumes\HVolumes.cs" />
     <Compile Include="LevelTools.cs" />
     <Compile Include="libs\Define.cs" />
@@ -206,20 +236,30 @@
     </Compile>
     <Compile Include="MarketParam.cs" />
     <Compile Include="libs\Proceses\MProcess.cs" />
+    <Compile Include="Market\Volumes\HVolumesTF.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="SettingsFormSec.cs" />
+    <Compile Include="libs\Settings.cs" />
+    <Compile Include="settings\SettingsLightOrders.cs" />
     <Compile Include="Strategy\FastGap.cs" />
     <Compile Include="Strategy\Strategy.cs" />
+    <Compile Include="Market\AppTools\TCollection.cs" />
     <Compile Include="TradeController.cs" />
-    <Compile Include="TradeVolume.cs" />
-    <Compile Include="TradingElement.cs" />
+    <Compile Include="Market\Volumes\TradeVolume.cs" />
+    <Compile Include="Market\AppTools\TElement.cs" />
     <Compile Include="Market\Volumes\Volume.cs" />
     <Compile Include="libs\WFile.cs" />
     <EmbeddedResource Include="FormSignalGsm.resx">
       <DependentUpon>FormSignalGsm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form_SettingsStop.resx">
+    <EmbeddedResource Include="Forms\Form_Arbitration.resx">
+      <DependentUpon>Form_Arbitration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StopOrders\Form_CommonSettingsStopOrders.resx">
+      <DependentUpon>Form_CommonSettingsStopOrders.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\StopOrders\Form_SettingsStop.resx">
       <DependentUpon>Form_SettingsStop.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Form_ActivateStopOrders.resx">
@@ -232,7 +272,7 @@
       <DependentUpon>Form_GraphicDepth.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Form_LightOrders.resx">
+    <EmbeddedResource Include="Forms\StopOrders\Form_LightOrders.resx">
       <DependentUpon>Form_LightOrders.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_ManyGraphics.resx">

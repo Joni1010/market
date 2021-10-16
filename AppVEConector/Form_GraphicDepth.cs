@@ -3,7 +3,6 @@ using System.Data;
 using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
-using TradingLib;
 using Libs;
 using System.Collections.Generic;
 
@@ -19,6 +18,8 @@ using GraphicTools.Extension;
 using System.Drawing;
 using GraphicTools.Base;
 using AppVEConector.libs.Signal;
+using Market.AppTools;
+using Market.Base;
 
 namespace AppVEConector
 {
@@ -53,9 +54,10 @@ namespace AppVEConector
         {
             get
             {
-                return Trader.Objects.StopOrders.ToArray().
-                    Where(o => o.Sec == Securities).
-                    OrderBy(o => o.OrderNumber).LastOrDefault();
+                return Trader.Objects.tStopOrders
+                    .SearchAll(o => o.Sec == Securities)
+                    .OrderBy(o => o.OrderNumber)
+                    .LastOrDefault();
             }
         }
 
@@ -78,6 +80,7 @@ namespace AppVEConector
             {
                 this.Close();
             }
+            SettingsDepth = SettingsFormSec.New(TrElement.Security);
         }
 
         private void Form_GraphicDepth_Load(object sender, EventArgs ev)
@@ -103,33 +106,13 @@ namespace AppVEConector
             this.FastUpdater();
 
             ///Событие новой свечи в любом тайм-фрейме
-            this.TrElement.OnNewCandle += (tf, candle) =>
+            TrElement.OnNewCandle += (tf, candle) =>
             {
-                if (this.FormStrategy.NotIsNull())
-                {
-                    this.FormStrategy.ActivateStrategy(tf);
-                }
-                if (this.CurrentTimeFrame.TimeFrame == tf)
+                if (this.CurrentTimeFrame.Period == tf)
                 {
                     this.UpdateGraphic();
                 }
                 GraphicStock.ProcessEventNewCandle(tf, candle);
-            };
-
-            comboBoxTimeFrame.InitDefault();
-            comboBoxTimeFrame.DataSource = SelectorTimeFrame.GetAll();
-            comboBoxTimeFrame.SelectedIndex = SelectorTimeFrame.GetIndex(SettingsDepth.Data.CurrentTimeFrame);
-            comboBoxTimeFrame.SelectedIndexChanged += (s, e) =>
-            {
-                ComboBox sen = (ComboBox)s;
-                if (sen.SelectedItem.NotIsNull() && sen.SelectedItem is SelectorTimeFrame && CurrentTimeFrameValue >= 0)
-                {
-                    var item = (SelectorTimeFrame)sen.SelectedItem;
-                    SettingsDepth.Data.CurrentTimeFrame = item.TimeFrame;
-                    GraphicStock.DataSourceTimeFrame = this.CurrentTimeFrame;
-                    CountCandleInGraphic = SettingsDepth.Data.TimeFrame[CurrentTimeFrameValue].CountVisibleCandle;
-                    UpdateGraphic();
-                }
             };
 
             GraphicStock.OnCandleMove += (p, candle) =>
@@ -162,7 +145,7 @@ namespace AppVEConector
             InitEvents();
 
             numericUpDownMAPeriod.InitWheelDecimal(0, 1000, 1);
-            GraphicStock.Indicators.ForEach((ind) =>
+            /*GraphicStock.Indicators.ForEach((ind) =>
             {
                 if (ind is MovingAverage)
                 {
@@ -171,13 +154,12 @@ namespace AppVEConector
                         numericUpDownMAPeriod.Value = ((MovingAverage)ind).GetPeriod();
                     });
                 }
-            });
+            });*/
 
             checkBoxStrechPrice.AddGroup();
             checkBoxMovePrice.AddGroup();
             checkBoxStrechPrice.Click += new System.EventHandler(this.checkBoxStrechPrice_Click);
             checkBoxMovePrice.CheckedChanged += new System.EventHandler(this.checkBoxMovePrice_CheckedChanged);
-
 
             hScrollGraphic.ValueChanged += (s, e) =>
             {
@@ -191,6 +173,11 @@ namespace AppVEConector
             {
                 GraphicStock.ActiveTrades.MinVolumeShow = (int)numericUpDownTradeVolControl.Value;
             };
+            buttonGetPortionHistoryTrades.Click += (s, e) =>
+            {
+                Trader.GetPortionHistoryTrades((int)numericUpDownHistoryTradesSlice.Value);
+            };
+
             UpdateGraphic();
         }
 
@@ -222,7 +209,7 @@ namespace AppVEConector
             {
                 Qlog.CatchException(() =>
                 {
-                    var listOrders = Trader.Objects.Orders.Where(o => o.IsActive() && o.IsBuy());
+                    var listOrders = Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsBuy());
                     foreach (var ord in listOrders)
                     {
                         Trader.CancelOrder(Securities, ord.OrderNumber);
@@ -244,7 +231,7 @@ namespace AppVEConector
             {
                 Qlog.CatchException(() =>
                 {
-                    var listOrders = Trader.Objects.Orders.Where(o => o.IsActive() && o.IsSell());
+                    var listOrders = Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsSell());
                     foreach (var ord in listOrders)
                     {
                         Trader.CancelOrder(Securities, ord.OrderNumber);
@@ -287,7 +274,7 @@ namespace AppVEConector
                 }
                 if (MouseEvent.Button == MouseButtons.Right)
                 {
-                    var ord = this.Trader.Objects.StopOrders.Where(o => o.Comment.Contains(Define.STOP_LIMIT)
+                    var ord = this.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
                         && o.IsActive() && o.IsBuy());
                     this.Trader.CancelListStopOrders(ord);
                 }
@@ -301,7 +288,7 @@ namespace AppVEConector
                 }
                 if (MouseEvent.Button == MouseButtons.Right)
                 {
-                    var ord = this.Trader.Objects.StopOrders.Where(o => o.Comment.Contains(Define.STOP_LIMIT)
+                    var ord = this.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
                         && o.IsActive() && o.IsSell());
                     this.Trader.CancelListStopOrders(ord);
                 }
@@ -314,7 +301,6 @@ namespace AppVEConector
                     if (ind is IndicatorCTHV)
                     {
                         ((IndicatorCTHV)ind).Enable = checkBoxIndEnableCountTrades.Checked;
-                        UpdateGraphic();
                         break;
                     }
                 }
@@ -339,7 +325,7 @@ namespace AppVEConector
         /// </summary>
         private void DeleteCharts(DateTime dateStart, DateTime dateEnd)
         {
-            this.TrElement.ClearCandles(dateStart, dateEnd);
+            TrElement.ClearCandles(dateStart, dateEnd);
         }
 
         /// <summary>
@@ -362,7 +348,7 @@ namespace AppVEConector
                     Volume = Convert.ToInt32(this.numericUpDownVolume.Value),
                     Direction = OrderDirection.Buy,
                     Comment = Define.STOP_LIMIT,
-                    ClientCode = SettingsDepth.Data.CodeClient,
+                    ClientCode = ClientCode.Value,
                     DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
                 };
                 if (Securities.LastPrice > this.numericUpDownStopPrice.Value)
@@ -387,7 +373,7 @@ namespace AppVEConector
                     Volume = Convert.ToInt32(this.numericUpDownVolume.Value),
                     Direction = OrderDirection.Sell,
                     Comment = Define.STOP_LIMIT,
-                    ClientCode = SettingsDepth.Data.CodeClient,
+                    ClientCode = ClientCode.Value,
                     DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
                 };
                 if (Securities.LastPrice < numericUpDownStopPrice.Value)
@@ -473,7 +459,7 @@ namespace AppVEConector
                         {
                             MThread.InitThread(() =>
                             {
-                                var ords = Trader.Objects.Orders.Where(o => o.Sec == Securities && o.Price == data.Price && o.IsActive());
+                                var ords = Trader.Objects.tOrders.SearchAll(o => o.Sec == Securities && o.Price == data.Price && o.IsActive());
                                 if (ords.NotIsNull())
                                 {
                                     foreach (var ord in ords)
@@ -489,7 +475,6 @@ namespace AppVEConector
         private void Form_GraphicDepth_FormClosed(object sender, FormClosedEventArgs e)
         {
             this.Trader.UnregisterDepth(Securities);
-            SettingsDepth.Close();
         }
 
         private void buttonCancelAll_Click(object sender, EventArgs e)
@@ -504,7 +489,7 @@ namespace AppVEConector
         {
             if (Securities.NotIsNull())
             {
-                var pos = Trader.Objects.Positions.FirstOrDefault(p => p.Sec == Securities);
+                var pos = Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
                 if (pos != null)
                 {
                     if (pos.CurrentVolume != 0)
@@ -591,16 +576,9 @@ namespace AppVEConector
             var result = MessageBox.Show(this, "Закрыть окно " + Securities.Code + "?", "Закрыть окно " + Securities.Code + "?",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
-            if (this.FormStrategy.NotIsNull())
-            {
-                MessageBox.Show("Закройте окно торгуемой стратегии!");
-                e.Cancel = true;
-                return;
-            }
-
             if (result == DialogResult.OK)
             {
-                this.TrElement.SaveCharts();
+                this.TrElement.Save();
                 e.Cancel = false;
             }
             else e.Cancel = true;
@@ -692,12 +670,12 @@ namespace AppVEConector
         /// </summary>
         /// <param name="timeFrame">Тайм-фрейм</param>
         /// <returns></returns>
-        private int GetIndexFirstCandle(CandleCollection timeFrame, int step = 5)
+        private int GetIndexFirstCandle(TimeFrame timeFrame, int step = 5)
         {
             int index = -1;
             hScrollGraphic.GuiAsync(() =>
             {
-                int countCandlesWithStep = (int)(timeFrame.Count / step);
+                int countCandlesWithStep = (int)(timeFrame.Candles.Count / step);
                 if (hScrollGraphic.Maximum != countCandlesWithStep)
                 {
                     var toFirst = false;
@@ -739,8 +717,8 @@ namespace AppVEConector
             this.CountCandleInGraphic -= (int)(this.CountCandleInGraphic / ConstMin) + val;
             if (this.CountCandleInGraphic < ConstMin) this.CountCandleInGraphic = ConstMin;
 
-            SettingsDepth.Data.TimeFrame[CurrentTimeFrameValue].CountVisibleCandle = CountCandleInGraphic;
-            this.UpdateGraphic();
+            SettingsDepth.SetTF(TimeFrameUse.Value, "CountVisibleCandle", CountCandleInGraphic);
+            UpdateGraphic();
         }
 
         private void buttonDec_Click(object sender, EventArgs e)
@@ -755,8 +733,8 @@ namespace AppVEConector
             this.CountCandleInGraphic += (int)(this.CountCandleInGraphic / ConstMin) + val;
             if (this.CountCandleInGraphic > 1500) this.CountCandleInGraphic = 1500;
 
-            SettingsDepth.Data.TimeFrame[CurrentTimeFrameValue].CountVisibleCandle = CountCandleInGraphic;
-            this.UpdateGraphic();
+            SettingsDepth.SetTF(TimeFrameUse.Value, "CountVisibleCandle", CountCandleInGraphic);
+            UpdateGraphic();
         }
 
 
@@ -809,6 +787,8 @@ namespace AppVEConector
             });
         }
 
+        private Thread threadLoadHistory = null;
+
         private void buttonLoadTicks_Click(object sender, EventArgs e)
         {
             OpenFileDialog file = new OpenFileDialog();
@@ -826,64 +806,59 @@ namespace AppVEConector
                     });
                     int CountFiles = file.FileNames.Length;
                     int CountStat = CountFiles;
-                    //  Поле которое необходимо модифицировать 
-                    var fieldModify = comboBoxLoadField.Text;
-                    // Операция модификации
-                    var operationModify = comboBoxLoadOper.Text;
 
-                    Thread threadLoad = null;
-                    MThread.InitThread(() =>
+                    threadLoadHistory = MThread.InitThread(() =>
                     {
-                        foreach (string f in file.FileNames)
+                        Qlog.CatchException(() =>
                         {
-                            if (threadLoad.NotIsNull())
+                            foreach (string filename in file.FileNames)
                             {
-                                threadLoad.Join();
-                            }
-                            WFile wf = new WFile(f);
-                            var arrayAll = wf.ReadAllLines();
-                            threadLoad = MThread.InitThread(() =>
-                            {
-                                int i = 0;
-                                List<Trade> LoadTradeFromFile = new List<Trade>();
+                                WFile wf = new WFile(filename);
+                                var arrayAll = wf.ReadAllLines();
+                                labelStatusLoad.GuiAsync(() =>
+                                {
+                                    labelStatusLoad.Text = filename + "\r\n" + labelStatusLoad.Text;
+                                    progressBalLoadHistory.Maximum = arrayAll.Length + 1;
+                                    progressBalLoadHistory.Value = 1;
+                                });
+                                int counterRow = 0;
+                                int numStep = 0;
                                 foreach (var str in arrayAll)
                                 {
-                                    if (i == 0)
+                                    if (counterRow == 0)
                                     {
-                                        i++;
+                                        counterRow++;
                                         continue; //пропускаем шапку
                                     }
                                     var tr = Trade.GetConvertTrade(Securities, str);
                                     //Корректируем значения 
-                                    var modifyTrade = this.ModifyLoadTrade(tr, fieldModify, operationModify);
+                                    var modifyTrade = ModifyLoadTrade(tr);
                                     if (modifyTrade.NotIsNull())
                                     {
-                                        LoadTradeFromFile.Add(modifyTrade);
+                                        TrElement.NewTrade(tr, true);
+                                        if (numStep > 5000)
+                                        {
+                                            progressBalLoadHistory.GuiAsync(() =>
+                                            {
+                                                if (counterRow < progressBalLoadHistory.Maximum)
+                                                {
+                                                    progressBalLoadHistory.Value = counterRow;
+                                                }
+                                            });
+                                            Thread.Sleep(2);
+                                            numStep = 0;
+                                        }
+                                        numStep++;
                                     }
-                                    i++;
-                                }
-                                labelStatusLoad.GuiAsync(() =>
-                                {
-                                    labelStatusLoad.Text = f + "\r\n" + labelStatusLoad.Text;
-                                });
-                                i = 100;
-                                foreach (var tr in LoadTradeFromFile)
-                                {
-                                    this.TrElement.NewTrade(tr, true);
-                                    if (i <= 0)
-                                    {
-                                        Thread.Sleep(1);
-                                        i = 100;
-                                    }
+                                    counterRow++;
                                 }
                                 CountStat--;
-
                                 labelStatusLoad.GuiAsync(() =>
                                 {
                                     labelStatusLoad.Text = "Process: " + CountStat + "/" + CountFiles + "\r\n" + labelStatusLoad.Text;
                                 });
-                            });
-                        }
+                            }
+                        });
                     });
                     labelStatusLoad.GuiAsync(() =>
                     {
@@ -897,22 +872,31 @@ namespace AppVEConector
             }
         }
 
-        private Trade ModifyLoadTrade(Trade trade, string fieldMod, string operationMod)
+        private void buttonStopLoadHistory_Click(object sender, EventArgs e)
+        {
+            if (threadLoadHistory.NotIsNull())
+            {
+                try
+                {
+                    threadLoadHistory.Abort();
+                    threadLoadHistory = null;
+                }
+                catch (Exception)
+                {
+                    //TODO остановка загрузки сделок
+                }
+            }
+        }
+
+        private Trade ModifyLoadTrade(Trade trade)
         {
             if (trade.IsNull())
             {
                 return null;
             }
-            if (!fieldMod.Empty() && !operationMod.Empty())
+            if (checkBoxDivVolumeLot.Checked)
             {
-                if (fieldMod == "Volume" && operationMod == "/")
-                {
-                    trade.Volume = trade.Volume / textBoxLoadValue.Text.ToInt32();
-                }
-                else if (fieldMod == "Volume" && operationMod == "*")
-                {
-                    trade.Volume = trade.Volume * textBoxLoadValue.Text.ToInt32();
-                }
+                trade.Volume = trade.Volume / trade.Sec.Lot;
             }
             return trade;
         }
@@ -920,44 +904,13 @@ namespace AppVEConector
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (this.FormStrategy.IsNull())
-            {
-                this.FormStrategy = new Form_Strategy_morePrev(this.Trader, this.TrElement);
-                this.FormStrategy.Show();
 
-                this.FormStrategy.FormClosed += (s, ecl) =>
-                {
-                    this.FormStrategy = null;
-                };
-            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             var formStops = new Form_ActivateStopOrders(this.Trader, this.TrElement);
             formStops.ShowDialog();
-        }
-
-
-        private void buttonSignals_Click(object sender, EventArgs e)
-        {
-            FormSignalGsm formSignal = new FormSignalGsm(this.TrElement, SignalView.GSMSignaler);
-            formSignal.ShowDialog();
-        }
-
-        private void buttonRecalculVol_Click(object sender, EventArgs e)
-        {
-            foreach (var tf in this.TrElement.CollectionTimeFrames.ToArray())
-            {
-                foreach (var can in tf.MainCollection)
-                {
-                    can.InterestBuy = 0;
-                    can.InterestSell = 0;
-                    can.CountInterest = 0;
-                    can.HorVolumes.HVolCollection.RecalculateMaxMinVolumes();
-                }
-                tf.TimeLastUpdateCollection = DateTime.Now;
-            }
         }
 
         private void buttonOrder5Plus_Click(object sender, EventArgs e)
@@ -1033,6 +986,7 @@ namespace AppVEConector
         private void numericUpDownMAPeriod_ValueChanged(object sender, EventArgs e)
         {
             var value = Convert.ToInt32(numericUpDownMAPeriod.Value);
+            SettingsDepth.SetTF(CurrentTimeFrame.Period, "MovingAverage", value);
             GraphicStock.Indicators.ForEach((ind) =>
             {
                 if (ind is MovingAverage)
@@ -1051,7 +1005,7 @@ namespace AppVEConector
 
             if (result == DialogResult.OK)
             {
-                TrElement.SaveCharts(true);
+                TrElement.Save();
                 MessageBox.Show("Инструмент сохранен");
             }
         }
@@ -1070,18 +1024,6 @@ namespace AppVEConector
             }
         }
 
-        private void buttonClearAllCandle_Click(object sender, EventArgs e)
-        {
-            var head = "Подтвердите удаление всех сделок " + Securities.Code + "?";
-            var result = MessageBox.Show(this, head, head,
-                MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-
-            if (result == DialogResult.OK)
-            {
-                this.DeleteCharts(DateTime.Now.AddYears(-20), DateTime.Now);
-                MessageBox.Show("История удалена");
-            }
-        }
         /// <summary>
         /// Растягивание графика
         /// </summary>
@@ -1091,13 +1033,15 @@ namespace AppVEConector
         {
             if (checkBoxStrechPrice.Checked)
             {
+                AutoSizeGraphic.Value = false;
                 GraphicStock.SetTypeScaling(BaseParams.TYPE_SCALING.STRECH);
             }
             else
             {
+                AutoSizeGraphic.Value = true;
                 GraphicStock.SetTypeScaling(BaseParams.TYPE_SCALING.NONE);
             }
-            this.UpdateGraphic();
+            UpdateGraphic();
         }
         /// <summary>
         /// Обработка перемещения графика вниз-вверх
@@ -1108,13 +1052,15 @@ namespace AppVEConector
         {
             if (checkBoxMovePrice.Checked)
             {
+                AutoSizeGraphic.Value = false;
                 GraphicStock.SetTypeScaling(BaseParams.TYPE_SCALING.MOVE);
             }
             else
             {
+                AutoSizeGraphic.Value = true;
                 GraphicStock.SetTypeScaling(BaseParams.TYPE_SCALING.NONE);
             }
-            this.UpdateGraphic();
+            UpdateGraphic();
         }
 
         private void checkBoxClearHorVol_CheckedChanged(object sender, EventArgs e)

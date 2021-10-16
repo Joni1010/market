@@ -3,6 +3,7 @@ using GraphicTools.Base;
 using GraphicTools.Shapes;
 using Market.Candles;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using static GraphicTools.GCandles;
 
@@ -21,7 +22,7 @@ namespace AppVEConector.GraphicTools.Indicators
             LOW = 4
         };
 
-        private CandleCollection Collection = null;
+        private IEnumerable<CandleData> Collection = null;
 
         /// <summary>
         /// Period
@@ -46,7 +47,7 @@ namespace AppVEConector.GraphicTools.Indicators
         /// Получить коллекцию
         /// </summary>
         /// <param name="collection"></param>
-        public void GetCollectionCandles(CandleCollection collection)
+        public void GetCollectionCandles(CandleData[] collection)
         {
             Collection = collection;
         }
@@ -160,6 +161,10 @@ namespace AppVEConector.GraphicTools.Indicators
                 int y1 = GMath.GetCoordinate(Panel.Rect.Height, Panel.Params.MaxPrice, Panel.Params.MinPrice, allVal[index].Value);
                 lastPoint = new PointF(lineCandle, y1);
                 return;
+            }
+            if(index >= allVal.Length)
+            {
+                index = allVal.Length - 1;
             }
             if (allVal[index].Count == Period)
             {

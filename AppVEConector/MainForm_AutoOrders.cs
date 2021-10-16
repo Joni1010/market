@@ -25,7 +25,8 @@ namespace AppVEConector
             {
                 if (comboBoxAOAccount.Items.Count == 0)
                 {
-                    comboBoxAOAccount.SetListValues(this.Trader.Objects.Clients.Select(c => c.Code).ToArray());
+                    comboBoxAOAccount.SetListValues(this.Trader.Objects.tClients.ToArray()
+                        .Select(c => c.Code).ToArray());
                 }
             };
             comboBoxAOSecurities.SetListValues(Global.GetWorkingListSec().ToArray());
@@ -35,7 +36,7 @@ namespace AppVEConector
                 var text = comboBoxAOSecurities.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.Securities.Where(el => el.Code.ToLower().Contains(text.ToLower()) ||
+                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
                         el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
                     if (listSec.Count() > 0)
                     {

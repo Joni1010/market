@@ -1,7 +1,7 @@
 ﻿using GraphicTools.Base;
 using GraphicTools.Shapes;
+using MarketObjects.Charts;
 using System.Drawing;
-using System.Linq;
 
 namespace GraphicTools.Extension
 {
@@ -49,7 +49,7 @@ namespace GraphicTools.Extension
 			(new TextDraw()).Paint(canvas, "max:" + this.Max.ToString(), Panel.Rect.X, Panel.Rect.Y + 1, Color.Black);
 		}
 
-		private void PaintOneLevel(Graphics canvas, ViewPanel Panel, MarketObjects.Chart Value, decimal MaxPrice, decimal MinPrice)
+		private void PaintOneLevel(Graphics canvas, ViewPanel Panel, Chart Value, decimal MaxPrice, decimal MinPrice)
 		{
 			int y = GMath.GetCoordinate(Panel.Rect.Height, MaxPrice, MinPrice, Value.Price);
 			int x1 = Panel.Rect.X + GMath.GetCoordinate(Panel.Rect.Width, this.Max, this.Min, Value.Volume > 0 ? 0 : Value.Volume);

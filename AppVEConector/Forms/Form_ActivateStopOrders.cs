@@ -1,11 +1,11 @@
 ﻿using AppVEConector.libs;
+using Market.AppTools;
 using MarketObjects;
 using QuikConnector.MarketObjects;
 using System;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
-using TradingLib;
 
 namespace AppVEConector
 {
@@ -41,7 +41,7 @@ namespace AppVEConector
 
 			buttonStopOrderCancel.Click += (s, ee) =>
 			{
-				var sOrders = this.Trader.Objects.StopOrders.Where(o => o.Sec == this.TrElement.Security &&
+				var sOrders = this.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == this.TrElement.Security &&
 					o.Comment.Contains(Define.STOP_LIMIT));
 				if(sOrders.NotIsNull() && sOrders.Count() > 0)
 				{

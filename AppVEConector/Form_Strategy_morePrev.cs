@@ -1,12 +1,12 @@
 ﻿using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Threading;
-using TradingLib;
 using System.Collections.Generic;
 using System;
 using MarketObjects;
 using Market.Candles;
 using GraphicTools.Extension;
+using Market.AppTools;
 
 namespace AppVEConector
 {
@@ -147,7 +147,8 @@ namespace AppVEConector
 
 		public void CancelOldOrders()
 		{
-			var ordersForCancel = this.Trader.Objects.Orders.Where(o => o.Comment.Contains(StructStrategy.PrefixComment) &&
+			var ordersForCancel = this.Trader.Objects.tOrders
+				.SearchAll(o => o.Comment.Contains(StructStrategy.PrefixComment) &&
 				o.Sec == this.TrElement.Security && o.IsActive());
 			if (ordersForCancel.NotIsNull())
 			{
@@ -190,51 +191,53 @@ namespace AppVEConector
 
 			if (this.checkBoxBuy.Checked)
 			{
-				var collectionCandle = TrElement.CollectionTimeFrames.FirstOrDefault(t => t.TimeFrame == TimeFrameBuy);
+				var collectionCandle = TrElement.StorageTF.GetTimeFrame(TimeFrameBuy).Candles.Collection;
 				if (collectionCandle.NotIsNull()) this.forBuy(collectionCandle);
 			}
 			if (this.checkBoxSell.Checked)
 			{
-				var collectionCandle = TrElement.CollectionTimeFrames.FirstOrDefault(t => t.TimeFrame == TimeFrameSell);
+				var collectionCandle = TrElement.StorageTF.GetTimeFrame(TimeFrameSell).Candles.Collection;
 				if (collectionCandle.NotIsNull()) this.forSell(collectionCandle);
 			}
 		}
 
 		public void EmulateSignal()
 		{
-			var collectionCandle = TrElement.CollectionTimeFrames.FirstOrDefault(t => t.TimeFrame == TimeFrameBuy);
-
-			var candlePrev = collectionCandle.GetElement(2);
-			var candleCurr = collectionCandle.GetElement(1);
-
-			if (checkBoxAccBuy.Checked)
+			var collectionCandle = TrElement.StorageTF.GetTimeFrame(TimeFrameBuy).Candles.Collection;
+			if (collectionCandle.Length > 2)
 			{
-				this.TraderBuy(candlePrev, candleCurr);
+				var candlePrev = collectionCandle[2];
+				var candleCurr = collectionCandle[1];
+
+				if (checkBoxAccBuy.Checked)
+				{
+					this.TraderBuy(candlePrev, candleCurr);
+				}
 			}
 		}
 
-		public void forBuy(CandleCollection collectionCandle)
+		public void forBuy(CandleData[] collectionCandle)
 		{
 			this.GuiAsync(() =>
 			{
-				if (collectionCandle.Count > 3)
+				if (collectionCandle.Length > 3)
 				{
-					var candlePrev = collectionCandle.GetElement(2);
-					var candleCurr = collectionCandle.GetElement(1);
+					var candlePrev = collectionCandle[2];
+					var candleCurr = collectionCandle[1];
 					if (candlePrev.NotIsNull() && candleCurr.NotIsNull())
 						StrategyBuy(candlePrev, candleCurr);
 				}
 			});
 		}
 
-		public void forSell(CandleCollection collectionCandle)
+		public void forSell(CandleData[] collectionCandle)
 		{
 			this.GuiAsync(() =>
 			{
-				if (collectionCandle.Count > 3)
+				if (collectionCandle.Length > 3)
 				{
-					var candlePrev = collectionCandle.GetElement(2);
-					var candleCurr = collectionCandle.GetElement(1);
+					var candlePrev = collectionCandle[2];
+					var candleCurr = collectionCandle[1];
 					if (candlePrev.NotIsNull() && candleCurr.NotIsNull())
 						StrategySell(candlePrev, candleCurr);
 				}
@@ -306,7 +309,7 @@ namespace AppVEConector
 					Direction = OrderDirection.Buy,
 					Sec = this.TrElement.Security,
 					SecCode = this.TrElement.Security.Code,
-					Comment = StructStrategy.PrefixComment + this.Trader.Objects.MyTrades.Count().ToString()
+					Comment = StructStrategy.PrefixComment + this.Trader.Objects.tMyTrades.Count.ToString()
 				};
 				ListSignals.Add(new Signal() { Order = order, CandlePrev = candlePrev, CandleCurr = candleCurr });
 				this.Trader.CreateOrder(order);
@@ -452,7 +455,7 @@ namespace AppVEConector
 					Direction = OrderDirection.Sell,
 					Sec = this.TrElement.Security,
 					SecCode = this.TrElement.Security.Code,
-					Comment = StructStrategy.PrefixComment + this.Trader.Objects.MyTrades.Count().ToString()
+					Comment = StructStrategy.PrefixComment + this.Trader.Objects.tMyTrades.Count.ToString()
 				};
 				ListSignals.Add(new Signal() { Order = order, CandlePrev = candlePrev, CandleCurr = candleCurr });
 				this.Trader.CreateOrder(order);
@@ -470,7 +473,7 @@ namespace AppVEConector
 		{
 			try
 			{
-				var pos = this.Trader.Objects.Positions.FirstOrDefault(p => p.Sec == this.TrElement.Security);
+				var pos = this.Trader.Objects.tPositions.SearchFirst(p => p.Sec == this.TrElement.Security);
 				if (pos.IsNull()) return false;
 				if (pos.CurrentVolume > 0) return true;
 			}

@@ -45,7 +45,7 @@ namespace AppVEConector.GraphicTools.Indicators
             circleCountTrade.ColorLine = Color.Black;
             circleCountTrade.Fill = true;
             circleCountTrade.FillColor = Color.Blue;
-            circleCountTrade.Radius = toolsCandle.Candle.CountTrade / 100 / CurrentTimeFrame;
+            circleCountTrade.Radius = toolsCandle.Candle.GetCountTrades() / 100 / CurrentTimeFrame;
             circleCountTrade.PaintCircle(canvas, 
                 new PointF(toolsCandle.TailCoord.High.X - circleCountTrade.Radius,
                 toolsCandle.Body.Y + toolsCandle.Body.Height / 2 - circleCountTrade.Radius));

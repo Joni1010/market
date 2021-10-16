@@ -38,14 +38,14 @@ namespace AppVEConector.GraphicTools.Indicators
 
             if (index < CountVisibleCandle)
             {
-                foreach (var hv in candle.GetHorVolumes().HVolCollection.ToArray())
+                /*foreach (var hv in candle.GetHorVolumes().HVolCollection.ToArray())
                 {
                     if (hv.CountBuy + hv.CountSell > MinLimitCount)
                     {
                         var value = hv.CountBuy + hv.CountSell;
                         if (MaxCount < value) MaxCount = value;
                     }
-                }
+                }*/
             }
         }
 
@@ -53,7 +53,7 @@ namespace AppVEConector.GraphicTools.Indicators
         {
             if (!Enable) return;
 
-            foreach (var hv in toolsCandle.Candle.GetHorVolumes().HVolCollection.ToArray())
+            /*foreach (var hv in toolsCandle.Candle.GetHorVolumes().HVolCollection.ToArray())
             {
                 if (hv.CountBuy + hv.CountSell > MinLimitCount)
                 {
@@ -80,7 +80,7 @@ namespace AppVEConector.GraphicTools.Indicators
                             new PointF(toolsCandle.TailCoord.High.X + radius, y), Color.FromArgb(220, Color.Blue));
                     }
                 }
-            }
+            }*/
         }
         public override void NewCandleInTimeFrame(int timeFrame, CandleData candle)
         {

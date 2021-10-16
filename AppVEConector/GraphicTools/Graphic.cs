@@ -50,6 +50,13 @@ namespace GraphicTools
             TypeHorVolume = type;
             GHorVolumes.Panel.Clear();
         }
+        public void SetLimitBorderHorVolume(long limit)
+        {
+            limitHorVol = limit;
+            GHorVolumes.Panel.Clear();
+        }
+
+        
         /// <summary>
         /// Возвращает тип гор. обьема
         /// </summary>
@@ -60,9 +67,12 @@ namespace GraphicTools
         }
 
         /// <summary> Перерисовать все объекты </summary>
-        public void Redraw()
+        public void Paint()
         {
             ComputeParams(ObjectCanvas.ClientRectangle);
+            //Получаем необходимые свечи
+            GetCollectionCandles();
+            
             PaintAll();
             RedrawActual();
         }
@@ -142,7 +152,7 @@ namespace GraphicTools
             };
             ObjectCanvas.Resize += (s, e) =>
             {
-                Redraw();
+                Paint();
                 ObjectCanvas.Refresh();
             };
             ObjectCanvas.MouseMove += (s, e) =>
