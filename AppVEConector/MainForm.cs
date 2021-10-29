@@ -792,15 +792,12 @@ namespace AppVEConector
 
             OnTimer1s += (timer) =>
             {
-                Qlog.CatchException(() =>
+                AutoOrdersLoopControl();
+                AutoSLLoopControl();
+                this.CheckAllSignals();
+                this.ForEachWinDepth((formDepth) =>
                 {
-                    AutoOrdersLoopControl();
-                    AutoSLLoopControl();
-                    this.CheckAllSignals();
-                    this.ForEachWinDepth((formDepth) =>
-                    {
-                        formDepth.FastUpdater();
-                    });
+                    formDepth.FastUpdater();
                 });
             };
             OnTimer3s += (timer) =>
