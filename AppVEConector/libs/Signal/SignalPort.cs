@@ -26,6 +26,8 @@ namespace AppVEConector.libs.Signal
 		public SignalPort(string namePort = "COM1", int speed = 9600, Parity parity = Parity.None)
 		{
 			this.Port = new SerialPort(namePort, speed, parity, 8, StopBits.One);
+			this.Port.WriteTimeout = 1000;
+			this.Port.ReadTimeout = 1000;
 		}
 		/// <summary>
 		/// Открывает порт для работы. Иначе возвращает false.

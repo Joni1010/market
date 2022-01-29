@@ -32,10 +32,17 @@ namespace AppVEConector.libs
         {
             try
             {
-                if (Global.ListLoadSec.NotIsNull() && !reloadList) return Global.ListLoadSec;
+                if (Global.ListLoadSec.NotIsNull() && !reloadList)
+                {
+                    return Global.ListLoadSec;
+                }
                 List<string> list = new List<string>();
                 var rootDir = Global.GetPathData();
-                System.IO.StreamReader openFile = new System.IO.StreamReader(rootDir + "\\" + FILE_WORKING_STOCK, true);
+                var filename = rootDir + "\\" + FILE_WORKING_STOCK;
+                if(!File.Exists(filename)){
+                    File.Create(filename);
+                }
+                System.IO.StreamReader openFile = new System.IO.StreamReader(filename, true);
                 while (!openFile.EndOfStream)
                 {
                     string line = openFile.ReadLine();
