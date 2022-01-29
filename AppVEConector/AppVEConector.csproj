@@ -35,9 +35,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="QuikConnector">
-      <HintPath>..\..\QuikConnector\QuikConnector\bin\Debug\QuikConnector.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -314,6 +311,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="img\nvis.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lib-quik-worker\QuikConnector\QuikConnector.csproj">
+      <Project>{af3398c2-18a5-43de-8ab1-4992e21b4abd}</Project>
+      <Name>QuikConnector</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
