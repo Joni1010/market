@@ -557,10 +557,10 @@ namespace AppVEConector
                             var row = ArrayBuy[i];
                             if (pricesBuy.Length <= i)
                             {
-                                ArraySell[i].Cells[2].Value = "";
-                                ArraySell[i].Cells[1].Value = "";
-                                ArraySell[i].Cells[1].Tag = null;
-                                ArraySell[i].Cells[3].Tag = null;
+                                ArrayBuy[i].Cells[2].Value = "";
+                                ArrayBuy[i].Cells[3].Value = "";
+                                ArrayBuy[i].Cells[1].Tag = null;
+                                ArrayBuy[i].Cells[3].Tag = null;
                                 continue;
                             }
                             var ordersByPrice = ordersBuy.Where(o => o.Price == pricesBuy[i]).ToArray();

@@ -19,6 +19,8 @@ using Market.AppTools;
 using System.ComponentModel;
 using libs;
 using AppVEConector.Forms;
+using QuikConnector.libs.json;
+using System.Text;
 
 namespace AppVEConector
 {
