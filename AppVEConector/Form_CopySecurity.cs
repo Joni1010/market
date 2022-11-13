@@ -12,13 +12,10 @@ namespace AppVEConector
     public partial class Form_CopySecurity : Form
     {
         TElement TrElement = null;
-        Connector.QuikConnector Trader = null;
-        public Form_CopySecurity(Connector.QuikConnector trader, TElement trElement)
+        public Form_CopySecurity( TElement trElement)
         {
             InitializeComponent();
-
             this.TrElement = trElement;
-            this.Trader = trader;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -29,7 +26,7 @@ namespace AppVEConector
             sec.Code = this.textBoxSecCode.Text; 
             sec.Shortname = this.textBoxSecCode.Text;
 
-            this.Trader.Objects.tSecurities.Add(sec);
+            Quik.Trader.Objects.tSecurities.Add(sec);
             this.Close();
         }
     }

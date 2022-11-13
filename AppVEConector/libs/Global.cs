@@ -1,5 +1,5 @@
 ﻿
-using Connector.Logs;
+using QuikConnector.Components.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,7 +14,7 @@ namespace AppVEConector.libs
         /// <returns></returns>
         public static string GetPathData()
         {
-            var sett = Connector.QuikConnector.ConfSettings.GetParam("Main", "PathData");
+            var sett = QuikConnector.Connector.ConfSettings.GetParam("Main", "PathData");
             return sett.NotIsNull() ? sett.Value : "";
         }
         /// <summary>
@@ -55,7 +55,7 @@ namespace AppVEConector.libs
             }
             catch (Exception e)
             {
-                Qlog.Write(e.ToString());
+                QLog.Write(e.ToString());
             }
             return null;
         }
@@ -73,7 +73,7 @@ namespace AppVEConector.libs
             }
             catch (Exception e)
             {
-                Qlog.Write(e.ToString());
+                QLog.Write(e.ToString());
             }
             return null;
         }

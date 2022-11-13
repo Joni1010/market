@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
+﻿using AppVEConector.Components;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 public static class ComboBoxExtension
@@ -41,30 +44,39 @@ public static class ComboBoxExtension
     {
         obj.Items.Clear();
     }
-}
 
-
-public static class CheckBoxExtension
-{
-    public static void AddGroup(this CheckBox obj)
+    /// <summary>
+    /// Создает поисковик и наполняет содержимым из поиска
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="search"></param>
+    public static void InitSearcher(this ComboBox obj, Func<string, string[]> search, Action after = null)
     {
-        obj.Click += (s, e) =>
+        if (search.IsNull())
         {
-            var parent = ((CheckBox)s).Parent;
-            foreach (var control in parent.Controls)
+            return;
+        }
+        obj.TextChanged += (s, e) =>
+        {
+            var text = obj.Text;
+
+            if (text.Length < 2 || obj.SelectedIndex >= 0)
             {
-                if (control is CheckBox)
-                {
-                    if (obj == control && ((CheckBox)control).Checked)
-                    {
-                        ((CheckBox)control).BackColor = Color.Red;
-                    }
-                    else
-                    {
-                        ((CheckBox)control).BackColor = SystemColors.Control;
-                        ((CheckBox)control).Checked = false;
-                    }
-                }
+                return;
+            }
+            var listSec = search(text);
+            if (listSec.Count() > 0)
+            {
+                obj.Clear();
+                obj.SetListValues(listSec);
+                obj.SelectedIndex = -1;
+            }
+            obj.Select(text.Length, 0);
+            obj.DroppedDown = true;
+            Cursor.Current = Cursors.Default;
+            if (after.NotIsNull())
+            {
+                after();
             }
         };
     }

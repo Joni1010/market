@@ -1,9 +1,5 @@
-﻿using Managers;
+﻿using QuikConnector.Components.Controllers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AppVEConector
@@ -37,11 +33,11 @@ namespace AppVEConector
                 {
                     DataGridViewRow row = dataGrid.Rows[index];
                     row.Selected = true;
-                    MThread.InitThread(() =>
+                    ThreadsController.Thread(() =>
                     {
                         decimal number = Convert.ToDecimal(row.Cells[1].Value.ToString());
                         var sec = this.SearchSecurity(row.Cells[2].Value.ToString());
-                        if (sec != null) Trader.CancelStopOrder(sec, number);
+                        if (sec != null) Quik.Trader.CancelStopOrder(sec, number);
                     });
                 }
             }

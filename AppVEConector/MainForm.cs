@@ -4,31 +4,29 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-
 using System.Windows.Threading;
 using System.Threading;
 using AppVEConector.libs;
-
 using MarketObjects;
-using Connector.Logs;
-using Managers;
 using AppVEConector.Forms.StopOrders;
 using Libs;
 using AppVEConector.libs.Signal;
 using Market.AppTools;
-using System.ComponentModel;
-using libs;
 using AppVEConector.Forms;
-using QuikConnector.libs.json;
-using System.Text;
+using QuikConnector.Components.Log;
+using AppVEConector.Components;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector
 {
     public partial class MainForm : Form
     {
-        public Connector.QuikConnector Trader = new Connector.QuikConnector();
         /// <summary> Торгуемы набор </summary>
         public TCollection DataTrading = new TCollection();
+        /// <summary>
+        /// Активные инстурменты с которыми осуществляется работа, а так же те, что в портфеле.
+        /// </summary>
+        public ActiveStocks ActiveList = new ActiveStocks();
 
         /// <summary> 100ms секундный таймер </summary>
         public event Action<DispatcherTimer> OnTimer100ms = null;
@@ -43,8 +41,7 @@ namespace AppVEConector
         public event Action<IEnumerable<Reply>> OnNewReply = null;
 
         /// <summary> Список откртых форм со стаканом </summary>
-        List<Form_GraphicDepth> ListFormsDepth = new List<Form_GraphicDepth>();
-        Mutex MutexListFormsDEpth = new Mutex();
+        readonly List<Form_GraphicDepth> ListFormsDepth = new List<Form_GraphicDepth>();
 
         /// <summary> Последнее сообщение по рынку </summary>
         public Reply LastMarketReply = null;
@@ -54,18 +51,16 @@ namespace AppVEConector
         //private TradeController ControlTrade = new TradeController();
         /// <summary> Форма быстрых ордеров </summary>
         private Form_LightOrders FormSpeedOrders = null;
-        /// <summary> Список создаваемы таймеров</summary>
-        private List<DispatcherTimer> listTimers = new List<DispatcherTimer>();
 
         public Kliring KliringDay = null;
         public Kliring KliringEndDay = null;
 
         public MainForm()
         {
-            var klirDay = Connector.QuikConnector.ConfSettings.GetParam("Kliring", "KlDay").Value;
-            var klirEndDay = Connector.QuikConnector.ConfSettings.GetParam("Kliring", "KlEndDay").Value;
-            this.KliringDay = new Kliring(klirDay);
-            this.KliringEndDay = new Kliring(klirEndDay);
+            var klirDay = QuikConnector.Connector.ConfSettings.GetParam("Kliring", "KlDay").Value;
+            var klirEndDay = QuikConnector.Connector.ConfSettings.GetParam("Kliring", "KlEndDay").Value;
+            KliringDay = new Kliring(klirDay);
+            KliringEndDay = new Kliring(klirEndDay);
             InitializeComponent();
         }
         /// <summary>
@@ -75,9 +70,9 @@ namespace AppVEConector
         /// <returns></returns>
         public Securities SearchSecurity(string secCode)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
-                var sec = Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.Contains(secCode)
+                var sec = Quik.Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.Contains(secCode)
                             && !s.Class.Code.Contains("INFO") && !s.Class.Code.Contains("EMU"));
                 return sec;
             });
@@ -85,9 +80,9 @@ namespace AppVEConector
         }
         public Securities SearchSecurity(string secCode, string secClassCode)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
-                var sec = Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.Contains(secCode)
+                var sec = Quik.Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.Contains(secCode)
                             && s.Class.Code.Contains(secClassCode) && !s.Class.Code.Contains("EMU"));
                 return sec;
             });
@@ -99,15 +94,15 @@ namespace AppVEConector
         /// <returns></returns>
         public Form_GraphicDepth ShowGraphicDepth(Securities sec)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 var form = ListFormsDepth.FirstOrDefault(f => f.TrElement.Security == sec);
                 if (form.IsNull())
                 {
-                    var elTr = this.DataTrading.AddOrFind(sec);
+                    var elTr = DataTrading.AddOrFind(sec);
                     if (elTr.NotIsNull())
                     {
-                        form = new Form_GraphicDepth(Trader, elTr, this);
+                        form = new Form_GraphicDepth(elTr, this);
                         ListFormsDepth.Add(form);
                     }
                     //Инициализация закрытия
@@ -128,73 +123,75 @@ namespace AppVEConector
 
         private void MainForm_Load(object sender, EventArgs ev)
         {
-            Form_MessageSignal.Parent = this;
-            Qlog.CatchException(() =>
+            QLog.ActionError = (e) =>
+            {
+                return MessageBox.Show(e.ToString());
+            };
+            Form_MessageSignal.PForm = this;
+            QLog.CatchException(() =>
             {
                 dataGridPortfolios.Rows[0].Resizable = DataGridViewTriState.False;
                 dataGridPositions.Rows[0].Resizable = DataGridViewTriState.False;
                 dataGridViewStopOrders.Rows[0].Resizable = DataGridViewTriState.False;
 
-                this.Trader.RegisterAllParamSec();
+                Quik.Trader.RegisterAllParamSec();
 
                 InitTimers();
 
-                this.InitPanelSignal();
-                this.InitPanelFastGap();
+                InitPanelSignal();
+                InitPanelFastGap();
                 InitAutoOrders();
                 InitAutoStopLoss();
 
 
-                Trader.Objects.OnRun += () =>
-                {
-                    this.RegisterAllSecurity();
-                };
+                //Quik.Trader.Objects.OnRun += () =>
+                //{
+                //    RegisterAllSecurity();
+                //};
                 //Открытие торгового окна по найденному инструменту, по двойному щелчку
                 dataGridFoundSec.DoubleClick += (s, e) =>
-            {
-                foreach (DataGridViewRow row in dataGridFoundSec.SelectedRows)
                 {
-                    if (row.Tag.NotIsNull())
+                    foreach (DataGridViewRow row in dataGridFoundSec.SelectedRows)
                     {
-                        var sec = (Securities)row.Tag;
-                        this.ShowGraphicDepth(sec);
+                        if (row.Tag.NotIsNull())
+                        {
+                            var sec = (Securities)row.Tag;
+                            ShowGraphicDepth(sec);
+                        }
                     }
-                }
-            };
+                };
                 //Открытие торгового окна по позиции, по двойному щелчку
                 dataGridPositions.DoubleClick += (s, e) =>
-            {
-                foreach (DataGridViewRow row in dataGridPositions.SelectedRows)
                 {
-                    if (row.Tag.NotIsNull())
+                    foreach (DataGridViewRow row in dataGridPositions.SelectedRows)
                     {
-                        var infoPos = ((string)row.Tag);
-                        if (!infoPos.Empty())
+                        if (row.Tag.NotIsNull())
                         {
-                            var sec = GetSecCodeAndClass(infoPos);
-                            if (sec.NotIsNull())
+                            var infoPos = ((string)row.Tag);
+                            if (!infoPos.Empty())
                             {
-                                ShowGraphicDepth(sec);
+                                var sec = GetSecByCode(infoPos);
+                                if (sec.NotIsNull())
+                                {
+                                    ShowGraphicDepth(sec);
+                                }
                             }
                         }
                     }
-                }
-            };
-
-
-                loadTextDescription();
-                this.WindowState = FormWindowState.Maximized;
-            }, "", () => { MessageBox.Show("Error load form!"); });
+                };
+                LoadTextDescription();
+                WindowState = FormWindowState.Maximized;
+            }, "");
         }
 
 
         /// /////////////////////////////////////////////////////////////////////////
-        List<DataGridViewRow> listRowsPortfolios = new List<DataGridViewRow>();
+        readonly List<DataGridViewRow> listRowsPortfolios = new List<DataGridViewRow>();
         private void UpdateInfoPortfolios()
         {
             int i = 0;
-            var listPortf = Trader.Objects.tPortfolios.ToArray();//.Where(p => p.TypeClient == 2);
-                                                                 //int count = listPortf.Count();
+            var listPortf = Quik.Trader.Objects.tPortfolios.ToArray();//.Where(p => p.TypeClient == 2);
+                                                                      //int count = listPortf.Count();
             foreach (var p in listPortf)
             {
                 dataGridPortfolios.GuiAsync(() =>
@@ -228,30 +225,31 @@ namespace AppVEConector
                 i++;
             }
         }
+
         /// /////////////////////////////////////////////////////////////////////////
-        List<DataGridViewRow> listRowsPositions = new List<DataGridViewRow>();
+        readonly List<DataGridViewRow> listRowsPositions = new List<DataGridViewRow>();
 
         void UpdateInfoPositions()
         {
-            if (Trader.Objects.tPositions.Count > 0)
+            if (Quik.Trader.Objects.tPositions.Count > 0)
             {
                 dataGridPositions.GuiAsync(() =>
                 {
-                    var listPos = Trader.Objects.tPositions.ToArray().OrderBy(p => p.Sec.ToString());
+                    var listPos = Quik.Trader.Objects.tPositions.ToArray().OrderBy(p => p.Sec.ToString());
                     string lastSec = null;
                     foreach (var p in listPos)
                     {
                         if (p.Sec.NotIsNull() && lastSec != p.ToString())
                         {
                             lastSec = p.ToString();
-                            var row = listRowsPositions.FirstOrDefault(r => r.Tag.ToString() == lastSec);
+                            var row = listRowsPositions.FirstOrDefault(r => r.Tag.ToString() == p.Sec.ToString());
                             if (row.IsNull())
                             {
                                 var newRow = (DataGridViewRow)dataGridPositions.Rows[0].Clone();
                                 newRow.Cells[0].Value = "";
                                 listRowsPositions.Add(newRow);
                                 row = newRow;
-                                Trader.RegisterSecurities(p.Sec);
+                                Quik.Trader.RegisterSecurities(p.Sec);
                             }
                             //Ищем все позиции данного инструмента
                             var allSecPos = listPos.Where(ps => ps.Sec == p.Sec && ps.Client.Code == p.Client.Code)
@@ -272,7 +270,7 @@ namespace AppVEConector
                                         : "/" + itemPos.Data.CurrentNet.ToString();
                                 }
 
-                                row.Tag = lastSec;
+                                row.Tag = p.Sec.ToString();
                                 row.Cells[0].Value = p.Sec.Name;
                                 row.Cells[1].Value = p.Client.NotIsNull() ? p.Client.Code + " " + types : "";
                                 row.Cells[2].Value = p.Sec.ToString();
@@ -280,12 +278,12 @@ namespace AppVEConector
                                 row.Cells[4].Value = p.Sec.StepPrice.ToString();
                                 row.Cells[5].Value = p.Sec.Params.BuyDepo.ToString();
                                 row.Cells[6].Value = curPos;// p.Data.CurrentNet.ToString();
-                                setColorRow(row.Cells[6], p.Data.CurrentNet);
+                                row.Cells[6].ColorMarket(p.Data.CurrentNet);
                                 //Orders
                                 row.Cells[7].Value = p.Data.OrdersBuy.ToString() + " / " + p.Data.OrdersSell.ToString();
                                 //Var margin
                                 row.Cells[8].Value = p.Data.VarMargin.ToString();
-                                setColorRow(row.Cells[8], p.Data.VarMargin);
+                                row.Cells[8].ColorMarket(p.Data.VarMargin);
                             }
                         }
                     }
@@ -300,15 +298,8 @@ namespace AppVEConector
             }
         }
 
-        void setColorRow(DataGridViewCell cell, decimal value)
-        {
-            if (value > 0) cell.Style.BackColor = Color.LightGreen;
-            if (value < 0) cell.Style.BackColor = Color.LightCoral;
-            if (value == 0) cell.Style.BackColor = Color.White;
-        }
-
         /// /////////////////////////////////////////////////////////////////////////
-        List<DataGridViewRow> listRowsOrders = new List<DataGridViewRow>();
+        readonly List<DataGridViewRow> listRowsOrders = new List<DataGridViewRow>();
         void UpdateInfoOrders(IEnumerable<Order> orders)
         {
             int i = 0;
@@ -371,14 +362,14 @@ namespace AppVEConector
 
         /// /////////////////////////////////////////////////////////////////////////
         /// 
-        List<DataGridViewRow> listRowsStopOrders = new List<DataGridViewRow>();
+        readonly List<DataGridViewRow> listRowsStopOrders = new List<DataGridViewRow>();
         void ResetTableStopOrders()
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 listRowsStopOrders.Clear();
                 dataGridViewStopOrders.Rows.Clear();
-                this.FilteringStopOrders(Trader.Objects.tStopOrders.ToArray());
+                FilteringStopOrders(Quik.Trader.Objects.tStopOrders.ToArray());
             });
         }
 
@@ -406,11 +397,11 @@ namespace AppVEConector
 
             if (changeFilter)
             {
-                this.UpdateInfoStopOrders(listFilter);
+                UpdateInfoStopOrders(listFilter);
             }
             else
             {
-                this.UpdateInfoStopOrders(stOrders);
+                UpdateInfoStopOrders(stOrders);
             }
         }
 
@@ -495,21 +486,19 @@ namespace AppVEConector
                     el.NewTrade(t);
                 }
             }
-            if (trades.Count() > 0)
+
+            Trade lastT = trades.Last();
+            this.GuiAsync(() =>
             {
-                Trade lastT = trades.Last();
-                ChangeTextMainStatusBar(
-                    Trader.Objects.tTrades.CountNew().ToString() + " " +
-                    lastT.DateTrade.GetDateTime().ToLongTimeString() +
-                    " Trade " + lastT.Number + " " +
-                    lastT.SecCode + ": " +
-                    lastT.Price + " (" + lastT.Volume + ") " + lastT.Direction,
-                    false);
-            }
+                labelLastTrade.Text =
+                lastT.DateTrade.GetDateTime().ToLongTimeString() + " " +
+                lastT.SecCode + " " +
+                lastT.Price + " (" + lastT.Volume + ") " + lastT.Direction;
+            });
         }
         private void EventAllTrades(IEnumerable<Trade> trades)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 UpdateInfoAllTrades(trades);
             });
@@ -518,7 +507,7 @@ namespace AppVEConector
 
         private void EventOldTrades(IEnumerable<Trade> trades)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 foreach (var t in trades)
                 {
@@ -528,13 +517,22 @@ namespace AppVEConector
                         el.NewTrade(t);
                     }
                 }
+                Trade lastT = trades.Last();
+                this.GuiAsync(() =>
+                {
+                    labelLastOldTrade.Text =
+                        lastT.DateTrade.GetDateTime().ToLongTimeString() + " " +
+                        lastT.SecCode + " " +
+                        lastT.Price + " (" + lastT.Volume + ") " + lastT.Direction;
+                    labelCountOldTrade.Text = Quik.Trader.Objects.tOldTrades.Count.ToString();
+                });
             });
         }
         private void EventOrders(IEnumerable<Order> orders)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
-                this.ForEachWinDepth((formDepth) =>
+                ForEachWinDepth((formDepth) =>
                 {
                     formDepth.EventAnyOrder(orders.Where(o => o.Sec == formDepth.TrElement.Security));
                 });
@@ -544,15 +542,15 @@ namespace AppVEConector
 
         void EventStopOrders(IEnumerable<StopOrder> stOrders)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
-                this.ForEachWinDepth((formDepth) =>
+                ForEachWinDepth((formDepth) =>
                 {
                     formDepth.EventAnyOrder(stOrders.Where(o => o.Sec == formDepth.TrElement.Security));
                 });
 
-                this.FilteringStopOrders(stOrders);
-                this.KilledSignalsByStopOrders(stOrders.ToArray());
+                FilteringStopOrders(stOrders);
+                KilledSignalsByStopOrders(stOrders.ToArray());
             });
         }
         /// <summary>
@@ -561,7 +559,7 @@ namespace AppVEConector
         /// <param name="stOrders"></param>
         private void KilledSignalsByStopOrders(StopOrder[] stOrders)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 foreach (var ord in stOrders)
                 {
@@ -581,14 +579,18 @@ namespace AppVEConector
         }
         void EventPositions(IEnumerable<Position> pos)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
+                foreach (var p in pos)
+                {
+                    ActiveList.Add(p.Sec);
+                }
                 UpdateInfoPositions();
             });
         }
         void EventPortfolio(IEnumerable<Portfolio> portf)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 UpdateInfoPortfolios();
             });
@@ -598,9 +600,9 @@ namespace AppVEConector
         /// <param name="listQuote"></param>
         /*void EventDepth(IEnumerable<Quote> listQuote)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
-                MThread.InitThread(() =>
+                ThreadsController.Thread(() =>
                 {
                     foreach (var q in listQuote)
                     {
@@ -617,11 +619,11 @@ namespace AppVEConector
 
         private void EventMyTrades(IEnumerable<MyTrade> myTrades)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 foreach (var mTrade in myTrades)
                 {
-                    this.ForEachWinDepth((formDepth) =>
+                    ForEachWinDepth((formDepth) =>
                     {
                         if (mTrade.Trade.Sec == formDepth.TrElement.Security)
                         {
@@ -632,23 +634,6 @@ namespace AppVEConector
             });
         }
 
-
-        private void EventNewSec(IEnumerable<Securities> listSec)
-        {
-            Qlog.CatchException(() =>
-            {
-                Securities last = null;
-                foreach (var s in listSec)
-                {
-                    var el = DataTrading.AddOrFind(s);
-                    last = s;
-                }
-                if (last.NotIsNull())
-                {
-                    ChangeTextMainStatusBar(Trader.Objects.tSecurities.Count + " " + last.ToString());
-                }
-            });
-        }
         /// <summary>
         /// Изменение текста в главном статус баре.
         /// </summary>
@@ -667,28 +652,28 @@ namespace AppVEConector
 
             ChangeTextMainStatusBar("Синхронизация с терминалом...");
 
-            Trader.Connect();
-            Trader.Objects.tTrades.OnNew += new Events.EventsBase<Trade>.eventElement(EventAllTrades);
-            Trader.Objects.tOldTrades.OnNew += new Events.EventsBase<Trade>.eventElement(EventOldTrades);
+            Quik.Trader.Connect();
+            Quik.Trader.Objects.tTrades.OnNew += EventAllTrades;
+            Quik.Trader.Objects.tOldTrades.OnNew += EventOldTrades;
 
-            //Trader.Objects.tSecurities.OnNew += new Events.EventsBase<Securities>.eventElement(EventNewSec);
+            //Quik.Trader.Objects.tSecurities.OnNew += new Events.EventsBase<Securities>.eventElement(EventNewSec);
 
-            Trader.Objects.tMyTrades.OnNew += new Events.EventsBase<MyTrade>.eventElement(EventMyTrades);
-            Trader.Objects.tOrders.OnNew += new Events.EventsBase<Order>.eventElement(EventOrders);
-            Trader.Objects.tOrders.OnChange += new Events.EventsBase<Order>.eventElement(EventOrders);
+            Quik.Trader.Objects.tMyTrades.OnNew += EventMyTrades;
+            Quik.Trader.Objects.tOrders.OnNew += EventOrders;
+            Quik.Trader.Objects.tOrders.OnChange += EventOrders;
 
-            Trader.Objects.tStopOrders.OnNew += new Events.EventsBase<StopOrder>.eventElement(EventStopOrders);
-            Trader.Objects.tStopOrders.OnChange += new Events.EventsBase<StopOrder>.eventElement(EventStopOrders);
+            Quik.Trader.Objects.tStopOrders.OnNew += EventStopOrders;
+            Quik.Trader.Objects.tStopOrders.OnChange += EventStopOrders;
 
-            Trader.Objects.tPortfolios.OnNew += new Events.EventsBase<Portfolio>.eventElement(EventPortfolio);
-            //Trader.Objects.tPortfolios.OnChange += new Events.EventsBase<Portfolio>.eventElement(EventPortfolio);
+            Quik.Trader.Objects.tPortfolios.OnNew += EventPortfolio;
+            //Quik.Trader.Objects.tPortfolios.OnChange += new Events.EventsBase<Portfolio>.eventElement(EventPortfolio);
 
-            Trader.Objects.tPositions.OnNew += new Events.EventsBase<Position>.eventElement(EventPositions);
-            Trader.Objects.tPositions.OnChange += new Events.EventsBase<Position>.eventElement(EventPositions);
+            Quik.Trader.Objects.tPositions.OnNew += EventPositions;
+            Quik.Trader.Objects.tPositions.OnChange += EventPositions;
 
-            Trader.Objects.tTransaction.OnTransReply += new ToolsTrans.eventTrans((listReply) =>
+            Quik.Trader.Objects.tTransaction.OnTransReply += new ToolsTrans.eventTrans((listReply) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     if (listReply.Count() > 0)
                     {
@@ -699,7 +684,7 @@ namespace AppVEConector
                         Reply r = listReply.Last();
                         if (r.NotIsNull())
                         {
-                            this.LastMarketReply = r;
+                            LastMarketReply = r;
                             ChangeTextMainStatusBar(r.ResultMsg);
                         }
                     }
@@ -713,7 +698,7 @@ namespace AppVEConector
         /// <param name="action"></param>
         private void ForEachWinDepth(Action<Form_GraphicDepth> action)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 if (ListFormsDepth.NotIsNull() && ListFormsDepth.Count > 0)
                 {
@@ -746,9 +731,9 @@ namespace AppVEConector
 
         private void InitTimers()
         {
-            EventHandler livingLoop = (s, e) =>
+            void livingLoop(object s, EventArgs e)
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     var now = DateTime.Now;
                     //100ms
@@ -756,7 +741,7 @@ namespace AppVEConector
                     {
                         if (OnTimer100ms.NotIsNull())
                         {
-                            this.OnTimer100ms((DispatcherTimer)s);
+                            OnTimer100ms((DispatcherTimer)s);
                         }
                         Timer100ms = now;
                     }
@@ -765,50 +750,50 @@ namespace AppVEConector
                     {
                         if (OnTimer1s.NotIsNull())
                         {
-                            this.OnTimer1s((DispatcherTimer)s);
+                            OnTimer1s((DispatcherTimer)s);
                         }
                         Timer1s = now;
                     }
                     //3 sec
                     if (now > Timer3s.AddSeconds(3))
                     {
-                        if (this.OnTimer3s.NotIsNull())
+                        if (OnTimer3s.NotIsNull())
                         {
-                            this.OnTimer3s((DispatcherTimer)s);
+                            OnTimer3s((DispatcherTimer)s);
                         }
                         Timer3s = now;
                     }
                     // 5 sec
                     if (now > Timer5s.AddSeconds(5))
                     {
-                        if (this.OnTimer5s.NotIsNull())
+                        if (OnTimer5s.NotIsNull())
                         {
-                            this.OnTimer5s((DispatcherTimer)s);
+                            OnTimer5s((DispatcherTimer)s);
                         }
                         Timer5s = now;
                     }
                     EventStrategy();
                 });
-            };
-            MTimer.InitTimer(new TimeSpan(100), livingLoop);
+            }
+            TimersController.Timer(new TimeSpan(100), livingLoop);
 
             OnTimer1s += (timer) =>
             {
                 AutoOrdersLoopControl();
                 AutoSLLoopControl();
-                this.CheckAllSignals();
-                this.ForEachWinDepth((formDepth) =>
+                CheckAllSignals();
+                ForEachWinDepth((formDepth) =>
                 {
                     formDepth.FastUpdater();
                 });
             };
             OnTimer3s += (timer) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
-                    this.Trader.PingServer();
+                    Quik.Trader.PingServer();
                     UpdateInfoPortfolios();
-                    this.ForEachWinDepth((formDepth) =>
+                    ForEachWinDepth((formDepth) =>
                     {
                         formDepth.LoopControl();
                     });
@@ -816,20 +801,20 @@ namespace AppVEConector
             };
             OnTimer5s += (timer) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     UpdateInfoPositions();
-                    ChangeTextMainStatusBar(Trader.Objects.tOldTrades.CountNew().ToString());
+                    ChangeTextMainStatusBar(Quik.Trader.Objects.tOldTrades.Count.ToString());
                 });
             };
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Trader.Disconnect();
+            Quik.Trader.Disconnect();
             Thread.Sleep(1);
             SaveAll();
-            MTimer.StopAll();
+            TimersController.StopAll();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -853,7 +838,7 @@ namespace AppVEConector
 
         private void DataGridPositions_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 var senderGrid = (DataGridView)sender;
                 if (senderGrid.Columns[e.ColumnIndex] is DataGridViewButtonColumn && e.RowIndex >= 0)
@@ -869,7 +854,7 @@ namespace AppVEConector
             var obj = (TextBox)sender;
             if (obj.Text.Length > 1)
             {
-                var list = this.FindSecurity(obj.Text);
+                var list = FindSecurity(obj.Text);
                 if (list.NotIsNull() && list.Count() > 0)
                 {
                     dataGridFoundSec.Rows.Clear();
@@ -897,7 +882,7 @@ namespace AppVEConector
                 if (row.Tag.NotIsNull())
                 {
                     var sec = (Securities)row.Tag;
-                    this.ShowGraphicDepth(sec);
+                    ShowGraphicDepth(sec);
                 }
             }
         }
@@ -919,14 +904,14 @@ namespace AppVEConector
             FormSpeedOrders = new Form_LightOrders(this);
             if (FormSpeedOrders.NotIsNull())
             {
-                FormSpeedOrders.FormClosed += (s, ee) => { this.FormSpeedOrders = null; };
+                FormSpeedOrders.FormClosed += (s, ee) => { FormSpeedOrders = null; };
                 FormSpeedOrders.Show();
             }
         }
         private void ToolStripMenuItemTestSign_Click_1(object sender, EventArgs e)
         {
             SignalView.GSMSignaler.SendTestSignal();
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 Thread.Sleep(1000);
                 SignalView.GSMSignaler.SendTestSignal(false);
@@ -936,7 +921,7 @@ namespace AppVEConector
         private void ToolStripMenuItemSignCall_Click(object sender, EventArgs e)
         {
             SignalView.GSMSignaler.SendSignalCall();
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 Thread.Sleep(15000);
                 SignalView.GSMSignaler.SendSignalResetCall();
@@ -948,22 +933,23 @@ namespace AppVEConector
         /// <returns></returns>
         public IEnumerable<Securities> FindSecurity(string codeOrName)
         {
-            if (this.Trader.IsNull()) return null;
-            if (this.Trader.Objects.tSecurities.Count > 0)
+            if (Quik.Trader.IsNull())
             {
-                var list = this.Trader.Objects.tSecurities.ToArray().Where(s => s.Name.NotIsNull() && s.Code.NotIsNull() &&
-                (s.Code.ToUpper().Contains(codeOrName.ToUpper()) || s.Name.ToUpper().Contains(codeOrName.ToUpper())));
-                if (list.NotIsNull()) return list;
+                return null;
+            }
+            if (Quik.Trader.Objects.tSecurities.Count > 0)
+            {
+                return Searcher.Stock(Quik.Trader.Objects.tSecurities.ToArray(), codeOrName);
             }
             return null;
         }
         /// <summary> Поиск инструмета </summary>
         public Securities FindSecurity(string secCode, string classCode)
         {
-            if (this.Trader.IsNull()) return null;
-            if (this.Trader.Objects.tSecurities.Count > 0)
+            if (Quik.Trader.IsNull()) return null;
+            if (Quik.Trader.Objects.tSecurities.Count > 0)
             {
-                var sec = this.Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.ToUpper().Contains(secCode.ToUpper()) && s.Class.Code.ToUpper().Contains(classCode.ToUpper()));
+                var sec = Quik.Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code.ToUpper().Contains(secCode.ToUpper()) && s.Class.Code.ToUpper().Contains(classCode.ToUpper()));
                 if (sec.NotIsNull()) return sec;
             }
             return null;
@@ -971,7 +957,7 @@ namespace AppVEConector
         /// <summary> Возвращает торговый элемент, или null </summary>
         public TElement GetTradeElement(Securities sec)
         {
-            return this.GetTradeElement(sec.Code, sec.Class.Code);
+            return GetTradeElement(sec.Code, sec.Class.Code);
         }
         /// <summary> Возвращает торговый элемент, или null </summary>
         /// <param name="secCode"></param>
@@ -979,9 +965,9 @@ namespace AppVEConector
         /// <returns></returns>
         public TElement GetTradeElement(string secCode, string classCode)
         {
-            if (this.Trader.IsNull()) return null;
-            if (this.DataTrading.IsNull()) return null;
-            var TrElem = this.DataTrading.Collection.FirstOrDefault(tr => tr.Security.Code == secCode && tr.Security.Class.Code == classCode);
+            if (Quik.Trader.IsNull()) return null;
+            if (DataTrading.IsNull()) return null;
+            var TrElem = DataTrading.Collection.FirstOrDefault(tr => tr.Security.Code == secCode && tr.Security.Class.Code == classCode);
             return TrElem.NotIsNull() ? TrElem : null;
         }
         /// <summary> Получает объект позиций по инструменту</summary>
@@ -989,77 +975,43 @@ namespace AppVEConector
         /// <returns></returns>
         public Position GetPosition(Securities sec)
         {
-            if (this.Trader.IsNull()) return null;
-            if (this.Trader.Objects.tPositions.Count == 0) return null;
-
-            var pos = this.Trader.Objects.tPositions.ToArray().FirstOrDefault(p => p.Sec.Code == sec.Code && p.Sec.Class.Code == sec.Class.Code);
-            if (pos.NotIsNull()) return pos;
-            return null;
-        }
-
-
-
-        /// <summary> Получает инструмент по коду инструмента и коду класса. </summary>
-        /// <param name="codeSecAndClass">Формат строки SIH8:SPBFUT</param>
-        public Securities GetSecCodeAndClass(string codeSecAndClass)
-        {
-            if (codeSecAndClass.Empty()) return null;
-            string line = codeSecAndClass;
-            if (!line.Empty())
+            if (Quik.Trader.IsNull() || Quik.Trader.Objects.tPositions.Count == 0)
             {
-                string[] el = line.Split(':');
-                if (el.Length > 1)
-                {
-                    if (!el[0].Empty() && !el[1].Empty())
-                    {
-                        var sec = this.Trader.Objects.tSecurities.ToArray().FirstOrDefault(s => s.Code == el[0] && s.Class.Code == el[1]);
-                        if (sec.NotIsNull())
-                        {
-                            return sec;
-                        }
-                    }
-                }
+                return null;
             }
-            return null;
+            var pos = Quik.Trader.Objects.tPositions.ToArray().FirstOrDefault(p => p.Sec.Code == sec.Code && p.Sec.Class.Code == sec.Class.Code);
+            return pos.NotIsNull() ? pos : null;
         }
 
-        /// <summary>
-        /// Проверка, яв-ся рабочим данный инструмент.
-        /// </summary>
-        /// <param name="sec"></param>
-        /// <param name="reloadSec"></param>
-        /// <returns></returns>
-        public bool CheckWorkingSec(Securities sec, bool reloadSec = false)
+
+        public Securities GetSecByCode(string codeAndClass)
         {
-            var list = Global.GetWorkingListSec(reloadSec);
-            foreach (var el in list.ToArray())
+            if (codeAndClass.Empty())
             {
-                if (el.ToUpper().Contains(sec.ToString().ToUpper()))
-                {
-                    return true;
-                }
+                return null;
             }
-            return false;
+            return Searcher.StockByCode(Quik.Trader.Objects.tSecurities.ToArray(), codeAndClass);
         }
+
         /// <summary>
         /// Проводит регистрацию всех активных инструментов
         /// </summary>
-        public void RegisterAllSecurity()
-        {
-            var res = Qlog.CatchException(() =>
-            {
-                var list = Global.GetWorkingListSec();
-                foreach (var el in list.ToArray())
-                {
-                    var sec = this.GetSecCodeAndClass(el);
-                    if (sec.NotIsNull())
-                    {
-                        Trader.RegisterSecurities(sec);
-                    }
-                }
-                return false;
-            });
-        }
+        //public void RegisterAllSecurity()
+        //{
+        //    var res = QLog.CatchException(() =>
+        //    {
+        //        var list = Global.GetWorkingListSec();
+        //        foreach (var el in list.ToArray())
+        //        {
+        //            var sec = GetSecCodeAndClass(el);
+        //            if (sec.NotIsNull())
+        //            {
+        //                Trader.RegisterSecurities(sec);
+        //            }
+        //        }
+        //        return false;
+        //    });
+        //}
 
         /// <summary>
         /// Проверка на клиринг. true - идет клиринг
@@ -1067,10 +1019,10 @@ namespace AppVEConector
         /// <returns></returns>
         public bool CheckKliring()
         {
-            if (this.KliringDay.Time < DateTime.Now
-                    && this.KliringDay.Time.AddMinutes(this.KliringDay.Period) > DateTime.Now) return true;
-            if (this.KliringEndDay.Time < DateTime.Now
-                    && this.KliringEndDay.Time.AddMinutes(this.KliringEndDay.Period) > DateTime.Now) return true;
+            if (KliringDay.Time < DateTime.Now
+                    && KliringDay.Time.AddMinutes(KliringDay.Period) > DateTime.Now) return true;
+            if (KliringEndDay.Time < DateTime.Now
+                    && KliringEndDay.Time.AddMinutes(KliringEndDay.Period) > DateTime.Now) return true;
             return false;
         }
 
@@ -1082,10 +1034,10 @@ namespace AppVEConector
                 if (row.Tag.NotIsNull())
                 {
                     var sec = (Securities)row.Tag;
-                    var el = this.DataTrading.AddOrFind(sec);
+                    var el = DataTrading.AddOrFind(sec);
                     if (el.NotIsNull())
                     {
-                        Trader.RegisterSecurities(el.Security);
+                        Quik.Trader.RegisterSecurities(el.Security);
                     }
                 }
             }
@@ -1097,15 +1049,13 @@ namespace AppVEConector
             var filename = rootDir + "/description.txt";
             WFile file = new WFile(filename);
             file.WriteFileNew(textBoxDescription.Text);
-            labelDescription.Text = textBoxDescription.Text;
         }
 
-        private void loadTextDescription()
+        private void LoadTextDescription()
         {
             var rootDir = Global.GetPathData();
             var filename = rootDir + "/description.txt";
             WFile file = new WFile(filename);
-            labelDescription.Text = textBoxDescription.Text = file.ReadAll();
         }
 
         private void арбитражToolStripMenuItem_Click(object sender, EventArgs e)

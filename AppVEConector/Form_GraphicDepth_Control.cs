@@ -55,7 +55,7 @@ namespace AppVEConector
                 var sOrders = GetStopOrdersForControl();
                 foreach (var sOrd in sOrders)
                 {
-                    Trader.CancelStopOrder(sOrd);
+                    Quik.Trader.CancelStopOrder(sOrd);
                 }
             };
             buttonMCReset.Click += (s, e) =>
@@ -87,7 +87,7 @@ namespace AppVEConector
                     {
                         foreach (var sOrd in sOrders)
                         {
-                            Trader.CancelStopOrder(sOrd);
+                            Quik.Trader.CancelStopOrder(sOrd);
                         }
                         return;
                     }
@@ -125,11 +125,11 @@ namespace AppVEConector
                             var newTakeProfit = GetTakeProfitOrderControl(pos.Data.CurrentNet, takePos, Price);
                             if (newStopOrder.NotIsNull() && checkBoxMCStopLoss.Checked)
                             {
-                                Trader.CreateStopOrder(newStopOrder, StopOrderType.StopLimit);
+                                Quik.Trader.CreateStopOrder(newStopOrder, StopOrderType.StopLimit);
                             }
                             if (newTakeProfit.NotIsNull() && checkBoxMCTakeProfit.Checked)
                             {
-                                Trader.CreateStopOrder(newTakeProfit, StopOrderType.TakeProfit);
+                                Quik.Trader.CreateStopOrder(newTakeProfit, StopOrderType.TakeProfit);
                             }
                         }
                         else
@@ -144,9 +144,9 @@ namespace AppVEConector
                     var sOrders = GetStopOrdersForControl();
                     foreach (var sOrd in sOrders)
                     {
-                        Trader.CancelStopOrder(sOrd);
-                        Trader.CancelAllOrder(Securities);
-                        Trader.CancelAllStopOrder(Securities);
+                        Quik.Trader.CancelStopOrder(sOrd);
+                        Quik.Trader.CancelAllOrder(Securities);
+                        Quik.Trader.CancelAllStopOrder(Securities);
                     }
                     //Снимаем флаг фиксации цены, чтобы при последующих ордерах не выставлялось не корректно.
                     checkBoxMCSetPrice.Checked = false;
@@ -275,28 +275,28 @@ namespace AppVEConector
         {
             if (position != 0)
             {
-                return Trader.Objects.tMyTrades.ToArray().LastOrDefault(t => t.Trade.Sec == Securities);
+                return Quik.Trader.Objects.tMyTrades.ToArray().LastOrDefault(t => t.Trade.Sec == Securities);
             }
             /*if (position > 0)
             {
-                return Trader.Objects.MyTrades.LastOrDefault(t => t.Trade.Sec == Securities && t.Trade.Direction == OrderDirection.Buy);
+                return Quik.Trader.Objects.MyTrades.LastOrDefault(t => t.Trade.Sec == Securities && t.Trade.Direction == OrderDirection.Buy);
             }
             else if (position < 0)
             {
-                return Trader.Objects.MyTrades.LastOrDefault(t => t.Trade.Sec == Securities && t.Trade.Direction == OrderDirection.Sell);
+                return Quik.Trader.Objects.MyTrades.LastOrDefault(t => t.Trade.Sec == Securities && t.Trade.Direction == OrderDirection.Sell);
             }*/
             return null;
         }
         private IEnumerable<StopOrder> GetStopOrdersForControl()
         {
-            return Trader.Objects.tStopOrders.SearchAll(o => o.Sec == Securities
+            return Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == Securities
                 && o.IsActive() && o.Comment.Contains(Define.STOP_CONTROL)
             );
         }
 
         private Position GetPositionForControl()
         {
-            return Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
+            return Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
         }
         /// <summary>
         /// Получение процент позиции, от общей позиции

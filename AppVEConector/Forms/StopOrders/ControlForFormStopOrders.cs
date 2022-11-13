@@ -1,7 +1,5 @@
 ﻿using AppVEConector.libs;
 using AppVEConector.libs.Signal;
-using Connector.Logs;
-using Managers;
 using Market.AppTools;
 using MarketObjects;
 using QuikConnector.MarketObjects;
@@ -13,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Threading;
+using QuikConnector.Components.Log;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector.Forms.StopOrders
 {
@@ -170,7 +170,7 @@ namespace AppVEConector.Forms.StopOrders
             {
                 eventInitPanel();
             }
-            Parent.Trader.Objects.tStopOrders.OnNew += (stopOrder) =>
+            Quik.Trader.Objects.tStopOrders.OnNew += (stopOrder) =>
             {
                 foreach (var sOrd in stopOrder)
                 {
@@ -195,7 +195,7 @@ namespace AppVEConector.Forms.StopOrders
         /// <returns></returns>
         private decimal? GetPriceLastStopOrder(Securities sec)
         {
-            var stopOrders = Parent.Trader.Objects.tStopOrders.SearchFirst(so => so.IsActive()
+            var stopOrders = Quik.Trader.Objects.tStopOrders.SearchFirst(so => so.IsActive()
                 && so.Sec == sec && so.Comment.Contains(Define.STOP_LOSS));
             if (stopOrders.NotIsNull())
             {
@@ -214,14 +214,14 @@ namespace AppVEConector.Forms.StopOrders
             {
                 panel.ComboboxSecurity.TextChanged += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         UpdateDataPanel(panel);
                     });
                 };
                 panel.ComboboxSecurity.SelectedValueChanged += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         var thisComBox = (ComboBox)s;
                         var doubleText = thisComBox.Text;
@@ -238,10 +238,10 @@ namespace AppVEConector.Forms.StopOrders
                 };
                 panel.ComboboxSecurity.MouseMove += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         var thisComBox = (ComboBox)s;
-                        var sec = Parent.Trader.Objects.tSecurities.SearchFirst(ss => ss.ToString() == thisComBox.Text);
+                        var sec = Quik.Trader.Objects.tSecurities.SearchFirst(ss => ss.ToString() == thisComBox.Text);
                         if (sec.NotIsNull())
                         {
                             SetMessage(
@@ -255,7 +255,7 @@ namespace AppVEConector.Forms.StopOrders
                 };
                 panel.PriceStop.MouseDoubleClick += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         if (panel.TrElement.IsNull()) return;
                         if (panel.PriceStop.IsMouseOnTextBox(e))
@@ -275,7 +275,7 @@ namespace AppVEConector.Forms.StopOrders
 
                 panel.ButtonCancelOrder.MouseUp += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         if (panel.TrElement.IsNull()) return;
                         MouseEventArgs ev = (MouseEventArgs)e;
@@ -291,7 +291,7 @@ namespace AppVEConector.Forms.StopOrders
                 };
                 panel.ButtonCancelStop.MouseUp += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         if (panel.TrElement.IsNull()) return;
                         MouseEventArgs ev = (MouseEventArgs)e;
@@ -308,7 +308,7 @@ namespace AppVEConector.Forms.StopOrders
 
                 panel.ButtonStop.MouseUp += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         if (panel.TrElement.IsNull()) return;
 
@@ -326,7 +326,7 @@ namespace AppVEConector.Forms.StopOrders
 
                 panel.LabelPosition.MouseUp += (s, e) =>
                 {
-                    Qlog.CatchException(() =>
+                    QLog.CatchException(() =>
                     {
                         if (panel.TrElement.IsNull()) return;
                         MouseEventArgs ev = (MouseEventArgs)e;
@@ -351,7 +351,7 @@ namespace AppVEConector.Forms.StopOrders
 
         /*private void LoadListTradeSec(ComboBox comboSec)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 var listWorkSec = Global.GetWorkingListSec();
                 var list = listWorkSec.ToList();
@@ -375,19 +375,19 @@ namespace AppVEConector.Forms.StopOrders
                 return;
             }
             string strSec = panel.ComboboxSecurity.SelectedItem.ToString();
-            var sec = Parent.GetSecCodeAndClass(strSec);
+            var sec = Parent.GetSecByCode(strSec);
             if (sec.NotIsNull())
             {
                 panel.TrElement = Parent.DataTrading.Collection.FirstOrDefault(t => t.Security == sec);
                 if (panel.TrElement.NotIsNull())
                 {
-                    panel.Position = Parent.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
-                    Parent.Trader.RegisterSecurities(sec);
+                    panel.Position = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
+                    Quik.Trader.RegisterSecurities(sec);
                     panel.PriceStop.InitSecurity(sec);
-
+                     
                     //Установка последней стоп цены
                     panel.PriceStop.Value = 0;
-                    var stopOrders = Parent.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == panel.TrElement.Security);
+                    var stopOrders = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == panel.TrElement.Security);
                     if (stopOrders.NotIsNull())
                     {
                         if (stopOrders.Count() > 0)
@@ -446,7 +446,7 @@ namespace AppVEConector.Forms.StopOrders
                     return;
                 }
             }
-            var pos = Parent.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
+            var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
             decimal stepStop = panel.TrElement.Security.Params.MinPriceStep * 20;
             int volume = pos.NotIsNull() ? pos.Data.CurrentNet : 0;
             if (volume < 0)
@@ -510,14 +510,14 @@ namespace AppVEConector.Forms.StopOrders
                 }
             }
 
-            MThread.InitThread(ThreadPriority.Normal, () =>
+            ThreadsController.Thread(ThreadPriority.Normal, () =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     Thread.Sleep(1000);
                     var countClosed = CancelAllStopOrders(panel);
                     Thread.Sleep(1000);
-                    Parent.Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
+                    Quik.Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
                     addSignalByStop(stopOrder);
                 });
             });
@@ -553,11 +553,11 @@ namespace AppVEConector.Forms.StopOrders
         {
             if (showInfo)
             {
-                var pos = Parent.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
-                var orders = Parent.Trader.Objects.tOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
+                var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
+                var orders = Quik.Trader.Objects.tOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
                 //panel.TrElement.Security.Orders.Where(p => p.Sec == panel.TrElement.Security && p.Status == OrderStatus.ACTIVE);
-                //Parent.Trader.Objects.Orders.Where(p => p.Sec == panel.TrElement.Security && p.Status == OrderStatus.ACTIVE);
-                var stop_orders = Parent.Trader.Objects.tStopOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
+                //Quik.Trader.Objects.Orders.Where(p => p.Sec == panel.TrElement.Security && p.Status == OrderStatus.ACTIVE);
+                var stop_orders = Quik.Trader.Objects.tStopOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
 
                 string text = "Инфо по " + panel.TrElement.Security + ": \n";
                 text += "Позиций: " + (pos.NotIsNull() ? pos.Data.CurrentNet : 0) + "\n";
@@ -575,7 +575,7 @@ namespace AppVEConector.Forms.StopOrders
             }
             else
             {
-                Parent.Trader.CancelAllOrder(panel.TrElement.Security);
+                Quik.Trader.CancelAllOrder(panel.TrElement.Security);
             }
         }
 
@@ -586,9 +586,9 @@ namespace AppVEConector.Forms.StopOrders
         {
             if (showInfo)
             {
-                var pos = Parent.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
-                var orders = Parent.Trader.Objects.tOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
-                var stop_orders = Parent.Trader.Objects.tStopOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
+                var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
+                var orders = Quik.Trader.Objects.tOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
+                var stop_orders = Quik.Trader.Objects.tStopOrders.SearchAll(p => p.Sec == panel.TrElement.Security && p.IsActive());
 
                 string text = "Инфо по " + panel.TrElement.Security + ": \n";
                 text += "Позиций: " + (pos.NotIsNull() ? pos.Data.CurrentNet : 0) + "\n";
@@ -616,7 +616,7 @@ namespace AppVEConector.Forms.StopOrders
         /// <param name="panel"></param>
         protected void ClosePos(PanelControl panel)
         {
-            var pos = Parent.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
+            var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == panel.TrElement.Security);
             if (pos.NotIsNull())
             {
                 var realPos = pos.Data.CurrentNet;
@@ -645,7 +645,7 @@ namespace AppVEConector.Forms.StopOrders
                                 order.Direction = OrderDirection.Buy;
                             }
                             order.Volume = countPos;
-                            Parent.Trader.CreateOrder(order);
+                            Quik.Trader.CreateOrder(order);
                         }
                         else
                         {
@@ -663,7 +663,7 @@ namespace AppVEConector.Forms.StopOrders
             {
                 return;
             }
-            var stopOrders = Parent.Trader.Objects.tStopOrders.SearchAll(so =>
+            var stopOrders = Quik.Trader.Objects.tStopOrders.SearchAll(so =>
                 so.IsActive() && so.Comment.Contains(Define.STOP_LOSS));
             foreach (var pan in ListPanels)
             {
@@ -693,7 +693,7 @@ namespace AppVEConector.Forms.StopOrders
                                 else
                                 {
                                     //если позиция ликвидирована, а стоп-заявки остались, то снимаем стопы
-                                    Parent.Trader.CancelAllStopOrder(pan.TrElement.Security);
+                                    Quik.Trader.CancelAllStopOrder(pan.TrElement.Security);
                                 }
                             }
                             else
@@ -734,7 +734,7 @@ namespace AppVEConector.Forms.StopOrders
                 return;
             }
 
-            var stopOrders = Parent.Trader.Objects.tStopOrders.SearchAll(so =>
+            var stopOrders = Quik.Trader.Objects.tStopOrders.SearchAll(so =>
             so.IsActive() && so.Comment.Contains(Define.STOP_LOSS));
             foreach (var pan in ListPanels)
             {
@@ -771,20 +771,20 @@ namespace AppVEConector.Forms.StopOrders
                         if (pan.Position.IsBuy())
                         {
                             var stOrd = stOrder.Where(o => o.Price > pan.TrElement.Security.LastPrice && pan.TrElement.Security.LastPrice > 0);
-                            if (stOrd.Count() > 0) Parent.Trader.CancelListStopOrders(stOrd);
+                            if (stOrd.Count() > 0) Quik.Trader.CancelListStopOrders(stOrd);
                             pan.LayoutPanel.BackColor = Color.LightGreen;
                         }
                         if (pan.Position.IsSell())
                         {
                             var stOrd = stOrder.Where(o => o.Price < pan.TrElement.Security.LastPrice && pan.TrElement.Security.LastPrice > 0);
-                            if (stOrd.Count() > 0) Parent.Trader.CancelListStopOrders(stOrd);
+                            if (stOrd.Count() > 0) Quik.Trader.CancelListStopOrders(stOrd);
                             pan.LayoutPanel.BackColor = Color.Coral;
                         }
                     }
                 }
 
                 //Получаем информацию по заявкам
-                var orders = Parent.Trader.Objects.tOrders.SearchAll(o => o.Sec == pan.TrElement.Security && o.Status == OrderStatus.ACTIVE);
+                var orders = Quik.Trader.Objects.tOrders.SearchAll(o => o.Sec == pan.TrElement.Security && o.Status == OrderStatus.ACTIVE);
                 var prefixOrdBuySell = "Or.B/S: ";
                 if (orders.NotIsNull() && orders.Count() > 0)
                 {
@@ -801,7 +801,7 @@ namespace AppVEConector.Forms.StopOrders
                 }
 
             }
-            var listPortf = Parent.Trader.Objects.tPortfolios.SearchAll(p => p.VarMargin != 0 && p.LimitKind == 0);
+            var listPortf = Quik.Trader.Objects.tPortfolios.SearchAll(p => p.VarMargin != 0 && p.LimitKind == 0);
             if (listPortf.NotIsNull())
             {
                 string textVarMargin = "";
@@ -817,10 +817,10 @@ namespace AppVEConector.Forms.StopOrders
         /// </summary>
         protected int CancelAllStopOrders(PanelControl panel)
         {
-            var cancelOrders = Parent.Trader.Objects.tStopOrders.SearchAll(so =>
+            var cancelOrders = Quik.Trader.Objects.tStopOrders.SearchAll(so =>
                     so.Sec == panel.TrElement.Security
                     && so.IsActive() && so.Comment.Contains(Define.STOP_LOSS));
-            Parent.Trader.CancelListStopOrders(cancelOrders);
+            Quik.Trader.CancelListStopOrders(cancelOrders);
             //RemoveListSignal(cancelOrders);
             return cancelOrders.Count();
         }

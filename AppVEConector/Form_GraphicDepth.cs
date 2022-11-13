@@ -4,31 +4,21 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 using Libs;
-using System.Collections.Generic;
-
 using MarketObjects;
-using Connector.Logs;
-using Managers;
-using Market.Candles;
 using System.Drawing.Drawing2D;
 using AppVEConector.libs;
 using QuikConnector.MarketObjects;
 using AppVEConector.GraphicTools.Indicators;
-using GraphicTools.Extension;
-using System.Drawing;
 using GraphicTools.Base;
-using AppVEConector.libs.Signal;
 using Market.AppTools;
 using Market.Base;
+using QuikConnector.Components.Log;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector
 {
     public partial class Form_GraphicDepth : Form
     {
-        /// <summary>
-        /// Trader
-        /// </summary>
-        public Connector.QuikConnector Trader = null;
         /// <summary>
         /// Торгуемый элемент
         /// </summary>
@@ -54,7 +44,7 @@ namespace AppVEConector
         {
             get
             {
-                return Trader.Objects.tStopOrders
+                return Quik.Trader.Objects.tStopOrders
                     .SearchAll(o => o.Sec == Securities)
                     .OrderBy(o => o.OrderNumber)
                     .LastOrDefault();
@@ -62,7 +52,7 @@ namespace AppVEConector
         }
 
 
-        public Form_GraphicDepth(Connector.QuikConnector trader, TElement trElement, object parent)
+        public Form_GraphicDepth(TElement trElement, object parent)
         {
             InitializeComponent();
             this.Parent = (MainForm)parent;
@@ -70,8 +60,7 @@ namespace AppVEConector
             {
                 this.Close();
             }
-            this.Trader = trader;
-            if (this.Trader.IsNull())
+            if (Quik.Trader.IsNull())
             {
                 this.Close();
             }
@@ -175,7 +164,7 @@ namespace AppVEConector
             };
             buttonGetPortionHistoryTrades.Click += (s, e) =>
             {
-                Trader.GetPortionHistoryTrades((int)numericUpDownHistoryTradesSlice.Value);
+                Quik.Trader.GetPortionHistoryTrades((int)numericUpDownHistoryTradesSlice.Value);
             };
 
             UpdateGraphic();
@@ -207,12 +196,12 @@ namespace AppVEConector
 
             Action eventCancelOrdersBuy = () =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
-                    var listOrders = Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsBuy());
+                    var listOrders = Quik.Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsBuy());
                     foreach (var ord in listOrders)
                     {
-                        Trader.CancelOrder(Securities, ord.OrderNumber);
+                        Quik.Trader.CancelOrder(Securities, ord.OrderNumber);
                     }
                 });
             };
@@ -229,12 +218,12 @@ namespace AppVEConector
 
             Action eventCancelOrdersSell = () =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
-                    var listOrders = Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsSell());
+                    var listOrders = Quik.Trader.Objects.tOrders.SearchAll(o => o.IsActive() && o.IsSell());
                     foreach (var ord in listOrders)
                     {
-                        Trader.CancelOrder(Securities, ord.OrderNumber);
+                        Quik.Trader.CancelOrder(Securities, ord.OrderNumber);
                     }
                 });
             };
@@ -274,9 +263,9 @@ namespace AppVEConector
                 }
                 if (MouseEvent.Button == MouseButtons.Right)
                 {
-                    var ord = this.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
+                    var ord = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
                         && o.IsActive() && o.IsBuy());
-                    this.Trader.CancelListStopOrders(ord);
+                    Quik.Trader.CancelListStopOrders(ord);
                 }
             };
             buttonStopLimitSell.MouseUp += (s, e) =>
@@ -288,9 +277,9 @@ namespace AppVEConector
                 }
                 if (MouseEvent.Button == MouseButtons.Right)
                 {
-                    var ord = this.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
+                    var ord = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Comment.Contains(Define.STOP_LIMIT)
                         && o.IsActive() && o.IsSell());
-                    this.Trader.CancelListStopOrders(ord);
+                    Quik.Trader.CancelListStopOrders(ord);
                 }
             };
 
@@ -356,12 +345,12 @@ namespace AppVEConector
                     sOrder.ConditionPrice = this.numericUpDownStopPrice.Value + Securities.Params.MinPriceStep;
                     sOrder.Offset = Securities.Params.MinPriceStep;
                     sOrder.Spread = Securities.Params.MinPriceStep;
-                    this.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
+                    Quik.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
                 }
                 else
                 {
                     sOrder.ConditionPrice = this.numericUpDownStopPrice.Value - Securities.Params.MinPriceStep;
-                    this.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
+                    Quik.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
                 }
             }
             else
@@ -381,12 +370,12 @@ namespace AppVEConector
                     sOrder.ConditionPrice = this.numericUpDownStopPrice.Value - Securities.Params.MinPriceStep;
                     sOrder.Offset = Securities.Params.MinPriceStep;
                     sOrder.Spread = Securities.Params.MinPriceStep;
-                    this.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
+                    Quik.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
                 }
                 else
                 {
                     sOrder.ConditionPrice = this.numericUpDownStopPrice.Value + Securities.Params.MinPriceStep;
-                    this.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
+                    Quik.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
                 }
             }
         }
@@ -434,9 +423,9 @@ namespace AppVEConector
                             direction = OrderDirection.Sell;
                         }
                         var clientCode = comboBoxCodeClient.SelectedItem.NotIsNull() ? comboBoxCodeClient.SelectedItem.ToString() : "";
-                        MThread.InitThread(() =>
+                        ThreadsController.Thread(() =>
                         {
-                            Trader.CreateOrder(new Order()
+                            Quik.Trader.CreateOrder(new Order()
                             {
                                 Sec = Securities,
                                 Direction = direction,
@@ -457,13 +446,13 @@ namespace AppVEConector
                         var data = (StructClickDepth)cell.Tag;
                         if (data.Flag == "buy" || data.Flag == "sell")
                         {
-                            MThread.InitThread(() =>
+                            ThreadsController.Thread(() =>
                             {
-                                var ords = Trader.Objects.tOrders.SearchAll(o => o.Sec == Securities && o.Price == data.Price && o.IsActive());
+                                var ords = Quik.Trader.Objects.tOrders.SearchAll(o => o.Sec == Securities && o.Price == data.Price && o.IsActive());
                                 if (ords.NotIsNull())
                                 {
                                     foreach (var ord in ords)
-                                        Trader.CancelOrder(ord.Sec, ord.OrderNumber);
+                                        Quik.Trader.CancelOrder(ord.Sec, ord.OrderNumber);
                                 }
                             });
                         }
@@ -474,14 +463,14 @@ namespace AppVEConector
 
         private void Form_GraphicDepth_FormClosed(object sender, FormClosedEventArgs e)
         {
-            this.Trader.UnregisterDepth(Securities);
+            Quik.Trader.UnregisterDepth(Securities);
         }
 
         private void buttonCancelAll_Click(object sender, EventArgs e)
         {
             if (Securities.NotIsNull())
             {
-                Trader.CancelAllOrder(Securities);
+                Quik.Trader.CancelAllOrder(Securities);
             }
         }
 
@@ -489,12 +478,12 @@ namespace AppVEConector
         {
             if (Securities.NotIsNull())
             {
-                var pos = Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
+                var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == Securities);
                 if (pos != null)
                 {
                     if (pos.CurrentVolume != 0)
                     {
-                        MThread.InitThread(() =>
+                        ThreadsController.Thread(() =>
                         {
                             OrderDirection? direction = pos.IsBuy()
                                 ? OrderDirection.Sell : OrderDirection.Buy;
@@ -506,7 +495,7 @@ namespace AppVEConector
                             this.GuiAsync(() =>
                             {
                                 var clientCode = comboBoxCodeClient.SelectedItem.NotIsNull() ? comboBoxCodeClient.SelectedItem.ToString() : "";
-                                Trader.CreateOrder(new Order()
+                                Quik.Trader.CreateOrder(new Order()
                                 {
                                     Sec = Securities,
                                     Direction = direction,
@@ -532,7 +521,7 @@ namespace AppVEConector
                 if (numericUpDownVolume.Value > 0)
                 {
                     var clientCode = comboBoxCodeClient.SelectedItem.NotIsNull() ? comboBoxCodeClient.SelectedItem.ToString() : "";
-                    Trader.CreateOrder(new Order()
+                    Quik.Trader.CreateOrder(new Order()
                     {
                         Sec = Securities,
                         Direction = OrderDirection.Buy,
@@ -555,7 +544,7 @@ namespace AppVEConector
                 if (numericUpDownVolume.Value > 0)
                 {
                     var clientCode = comboBoxCodeClient.SelectedItem.NotIsNull() ? comboBoxCodeClient.SelectedItem.ToString() : "";
-                    Trader.CreateOrder(new Order()
+                    Quik.Trader.CreateOrder(new Order()
                     {
                         Sec = Securities,
                         Direction = OrderDirection.Sell,
@@ -591,7 +580,7 @@ namespace AppVEConector
             {
                 if (this.TrElement.NotIsNull())
                 {
-                    this.Trader.RegisterDepth(Securities);
+                    Quik.Trader.RegisterDepth(Securities);
                 }
                 dataGridViewDepth.Enabled = false;
                 panelLock.Visible = true;
@@ -600,7 +589,7 @@ namespace AppVEConector
             {
                 if (this.TrElement.NotIsNull())
                 {
-                    this.Trader.UnregisterDepth(Securities);
+                    Quik.Trader.UnregisterDepth(Securities);
                 }
                 dataGridViewDepth.Enabled = true;
                 panelLock.Visible = false;
@@ -611,7 +600,7 @@ namespace AppVEConector
         {
             if (Securities != null)
             {
-                Trader.CancelAllStopOrder(Securities);
+                Quik.Trader.CancelAllStopOrder(Securities);
             }
         }
 
@@ -635,7 +624,7 @@ namespace AppVEConector
         /// <param name="e"></param>
         private void buttonCreateStopOrder_Click(object sender, EventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 decimal Price = numericUpDownStopPrice.Value;
                 this.SetStopOrder(Price, Position.Data.CurrentNet);
@@ -657,7 +646,7 @@ namespace AppVEConector
 
         private void pictureBoxGraphic_Paint(object sender, PaintEventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 var g = e.Graphics;
                 g.CompositingQuality = CompositingQuality.GammaCorrected;
@@ -768,7 +757,7 @@ namespace AppVEConector
                 if (!row.Tag.IsNull())
                 {
                     var ord = (Order)row.Tag;
-                    this.Trader.CancelOrder(ord.Sec, ord.OrderNumber);
+                    Quik.Trader.CancelOrder(ord.Sec, ord.OrderNumber);
                 }
             });
         }
@@ -782,7 +771,7 @@ namespace AppVEConector
                     var clientCode = comboBoxCodeClient.SelectedItem.NotIsNull() ? comboBoxCodeClient.SelectedItem.ToString() : "";
                     var ord = (Order)row.Tag;
                     ord.ClientCode = clientCode;
-                    this.Trader.CreateOrder(ord);
+                    Quik.Trader.CreateOrder(ord);
                 }
             });
         }
@@ -807,9 +796,9 @@ namespace AppVEConector
                     int CountFiles = file.FileNames.Length;
                     int CountStat = CountFiles;
 
-                    threadLoadHistory = MThread.InitThread(() =>
+                    threadLoadHistory = ThreadsController.Thread(() =>
                     {
-                        Qlog.CatchException(() =>
+                        QLog.CatchException(() =>
                         {
                             foreach (string filename in file.FileNames)
                             {
@@ -909,7 +898,7 @@ namespace AppVEConector
 
         private void button2_Click(object sender, EventArgs e)
         {
-            var formStops = new Form_ActivateStopOrders(this.Trader, this.TrElement);
+            var formStops = new Form_ActivateStopOrders(this.TrElement);
             formStops.ShowDialog();
         }
 
@@ -924,7 +913,7 @@ namespace AppVEConector
                     var newOrd = ord.Clone();
                     newOrd.ClientCode = clientCode;
                     newOrd.Price = ord.Price + 5 * Securities.MinPriceStep;
-                    this.Trader.CreateOrder(newOrd);
+                    Quik.Trader.CreateOrder(newOrd);
                 }
             });
         }
@@ -940,7 +929,7 @@ namespace AppVEConector
                     var newOrd = ord.Clone();
                     newOrd.ClientCode = clientCode;
                     newOrd.Price = ord.Price - 5 * Securities.MinPriceStep;
-                    this.Trader.CreateOrder(newOrd);
+                    Quik.Trader.CreateOrder(newOrd);
                 }
             });
         }
@@ -956,7 +945,7 @@ namespace AppVEConector
                     var newOrd = ord.Clone();
                     newOrd.ClientCode = clientCode;
                     newOrd.Price = ord.Price + 10 * Securities.MinPriceStep;
-                    this.Trader.CreateOrder(newOrd);
+                    Quik.Trader.CreateOrder(newOrd);
                 }
             });
         }
@@ -972,14 +961,14 @@ namespace AppVEConector
                     var newOrd = ord.Clone();
                     newOrd.ClientCode = clientCode;
                     newOrd.Price = ord.Price - 10 * Securities.MinPriceStep;
-                    this.Trader.CreateOrder(newOrd);
+                    Quik.Trader.CreateOrder(newOrd);
                 }
             });
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var formCopy = new Form_CopySecurity(this.Trader, this.TrElement);
+            var formCopy = new Form_CopySecurity(TrElement);
             formCopy.ShowDialog();
         }
 

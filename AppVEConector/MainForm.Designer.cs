@@ -106,14 +106,18 @@ namespace AppVEConector
             this.BtnGetDepth = new System.Windows.Forms.DataGridViewButtonColumn();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.labelLastOldTrade = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxSearchSec = new System.Windows.Forms.TextBox();
             this.dataGridFoundSec = new System.Windows.Forms.DataGridView();
             this.CodeSec = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.NameSec = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.buttonOpenFoundDepth = new System.Windows.Forms.Button();
             this.buttonSaveSecurity = new System.Windows.Forms.Button();
-            this.labelDescription = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label20 = new System.Windows.Forms.Label();
+            this.buttonOpenFoundDepth = new System.Windows.Forms.Button();
+            this.labelLastTrade = new System.Windows.Forms.Label();
             this.tabControlMain = new System.Windows.Forms.TabControl();
             this.tabPageSignals = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel19 = new System.Windows.Forms.TableLayoutPanel();
@@ -234,6 +238,7 @@ namespace AppVEConector
             this.labelASLLog = new System.Windows.Forms.Label();
             this.comboBoxASLAccount = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
+            this.labelCountOldTrade = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabPageStopOrders.SuspendLayout();
@@ -326,7 +331,7 @@ namespace AppVEConector
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 478);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 538);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(933, 22);
             this.statusStrip1.TabIndex = 0;
@@ -403,14 +408,14 @@ namespace AppVEConector
             // ToolStripMenuItemTestSign
             // 
             this.ToolStripMenuItemTestSign.Name = "ToolStripMenuItemTestSign";
-            this.ToolStripMenuItemTestSign.Size = new System.Drawing.Size(200, 22);
+            this.ToolStripMenuItemTestSign.Size = new System.Drawing.Size(199, 22);
             this.ToolStripMenuItemTestSign.Text = "Тест передачи сигнала";
             this.ToolStripMenuItemTestSign.Click += new System.EventHandler(this.ToolStripMenuItemTestSign_Click_1);
             // 
             // ToolStripMenuItemSignCall
             // 
             this.ToolStripMenuItemSignCall.Name = "ToolStripMenuItemSignCall";
-            this.ToolStripMenuItemSignCall.Size = new System.Drawing.Size(200, 22);
+            this.ToolStripMenuItemSignCall.Size = new System.Drawing.Size(199, 22);
             this.ToolStripMenuItemSignCall.Text = "Тест вызова";
             this.ToolStripMenuItemSignCall.Click += new System.EventHandler(this.ToolStripMenuItemSignCall_Click);
             // 
@@ -426,7 +431,7 @@ namespace AppVEConector
             this.tabPageStopOrders.Controls.Add(this.splitContainerMainOrders);
             this.tabPageStopOrders.Location = new System.Drawing.Point(4, 22);
             this.tabPageStopOrders.Name = "tabPageStopOrders";
-            this.tabPageStopOrders.Size = new System.Drawing.Size(925, 428);
+            this.tabPageStopOrders.Size = new System.Drawing.Size(925, 488);
             this.tabPageStopOrders.TabIndex = 3;
             this.tabPageStopOrders.Text = "Стоп заявки";
             this.tabPageStopOrders.UseVisualStyleBackColor = true;
@@ -441,7 +446,7 @@ namespace AppVEConector
             // 
             this.splitContainerMainOrders.Panel2.Controls.Add(this.splitContainerTablesStopOrders);
             this.splitContainerMainOrders.Panel2.Controls.Add(this.panelConditionStopList);
-            this.splitContainerMainOrders.Size = new System.Drawing.Size(925, 428);
+            this.splitContainerMainOrders.Size = new System.Drawing.Size(925, 488);
             this.splitContainerMainOrders.SplitterDistance = 162;
             this.splitContainerMainOrders.TabIndex = 1;
             // 
@@ -455,8 +460,8 @@ namespace AppVEConector
             // splitContainerTablesStopOrders.Panel1
             // 
             this.splitContainerTablesStopOrders.Panel1.Controls.Add(this.dataGridViewStopOrders);
-            this.splitContainerTablesStopOrders.Size = new System.Drawing.Size(759, 388);
-            this.splitContainerTablesStopOrders.SplitterDistance = 242;
+            this.splitContainerTablesStopOrders.Size = new System.Drawing.Size(759, 448);
+            this.splitContainerTablesStopOrders.SplitterDistance = 279;
             this.splitContainerTablesStopOrders.TabIndex = 1;
             // 
             // dataGridViewStopOrders
@@ -481,7 +486,7 @@ namespace AppVEConector
             this.dataGridViewStopOrders.ReadOnly = true;
             this.dataGridViewStopOrders.RowHeadersVisible = false;
             this.dataGridViewStopOrders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewStopOrders.Size = new System.Drawing.Size(759, 242);
+            this.dataGridViewStopOrders.Size = new System.Drawing.Size(759, 279);
             this.dataGridViewStopOrders.TabIndex = 1;
             this.dataGridViewStopOrders.DoubleClick += new System.EventHandler(this.dataGridViewStopOrders_DoubleClick);
             // 
@@ -629,7 +634,7 @@ namespace AppVEConector
             this.tabPageOrders.Controls.Add(this.panel3);
             this.tabPageOrders.Location = new System.Drawing.Point(4, 22);
             this.tabPageOrders.Name = "tabPageOrders";
-            this.tabPageOrders.Size = new System.Drawing.Size(925, 428);
+            this.tabPageOrders.Size = new System.Drawing.Size(925, 488);
             this.tabPageOrders.TabIndex = 2;
             this.tabPageOrders.Text = "Заявки";
             this.tabPageOrders.UseVisualStyleBackColor = true;
@@ -640,7 +645,7 @@ namespace AppVEConector
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel4.Location = new System.Drawing.Point(130, 0);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(795, 428);
+            this.panel4.Size = new System.Drawing.Size(795, 488);
             this.panel4.TabIndex = 1;
             // 
             // splitContainerListOrders
@@ -658,8 +663,8 @@ namespace AppVEConector
             // splitContainerListOrders.Panel2
             // 
             this.splitContainerListOrders.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.splitContainerListOrders.Size = new System.Drawing.Size(795, 428);
-            this.splitContainerListOrders.SplitterDistance = 267;
+            this.splitContainerListOrders.Size = new System.Drawing.Size(795, 488);
+            this.splitContainerListOrders.SplitterDistance = 304;
             this.splitContainerListOrders.TabIndex = 2;
             // 
             // groupBoxOrders
@@ -668,7 +673,7 @@ namespace AppVEConector
             this.groupBoxOrders.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBoxOrders.Location = new System.Drawing.Point(0, 0);
             this.groupBoxOrders.Name = "groupBoxOrders";
-            this.groupBoxOrders.Size = new System.Drawing.Size(795, 267);
+            this.groupBoxOrders.Size = new System.Drawing.Size(795, 304);
             this.groupBoxOrders.TabIndex = 0;
             this.groupBoxOrders.TabStop = false;
             this.groupBoxOrders.Text = "Заявки";
@@ -692,7 +697,7 @@ namespace AppVEConector
             this.dataGridViewOrders.Name = "dataGridViewOrders";
             this.dataGridViewOrders.RowHeadersVisible = false;
             this.dataGridViewOrders.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewOrders.Size = new System.Drawing.Size(789, 248);
+            this.dataGridViewOrders.Size = new System.Drawing.Size(789, 285);
             this.dataGridViewOrders.TabIndex = 1;
             this.dataGridViewOrders.DoubleClick += new System.EventHandler(this.DataGridViewOrders_DoubleClick);
             // 
@@ -778,7 +783,7 @@ namespace AppVEConector
             this.panel3.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(130, 428);
+            this.panel3.Size = new System.Drawing.Size(130, 488);
             this.panel3.TabIndex = 0;
             // 
             // tabPage1
@@ -791,7 +796,7 @@ namespace AppVEConector
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(925, 428);
+            this.tabPage1.Size = new System.Drawing.Size(925, 488);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Главная";
             // 
@@ -801,7 +806,7 @@ namespace AppVEConector
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(338, 3);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(582, 420);
+            this.panel2.Size = new System.Drawing.Size(582, 480);
             this.panel2.TabIndex = 1;
             // 
             // splitContainer1
@@ -818,8 +823,8 @@ namespace AppVEConector
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.PanelPositions);
-            this.splitContainer1.Size = new System.Drawing.Size(582, 420);
-            this.splitContainer1.SplitterDistance = 166;
+            this.splitContainer1.Size = new System.Drawing.Size(582, 480);
+            this.splitContainer1.SplitterDistance = 189;
             this.splitContainer1.TabIndex = 0;
             // 
             // PanelPortfolios
@@ -828,7 +833,7 @@ namespace AppVEConector
             this.PanelPortfolios.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelPortfolios.Location = new System.Drawing.Point(0, 0);
             this.PanelPortfolios.Name = "PanelPortfolios";
-            this.PanelPortfolios.Size = new System.Drawing.Size(582, 166);
+            this.PanelPortfolios.Size = new System.Drawing.Size(582, 189);
             this.PanelPortfolios.TabIndex = 3;
             this.PanelPortfolios.TabStop = false;
             this.PanelPortfolios.Text = "Портфели";
@@ -856,7 +861,7 @@ namespace AppVEConector
             this.dataGridPortfolios.RowTemplate.ReadOnly = true;
             this.dataGridPortfolios.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.dataGridPortfolios.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridPortfolios.Size = new System.Drawing.Size(576, 147);
+            this.dataGridPortfolios.Size = new System.Drawing.Size(576, 170);
             this.dataGridPortfolios.TabIndex = 0;
             // 
             // Account
@@ -929,7 +934,7 @@ namespace AppVEConector
             this.PanelPositions.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelPositions.Location = new System.Drawing.Point(0, 0);
             this.PanelPositions.Name = "PanelPositions";
-            this.PanelPositions.Size = new System.Drawing.Size(582, 250);
+            this.PanelPositions.Size = new System.Drawing.Size(582, 287);
             this.PanelPositions.TabIndex = 5;
             this.PanelPositions.TabStop = false;
             this.PanelPositions.Text = "Позиции";
@@ -953,7 +958,7 @@ namespace AppVEConector
             this.dataGridPositions.Name = "dataGridPositions";
             this.dataGridPositions.RowHeadersVisible = false;
             this.dataGridPositions.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridPositions.Size = new System.Drawing.Size(576, 231);
+            this.dataGridPositions.Size = new System.Drawing.Size(576, 268);
             this.dataGridPositions.TabIndex = 1;
             this.dataGridPositions.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridPositions_CellContentClick);
             // 
@@ -1040,7 +1045,7 @@ namespace AppVEConector
             this.panel1.Dock = System.Windows.Forms.DockStyle.Left;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(335, 420);
+            this.panel1.Size = new System.Drawing.Size(335, 480);
             this.panel1.TabIndex = 0;
             // 
             // tableLayoutPanel1
@@ -1050,24 +1055,44 @@ namespace AppVEConector
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 117F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.Controls.Add(this.labelCountOldTrade, 2, 6);
+            this.tableLayoutPanel1.Controls.Add(this.labelLastOldTrade, 2, 5);
             this.tableLayoutPanel1.Controls.Add(this.label6, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.textBoxSearchSec, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.dataGridFoundSec, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.buttonOpenFoundDepth, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.buttonSaveSecurity, 1, 3);
-            this.tableLayoutPanel1.Controls.Add(this.labelDescription, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label15, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label19, 1, 5);
+            this.tableLayoutPanel1.Controls.Add(this.label20, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.buttonOpenFoundDepth, 2, 3);
+            this.tableLayoutPanel1.Controls.Add(this.labelLastTrade, 2, 4);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowCount = 8;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 21F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 38F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 251F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(335, 420);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(335, 480);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // labelLastOldTrade
+            // 
+            this.labelLastOldTrade.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelLastOldTrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelLastOldTrade.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelLastOldTrade.Location = new System.Drawing.Point(128, 270);
+            this.labelLastOldTrade.Margin = new System.Windows.Forms.Padding(1);
+            this.labelLastOldTrade.Name = "labelLastOldTrade";
+            this.labelLastOldTrade.Size = new System.Drawing.Size(196, 23);
+            this.labelLastOldTrade.TabIndex = 7;
+            this.labelLastOldTrade.Text = "-";
+            this.labelLastOldTrade.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label6
             // 
@@ -1105,7 +1130,7 @@ namespace AppVEConector
             this.dataGridFoundSec.RowHeadersVisible = false;
             this.dataGridFoundSec.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridFoundSec.ShowEditingIcon = false;
-            this.dataGridFoundSec.Size = new System.Drawing.Size(313, 98);
+            this.dataGridFoundSec.Size = new System.Drawing.Size(313, 159);
             this.dataGridFoundSec.TabIndex = 3;
             // 
             // CodeSec
@@ -1121,20 +1146,9 @@ namespace AppVEConector
             this.NameSec.ReadOnly = true;
             this.NameSec.Width = 210;
             // 
-            // buttonOpenFoundDepth
-            // 
-            this.buttonOpenFoundDepth.Dock = System.Windows.Forms.DockStyle.Right;
-            this.buttonOpenFoundDepth.Location = new System.Drawing.Point(221, 134);
-            this.buttonOpenFoundDepth.Name = "buttonOpenFoundDepth";
-            this.buttonOpenFoundDepth.Size = new System.Drawing.Size(101, 32);
-            this.buttonOpenFoundDepth.TabIndex = 4;
-            this.buttonOpenFoundDepth.Text = "Торговое окно";
-            this.buttonOpenFoundDepth.UseVisualStyleBackColor = true;
-            this.buttonOpenFoundDepth.Click += new System.EventHandler(this.ButtonOpenFoundDepth_Click);
-            // 
             // buttonSaveSecurity
             // 
-            this.buttonSaveSecurity.Location = new System.Drawing.Point(13, 134);
+            this.buttonSaveSecurity.Location = new System.Drawing.Point(13, 195);
             this.buttonSaveSecurity.Name = "buttonSaveSecurity";
             this.buttonSaveSecurity.Size = new System.Drawing.Size(103, 32);
             this.buttonSaveSecurity.TabIndex = 5;
@@ -1142,16 +1156,64 @@ namespace AppVEConector
             this.buttonSaveSecurity.UseVisualStyleBackColor = true;
             this.buttonSaveSecurity.Click += new System.EventHandler(this.buttonSaveSecurity_Click);
             // 
-            // labelDescription
+            // label15
             // 
-            this.labelDescription.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableLayoutPanel1.SetColumnSpan(this.labelDescription, 2);
-            this.labelDescription.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelDescription.Location = new System.Drawing.Point(15, 174);
-            this.labelDescription.Margin = new System.Windows.Forms.Padding(5);
-            this.labelDescription.Name = "labelDescription";
-            this.labelDescription.Size = new System.Drawing.Size(305, 241);
-            this.labelDescription.TabIndex = 6;
+            this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label15.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label15.Location = new System.Drawing.Point(11, 245);
+            this.label15.Margin = new System.Windows.Forms.Padding(1);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(115, 23);
+            this.label15.TabIndex = 6;
+            this.label15.Text = "Последняя сделка:";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label19
+            // 
+            this.label19.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label19.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label19.Location = new System.Drawing.Point(11, 270);
+            this.label19.Margin = new System.Windows.Forms.Padding(1);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(115, 23);
+            this.label19.TabIndex = 6;
+            this.label19.Text = "Историч. сделка:";
+            this.label19.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // label20
+            // 
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label20.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label20.Location = new System.Drawing.Point(11, 295);
+            this.label20.Margin = new System.Windows.Forms.Padding(1);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(115, 23);
+            this.label20.TabIndex = 6;
+            this.label20.Text = "Кол-во ист. сделок:";
+            this.label20.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // buttonOpenFoundDepth
+            // 
+            this.buttonOpenFoundDepth.Location = new System.Drawing.Point(130, 195);
+            this.buttonOpenFoundDepth.Name = "buttonOpenFoundDepth";
+            this.buttonOpenFoundDepth.Size = new System.Drawing.Size(101, 32);
+            this.buttonOpenFoundDepth.TabIndex = 4;
+            this.buttonOpenFoundDepth.Text = "Торговое окно";
+            this.buttonOpenFoundDepth.UseVisualStyleBackColor = false;
+            this.buttonOpenFoundDepth.Click += new System.EventHandler(this.ButtonOpenFoundDepth_Click);
+            // 
+            // labelLastTrade
+            // 
+            this.labelLastTrade.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelLastTrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelLastTrade.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelLastTrade.Location = new System.Drawing.Point(128, 245);
+            this.labelLastTrade.Margin = new System.Windows.Forms.Padding(1);
+            this.labelLastTrade.Name = "labelLastTrade";
+            this.labelLastTrade.Size = new System.Drawing.Size(196, 23);
+            this.labelLastTrade.TabIndex = 6;
+            this.labelLastTrade.Text = "-";
+            this.labelLastTrade.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // tabControlMain
             // 
@@ -1167,7 +1229,7 @@ namespace AppVEConector
             this.tabControlMain.Location = new System.Drawing.Point(0, 24);
             this.tabControlMain.Name = "tabControlMain";
             this.tabControlMain.SelectedIndex = 0;
-            this.tabControlMain.Size = new System.Drawing.Size(933, 454);
+            this.tabControlMain.Size = new System.Drawing.Size(933, 514);
             this.tabControlMain.TabIndex = 3;
             // 
             // tabPageSignals
@@ -1175,7 +1237,7 @@ namespace AppVEConector
             this.tabPageSignals.Controls.Add(this.tableLayoutPanel19);
             this.tabPageSignals.Location = new System.Drawing.Point(4, 22);
             this.tabPageSignals.Name = "tabPageSignals";
-            this.tabPageSignals.Size = new System.Drawing.Size(925, 428);
+            this.tabPageSignals.Size = new System.Drawing.Size(925, 488);
             this.tabPageSignals.TabIndex = 4;
             this.tabPageSignals.Text = "Сигналы";
             this.tabPageSignals.UseVisualStyleBackColor = true;
@@ -1196,7 +1258,7 @@ namespace AppVEConector
             this.tableLayoutPanel19.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 110F));
             this.tableLayoutPanel19.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel19.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel19.Size = new System.Drawing.Size(925, 428);
+            this.tableLayoutPanel19.Size = new System.Drawing.Size(925, 488);
             this.tableLayoutPanel19.TabIndex = 2;
             // 
             // tableLayoutPanel6
@@ -1681,7 +1743,7 @@ namespace AppVEConector
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.tableLayoutPanel2);
-            this.splitContainer2.Size = new System.Drawing.Size(919, 234);
+            this.splitContainer2.Size = new System.Drawing.Size(919, 294);
             this.splitContainer2.SplitterDistance = 468;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -1697,8 +1759,8 @@ namespace AppVEConector
             this.tableLayoutPanelSettingsSign.Name = "tableLayoutPanelSettingsSign";
             this.tableLayoutPanelSettingsSign.RowCount = 1;
             this.tableLayoutPanelSettingsSign.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelSettingsSign.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 234F));
-            this.tableLayoutPanelSettingsSign.Size = new System.Drawing.Size(468, 234);
+            this.tableLayoutPanelSettingsSign.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 294F));
+            this.tableLayoutPanelSettingsSign.Size = new System.Drawing.Size(468, 294);
             this.tableLayoutPanelSettingsSign.TabIndex = 5;
             // 
             // tableLayoutPanel11
@@ -1714,7 +1776,7 @@ namespace AppVEConector
             this.tableLayoutPanel11.Name = "tableLayoutPanel11";
             this.tableLayoutPanel11.RowCount = 1;
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(468, 234);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(468, 294);
             this.tableLayoutPanel11.TabIndex = 8;
             // 
             // dataGridViewListSign
@@ -1733,7 +1795,7 @@ namespace AppVEConector
             this.dataGridViewListSign.RowHeadersVisible = false;
             this.dataGridViewListSign.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridViewListSign.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewListSign.Size = new System.Drawing.Size(406, 232);
+            this.dataGridViewListSign.Size = new System.Drawing.Size(406, 292);
             this.dataGridViewListSign.TabIndex = 3;
             // 
             // dataGridViewTextBoxColumn1
@@ -1776,7 +1838,7 @@ namespace AppVEConector
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(60, 234);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(60, 294);
             this.tableLayoutPanel12.TabIndex = 4;
             // 
             // buttonSignDown
@@ -1822,8 +1884,8 @@ namespace AppVEConector
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 234F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(447, 234);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 294F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(447, 294);
             this.tableLayoutPanel2.TabIndex = 4;
             // 
             // textBoxLogSign
@@ -1835,7 +1897,7 @@ namespace AppVEConector
             this.textBoxLogSign.Name = "textBoxLogSign";
             this.textBoxLogSign.ReadOnly = true;
             this.textBoxLogSign.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLogSign.Size = new System.Drawing.Size(221, 232);
+            this.textBoxLogSign.Size = new System.Drawing.Size(221, 292);
             this.textBoxLogSign.TabIndex = 2;
             // 
             // textBoxLogDev
@@ -1847,7 +1909,7 @@ namespace AppVEConector
             this.textBoxLogDev.Name = "textBoxLogDev";
             this.textBoxLogDev.ReadOnly = true;
             this.textBoxLogDev.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxLogDev.Size = new System.Drawing.Size(222, 232);
+            this.textBoxLogDev.Size = new System.Drawing.Size(222, 292);
             this.textBoxLogDev.TabIndex = 1;
             // 
             // tableLayoutPanel8
@@ -1894,7 +1956,7 @@ namespace AppVEConector
             this.tabPageFastGaps.Controls.Add(this.tableLayoutPanel3);
             this.tabPageFastGaps.Location = new System.Drawing.Point(4, 22);
             this.tabPageFastGaps.Name = "tabPageFastGaps";
-            this.tabPageFastGaps.Size = new System.Drawing.Size(925, 428);
+            this.tabPageFastGaps.Size = new System.Drawing.Size(925, 488);
             this.tabPageFastGaps.TabIndex = 5;
             this.tabPageFastGaps.Text = "Поиск гэпов";
             this.tabPageFastGaps.UseVisualStyleBackColor = true;
@@ -1914,7 +1976,7 @@ namespace AppVEConector
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(925, 428);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(925, 488);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // tableLayoutPanel10
@@ -1941,7 +2003,7 @@ namespace AppVEConector
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel10.Size = new System.Drawing.Size(297, 192);
+            this.tableLayoutPanel10.Size = new System.Drawing.Size(297, 222);
             this.tableLayoutPanel10.TabIndex = 0;
             // 
             // label9
@@ -2016,11 +2078,11 @@ namespace AppVEConector
             // textBoxFGLog
             // 
             this.textBoxFGLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxFGLog.Location = new System.Drawing.Point(3, 201);
+            this.textBoxFGLog.Location = new System.Drawing.Point(3, 231);
             this.textBoxFGLog.Multiline = true;
             this.textBoxFGLog.Name = "textBoxFGLog";
             this.tableLayoutPanel3.SetRowSpan(this.textBoxFGLog, 2);
-            this.textBoxFGLog.Size = new System.Drawing.Size(297, 224);
+            this.textBoxFGLog.Size = new System.Drawing.Size(297, 254);
             this.textBoxFGLog.TabIndex = 1;
             // 
             // tableLayoutPanel20
@@ -2042,7 +2104,7 @@ namespace AppVEConector
             this.tabPageDescription.Controls.Add(this.tableLayoutPanel13);
             this.tabPageDescription.Location = new System.Drawing.Point(4, 22);
             this.tabPageDescription.Name = "tabPageDescription";
-            this.tabPageDescription.Size = new System.Drawing.Size(925, 428);
+            this.tabPageDescription.Size = new System.Drawing.Size(925, 488);
             this.tabPageDescription.TabIndex = 6;
             this.tabPageDescription.Text = "Описание";
             this.tabPageDescription.UseVisualStyleBackColor = true;
@@ -2060,7 +2122,7 @@ namespace AppVEConector
             this.tableLayoutPanel13.RowCount = 2;
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 90.18691F));
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 9.813084F));
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(925, 428);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(925, 488);
             this.tableLayoutPanel13.TabIndex = 0;
             // 
             // tableLayoutPanel18
@@ -2073,7 +2135,7 @@ namespace AppVEConector
             this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 80F));
             this.tableLayoutPanel18.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 241F));
             this.tableLayoutPanel18.Controls.Add(this.buttonDescSave, 0, 0);
-            this.tableLayoutPanel18.Location = new System.Drawing.Point(3, 388);
+            this.tableLayoutPanel18.Location = new System.Drawing.Point(3, 443);
             this.tableLayoutPanel18.Name = "tableLayoutPanel18";
             this.tableLayoutPanel18.RowCount = 1;
             this.tableLayoutPanel18.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -2097,7 +2159,7 @@ namespace AppVEConector
             this.textBoxDescription.Multiline = true;
             this.textBoxDescription.Name = "textBoxDescription";
             this.textBoxDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxDescription.Size = new System.Drawing.Size(919, 379);
+            this.textBoxDescription.Size = new System.Drawing.Size(919, 434);
             this.textBoxDescription.TabIndex = 1;
             // 
             // tabPageAutoOrders
@@ -2105,7 +2167,7 @@ namespace AppVEConector
             this.tabPageAutoOrders.Controls.Add(this.tableLayoutPanel24);
             this.tabPageAutoOrders.Location = new System.Drawing.Point(4, 22);
             this.tabPageAutoOrders.Name = "tabPageAutoOrders";
-            this.tabPageAutoOrders.Size = new System.Drawing.Size(925, 428);
+            this.tabPageAutoOrders.Size = new System.Drawing.Size(925, 488);
             this.tabPageAutoOrders.TabIndex = 7;
             this.tabPageAutoOrders.Text = "Авто-ордера";
             this.tabPageAutoOrders.UseVisualStyleBackColor = true;
@@ -2122,8 +2184,8 @@ namespace AppVEConector
             this.tableLayoutPanel24.Name = "tableLayoutPanel24";
             this.tableLayoutPanel24.RowCount = 1;
             this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 428F));
-            this.tableLayoutPanel24.Size = new System.Drawing.Size(925, 428);
+            this.tableLayoutPanel24.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 488F));
+            this.tableLayoutPanel24.Size = new System.Drawing.Size(925, 488);
             this.tableLayoutPanel24.TabIndex = 0;
             // 
             // tableLayoutPanel21
@@ -2155,7 +2217,7 @@ namespace AppVEConector
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 11F));
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel21.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
-            this.tableLayoutPanel21.Size = new System.Drawing.Size(322, 422);
+            this.tableLayoutPanel21.Size = new System.Drawing.Size(322, 482);
             this.tableLayoutPanel21.TabIndex = 1;
             // 
             // numericUpDownAOVolume
@@ -2277,7 +2339,7 @@ namespace AppVEConector
             this.labelAOLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.labelAOLog.Location = new System.Drawing.Point(3, 272);
             this.labelAOLog.Name = "labelAOLog";
-            this.labelAOLog.Size = new System.Drawing.Size(316, 150);
+            this.labelAOLog.Size = new System.Drawing.Size(316, 210);
             this.labelAOLog.TabIndex = 10;
             // 
             // tableLayoutPanel25
@@ -2292,7 +2354,7 @@ namespace AppVEConector
             this.tableLayoutPanel25.RowCount = 2;
             this.tableLayoutPanel25.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel25.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel25.Size = new System.Drawing.Size(591, 422);
+            this.tableLayoutPanel25.Size = new System.Drawing.Size(591, 482);
             this.tableLayoutPanel25.TabIndex = 10;
             // 
             // tableLayoutPanel23
@@ -2308,7 +2370,7 @@ namespace AppVEConector
             this.tableLayoutPanel23.Controls.Add(this.buttonAODelete, 0, 0);
             this.tableLayoutPanel23.Controls.Add(this.checkBoxAOSelectSec, 3, 0);
             this.tableLayoutPanel23.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel23.Location = new System.Drawing.Point(1, 393);
+            this.tableLayoutPanel23.Location = new System.Drawing.Point(1, 453);
             this.tableLayoutPanel23.Margin = new System.Windows.Forms.Padding(1);
             this.tableLayoutPanel23.Name = "tableLayoutPanel23";
             this.tableLayoutPanel23.RowCount = 1;
@@ -2365,7 +2427,7 @@ namespace AppVEConector
             this.dataGridViewAOList.RowHeadersVisible = false;
             this.dataGridViewAOList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridViewAOList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewAOList.Size = new System.Drawing.Size(589, 390);
+            this.dataGridViewAOList.Size = new System.Drawing.Size(589, 450);
             this.dataGridViewAOList.TabIndex = 6;
             // 
             // dataGridViewTextBoxColumn2
@@ -2400,7 +2462,7 @@ namespace AppVEConector
             this.tabPageAutoStops.Controls.Add(this.tableLayoutPanel26);
             this.tabPageAutoStops.Location = new System.Drawing.Point(4, 22);
             this.tabPageAutoStops.Name = "tabPageAutoStops";
-            this.tabPageAutoStops.Size = new System.Drawing.Size(925, 428);
+            this.tabPageAutoStops.Size = new System.Drawing.Size(925, 488);
             this.tabPageAutoStops.TabIndex = 8;
             this.tabPageAutoStops.Text = "Риск-стопы";
             this.tabPageAutoStops.UseVisualStyleBackColor = true;
@@ -2418,7 +2480,7 @@ namespace AppVEConector
             this.tableLayoutPanel26.RowCount = 1;
             this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel26.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel26.Size = new System.Drawing.Size(925, 428);
+            this.tableLayoutPanel26.Size = new System.Drawing.Size(925, 488);
             this.tableLayoutPanel26.TabIndex = 1;
             // 
             // tableLayoutPanel29
@@ -2433,7 +2495,7 @@ namespace AppVEConector
             this.tableLayoutPanel29.RowCount = 2;
             this.tableLayoutPanel29.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel29.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel29.Size = new System.Drawing.Size(591, 422);
+            this.tableLayoutPanel29.Size = new System.Drawing.Size(591, 482);
             this.tableLayoutPanel29.TabIndex = 10;
             // 
             // tableLayoutPanel30
@@ -2448,7 +2510,7 @@ namespace AppVEConector
             this.tableLayoutPanel30.Controls.Add(this.buttonASLDelete, 0, 0);
             this.tableLayoutPanel30.Controls.Add(this.checkBoxASLBySec, 3, 0);
             this.tableLayoutPanel30.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel30.Location = new System.Drawing.Point(1, 393);
+            this.tableLayoutPanel30.Location = new System.Drawing.Point(1, 453);
             this.tableLayoutPanel30.Margin = new System.Windows.Forms.Padding(1);
             this.tableLayoutPanel30.Name = "tableLayoutPanel30";
             this.tableLayoutPanel30.RowCount = 1;
@@ -2494,7 +2556,7 @@ namespace AppVEConector
             this.dataGridViewASLList.RowHeadersVisible = false;
             this.dataGridViewASLList.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             this.dataGridViewASLList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewASLList.Size = new System.Drawing.Size(589, 390);
+            this.dataGridViewASLList.Size = new System.Drawing.Size(589, 450);
             this.dataGridViewASLList.TabIndex = 6;
             // 
             // dataGridViewTextBoxColumn5
@@ -2524,7 +2586,7 @@ namespace AppVEConector
             this.groupBox4.Location = new System.Drawing.Point(1, 5);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(1, 5, 1, 1);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(326, 422);
+            this.groupBox4.Size = new System.Drawing.Size(326, 482);
             this.groupBox4.TabIndex = 11;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Обязательные стоп-завки. Если другие не выствлены";
@@ -2557,7 +2619,7 @@ namespace AppVEConector
             this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
             this.tableLayoutPanel27.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel27.Size = new System.Drawing.Size(320, 403);
+            this.tableLayoutPanel27.Size = new System.Drawing.Size(320, 463);
             this.tableLayoutPanel27.TabIndex = 2;
             // 
             // tableLayoutPanel28
@@ -2636,7 +2698,7 @@ namespace AppVEConector
             this.labelASLLog.Location = new System.Drawing.Point(1, 273);
             this.labelASLLog.Margin = new System.Windows.Forms.Padding(1);
             this.labelASLLog.Name = "labelASLLog";
-            this.labelASLLog.Size = new System.Drawing.Size(318, 129);
+            this.labelASLLog.Size = new System.Drawing.Size(318, 189);
             this.labelASLLog.TabIndex = 10;
             // 
             // comboBoxASLAccount
@@ -2656,11 +2718,24 @@ namespace AppVEConector
             this.label18.Text = "Кл. счет";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // labelCountOldTrade
+            // 
+            this.labelCountOldTrade.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCountOldTrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelCountOldTrade.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelCountOldTrade.Location = new System.Drawing.Point(128, 295);
+            this.labelCountOldTrade.Margin = new System.Windows.Forms.Padding(1);
+            this.labelCountOldTrade.Name = "labelCountOldTrade";
+            this.labelCountOldTrade.Size = new System.Drawing.Size(196, 23);
+            this.labelCountOldTrade.TabIndex = 8;
+            this.labelCountOldTrade.Text = "-";
+            this.labelCountOldTrade.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(933, 500);
+            this.ClientSize = new System.Drawing.Size(933, 560);
             this.Controls.Add(this.tabControlMain);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -2916,7 +2991,6 @@ namespace AppVEConector
         private TableLayoutPanel tableLayoutPanel18;
         private TextBox textBoxDescription;
         private Button buttonDescSave;
-        private Label labelDescription;
         private Label labelSignNameSec;
         private DataGridView dataGridPositions;
         private TableLayoutPanel tableLayoutPanel20;
@@ -2979,6 +3053,12 @@ namespace AppVEConector
         private DataGridViewTextBoxColumn PosVarMargin;
         private DataGridViewButtonColumn BtnGetDepth;
         private ToolStripMenuItem арбитражToolStripMenuItem;
+        private Label label15;
+        private Label label19;
+        private Label label20;
+        private Label labelLastTrade;
+        private Label labelLastOldTrade;
+        private Label labelCountOldTrade;
     }
 }
 

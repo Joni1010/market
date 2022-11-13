@@ -9,14 +9,13 @@ using System.Threading;
 using AppVEConector.libs;
 using Market.Candles;
 using GraphicTools;
-using Connector.Logs;
-using Managers;
 using libs;
-using QuikConnector.libs;
 using QuikConnector.MarketObjects;
 using AppVEConector.libs.Signal;
 using MarketObjects.Charts;
 using Market.Base;
+using QuikConnector.Components.Log;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector
 {
@@ -152,7 +151,7 @@ namespace AppVEConector
             InitAllPanels();
 
             //Регистрация стакана
-            Trader.RegisterDepth(Securities);
+            Quik.Trader.RegisterDepth(Securities);
 
 
             //цена для заявки
@@ -229,13 +228,13 @@ namespace AppVEConector
         {
             if (this.checkBoxCancelStop.Checked)
             {
-                var pos = this.Trader.Objects.tPositions.SearchFirst(p => p.Sec.Code == Securities.Code);
-                var stopLoss = this.Trader.Objects.tStopOrders.SearchFirst(so => so.Sec.Code == Securities.Code && so.IsActive());
+                var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec.Code == Securities.Code);
+                var stopLoss = Quik.Trader.Objects.tStopOrders.SearchFirst(so => so.Sec.Code == Securities.Code && so.IsActive());
                 if (pos.NotIsNull() && stopLoss.NotIsNull())
                 {
                     if (pos.CurrentVolume == 0)
                     {
-                        this.Trader.CancelAllStopOrder(Securities);
+                        Quik.Trader.CancelAllStopOrder(Securities);
                     }
                 }
             }
@@ -256,7 +255,7 @@ namespace AppVEConector
             }
             if (comboBoxCodeClient.SelectedItem.NotIsNull())
             {
-                var listPortf = Trader.Objects.tPortfolios
+                var listPortf = Quik.Trader.Objects.tPortfolios
                     .SearchAll(p => p.Account.AccClasses.FirstOrDefault(c => c == Securities.Class).NotIsNull() &&
                         p.Client.Code == comboBoxCodeClient.SelectedItem.ToString());
                 if (TypeClientLimit.Value >= 0)
@@ -270,14 +269,14 @@ namespace AppVEConector
             }
             if (ClientCode.Value.Empty())
             {
-                Position = Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities);
+                Position = Quik.Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities);
             }
             else
             {
-                Position = Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities
+                Position = Quik.Trader.Objects.tPositions.SearchFirst(s => s.Sec == Securities
                     && s.Client.Code == ClientCode.Value);
             }
-            ThreadInfo = MThread.InitThread(() =>
+            ThreadInfo = ThreadsController.Thread(() =>
             {
                 if (this.Position.NotIsNull())
                 {
@@ -288,7 +287,7 @@ namespace AppVEConector
                     Info.CurrentPrice = Securities.LastPrice;
                 }
                 //orders
-                var orders = this.Trader.Objects.tOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive()).ToArray();
+                var orders = Quik.Trader.Objects.tOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive()).ToArray();
                 var ordB = orders.Where(o => o.IsBuy()).ToArray();
                 var ordS = orders.Where(o => o.IsSell()).ToArray();
                 Info.CountOrderBuy = ordB.Count();
@@ -296,7 +295,7 @@ namespace AppVEConector
                 Info.CountVolumeBuy = ordB.Sum(o => o.Balance);
                 Info.CountVolumeSell = ordS.Sum(o => o.Balance);
 
-                var stopOrdersActive = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive());
+                var stopOrdersActive = Quik.Trader.Objects.tStopOrders.SearchAll(so => so.Sec.Code == Securities.Code && so.IsActive());
                 if (stopOrdersActive.NotIsNull())
                 {
                     var soBuy = stopOrdersActive.Where(so => so.IsBuy()).ToArray();
@@ -358,7 +357,7 @@ namespace AppVEConector
         /// <summary> Обновляем формы с иформацией </summary>
         public void UpdateInfoForm()
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 labelStopOrders.Text = "0/0";
                 labelStopLimitOrders.Text = "0/0";
@@ -465,7 +464,7 @@ namespace AppVEConector
                 return;
             }
             int count = 20;
-            var orders = Trader.Objects.tOrders
+            var orders = Quik.Trader.Objects.tOrders
                 .SearchAll(o => o.Sec == TrElement.Security && o.Status == OrderStatus.ACTIVE);
 
             var ordersBuy = orders.Where(o => o.Direction == OrderDirection.Buy)
@@ -507,7 +506,7 @@ namespace AppVEConector
                     ArrayBuy[i].Cells[1].Style.Font = new Font(DataGridView.DefaultFont, FontStyle.Regular);
                 }
             }
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 //Синхронизуируем между потоками
                 dataGridViewDepth.GuiAsync(() =>
@@ -612,7 +611,7 @@ namespace AppVEConector
                     textBoxMessage.Text = Msg;
                     this.SetBottomMessage(Msg);
                 });
-                MThread.InitThread(() =>
+                ThreadsController.Thread(() =>
                 {
                     Thread.Sleep(4000);
                     panelMessage.GuiAsync(() =>
@@ -659,8 +658,8 @@ namespace AppVEConector
             }
             if (nativeOrders)
             {
-                var actOrders = Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
-                var actStOrd = Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
+                var actOrders = Quik.Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
+                var actStOrd = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == Securities.Code && o.IsActive());
                 EventNewOrder(actOrders);
                 EventNewStopOrder(actStOrd);
                 ActionAllActiveOrders(actOrders, actStOrd);
@@ -715,7 +714,7 @@ namespace AppVEConector
         /// <summary> Событие новой заявки </summary>
         public void EventNewOrder(IEnumerable<Order> orders)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 if (TrElement.IsNull()) return;
                 //Обновялем панель заявок
@@ -743,7 +742,7 @@ namespace AppVEConector
                             && so.Comment.Contains(Define.STOP_LOSS));
                         if (cancelOrders.NotIsNull())
                         {
-                            this.Trader.CancelListStopOrders(cancelOrders);
+                            Quik.Trader.CancelListStopOrders(cancelOrders);
                         }
                     }
                 }
@@ -856,20 +855,20 @@ namespace AppVEConector
             {
                 numericUpDownStopPrice.Value = Price;
             });
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
-                var cancelOrders = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities
+                var cancelOrders = Quik.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities
                             && so.IsActive() && so.Comment.Contains(Define.STOP_LOSS));
                 if (cancelOrders.NotIsNull())
                 {
-                    this.Trader.CancelListStopOrders(cancelOrders);
+                    Quik.Trader.CancelListStopOrders(cancelOrders);
                 }
                 Thread.Sleep(500);
-                this.Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
+                Quik.Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
                 if (checkSet)
                 {
                     Thread.Sleep(10000);
-                    var allStopOrders = this.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities && so.IsActive());
+                    var allStopOrders = Quik.Trader.Objects.tStopOrders.SearchAll(so => so.Sec == Securities && so.IsActive());
                     if (allStopOrders.NotIsNull())
                     {
                         if (allStopOrders.Count() == 0)

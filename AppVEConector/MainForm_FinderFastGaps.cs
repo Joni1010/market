@@ -1,11 +1,8 @@
 ﻿using GraphicTools.Extension;
-using Managers;
+using QuikConnector.Components.Controllers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AppVEConector
@@ -56,7 +53,7 @@ namespace AppVEConector
                     {
                         return;
                     }
-                    threadStrategy = MThread.InitThread(() =>
+                    threadStrategy = ThreadsController.Thread(() =>
                     {
                         var allStocks = DataTrading.Collection.ToArray();
                         foreach (var elem in allStocks)

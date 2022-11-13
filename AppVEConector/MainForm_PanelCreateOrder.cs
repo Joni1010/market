@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Windows.Forms;
-using Managers;
 using MarketObjects;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector
 {
@@ -17,7 +16,7 @@ namespace AppVEConector
                 {
                     if (CreateOrderSec != null)
                     {
-                        var pos = Trader.Objects.Positions.FirstOrDefault(p => p.Sec == CreateOrderSec);
+                        var pos = Quik.Trader.Objects.Positions.FirstOrDefault(p => p.Sec == CreateOrderSec);
                         OrdersLastPrice.GuiAsync(() =>
                         {
                             if (CreateOrderSec != null)
@@ -66,7 +65,7 @@ namespace AppVEConector
 
                     if (labelOrdersClass.Tag == null) labelOrdersClass.Tag = 0;
                     int index = (int)labelOrdersClass.Tag;
-                    var listSec = Trader.Objects.Securities.Where(s => s.Code == CreateOrderSec.Code).ToArray();
+                    var listSec = Quik.Trader.Objects.Securities.Where(s => s.Code == CreateOrderSec.Code).ToArray();
                     if (listSec.Length > 0)
                     {
                         if (index >= listSec.Length) index = 0;
@@ -207,9 +206,9 @@ namespace AppVEConector
         {
             if (CreateOrderSec != null)
             {
-                MThread.InitThread(() =>
+                ThreadsController.Thread(() =>
                 {
-                    Trader.CancelAllOrder(CreateOrderSec);
+                    Quik.Trader.CancelAllOrder(CreateOrderSec);
                 });
             }
         }
@@ -230,11 +229,14 @@ namespace AppVEConector
                     {
                         DataGridViewRow row = dataGrid.Rows[index];
                         row.Selected = true;
-                        MThread.InitThread(() =>
+                        ThreadsController.Thread(() =>
                         {
                             decimal number = Convert.ToDecimal(row.Cells[2].Value.ToString());
-                            var sec = Trader.Objects.tSecurities.SearchFirst(s => s == row.Cells[3].Value);
-                            if (sec != null) Trader.CancelOrder(sec, number);
+                            var sec = Quik.Trader.Objects.tSecurities.SearchFirst(s => s == row.Cells[3].Value);
+                            if (sec.NotIsNull())
+                            {
+                                Quik.Trader.CancelOrder(sec, number);
+                            }
                         });
                     }
                 }

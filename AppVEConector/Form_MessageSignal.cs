@@ -18,7 +18,7 @@ namespace AppVEConector
             public string Signal;
             public string SecAndClass;
         }
-        public static MainForm Parent = null;
+        public static MainForm PForm = null;
         //private static string TextMsg = "";
         private static List<RowSignal> listSignals = new List<RowSignal>();
 
@@ -95,9 +95,9 @@ namespace AppVEConector
                 if (cell.NotIsNull() && cell.Tag.NotIsNull())
                 {
                     var sec = (string)cell.Tag;
-                    if (Parent.NotIsNull())
+                    if (PForm.NotIsNull())
                     {
-                        Parent.ShowGraphicDepth(Parent.GetSecCodeAndClass(sec));
+                        PForm.ShowGraphicDepth(PForm.GetSecByCode(sec));
                     }
                 }
             };

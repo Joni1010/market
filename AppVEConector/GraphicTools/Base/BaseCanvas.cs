@@ -1,5 +1,4 @@
-﻿using Connector.Logs;
-using GraphicTools.Shapes;
+﻿using GraphicTools.Shapes;
 using System;
 using System.Drawing;
 

@@ -1,12 +1,10 @@
-﻿using AppVEConector.libs;
+﻿using AppVEConector.Components;
+using AppVEConector.libs;
 using AppVEConector.libs.Signal;
-using Managers;
 using MarketObjects;
+using QuikConnector.Components.Controllers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AppVEConector
@@ -25,7 +23,7 @@ namespace AppVEConector
             {
                 if (comboBoxAOAccount.Items.Count == 0)
                 {
-                    comboBoxAOAccount.SetListValues(this.Trader.Objects.tClients.ToArray()
+                    comboBoxAOAccount.SetListValues(Quik.Trader.Objects.tClients.ToArray()
                         .Select(c => c.Code).ToArray());
                 }
             };
@@ -36,8 +34,7 @@ namespace AppVEConector
                 var text = comboBoxAOSecurities.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
+                    var listSec = Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
                     if (listSec.Count() > 0)
                     {
                         comboBoxAOSecurities.Clear();
@@ -153,7 +150,7 @@ namespace AppVEConector
         {
             if (comboBoxAOSecurities.SelectedItem.NotIsNull())
             {
-                AutoOrderSec = GetSecCodeAndClass(comboBoxAOSecurities.SelectedItem.ToString());
+                AutoOrderSec = GetSecByCode(comboBoxAOSecurities.SelectedItem.ToString());
                 if (AutoOrderSec.NotIsNull())
                 {
                     labelAOInfo.Text =
@@ -241,11 +238,11 @@ namespace AppVEConector
 
         public void AutoOrdersLoopControl()
         {
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 foreach (var ord in ObjAutoOrders.ToArray)
                 {
-                    var sec = GetSecCodeAndClass(ord.SecAndCode);
+                    var sec = GetSecByCode(ord.SecAndCode);
                     if (sec.NotIsNull())
                     {
                         Order order = null;
@@ -281,7 +278,7 @@ namespace AppVEConector
                         {
                             ObjAutoOrders.Delete(ord);
 
-                            Trader.CreateOrder(order);
+                            Quik.Trader.CreateOrder(order);
                             SignalView.GSMSignaler.SendSignalCall();
 
                             textBoxLogSign.GuiAsync(() =>

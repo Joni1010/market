@@ -11,13 +11,10 @@ namespace AppVEConector
 {
 	public partial class Form_ActivateStopOrders :Form
 	{
-		Connector.QuikConnector Trader;
 		TElement TrElement;
-		public Form_ActivateStopOrders(Connector.QuikConnector trader, TElement trElement)
+		public Form_ActivateStopOrders(TElement trElement)
 		{
 			InitializeComponent();
-
-			this.Trader = trader;
 			this.TrElement = trElement;
 		}
 
@@ -41,12 +38,14 @@ namespace AppVEConector
 
 			buttonStopOrderCancel.Click += (s, ee) =>
 			{
-				var sOrders = this.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == this.TrElement.Security &&
+				var sOrders = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == this.TrElement.Security &&
 					o.Comment.Contains(Define.STOP_LIMIT));
 				if(sOrders.NotIsNull() && sOrders.Count() > 0)
 				{
-					foreach(var ord in sOrders)
-						this.Trader.CancelStopOrder(ord);
+					foreach (var ord in sOrders)
+					{
+						Quik.Trader.CancelStopOrder(ord);
+					}
 				}
 			};
 
@@ -82,7 +81,7 @@ namespace AppVEConector
 					Spread = this.TrElement.Security.Params.MinPriceStep,
 					DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
 				};
-				this.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
+				Quik.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
 			} else {
 				var sOrder = new StopOrder()
 				{
@@ -94,7 +93,7 @@ namespace AppVEConector
 					ConditionPrice = this.numericUpDownStopOrderPrice.Value - this.TrElement.Security.Params.MinPriceStep,
 					DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
 				};
-				this.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
+				Quik.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
 			}
 		}
 
@@ -115,7 +114,7 @@ namespace AppVEConector
 					Spread = this.TrElement.Security.Params.MinPriceStep,
 					DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
 				};
-				this.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
+				Quik.Trader.CreateStopOrder(sOrder, StopOrderType.TakeProfit);
 			}
 			else
 			{
@@ -129,7 +128,7 @@ namespace AppVEConector
 					ConditionPrice = this.numericUpDownStopOrderPrice.Value + this.TrElement.Security.Params.MinPriceStep,
 					DateExpiry = DateMarket.ExtractDateTime(dateTimePickerStopOrder.Value)
 				};
-				this.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
+				Quik.Trader.CreateStopOrder(sOrder, StopOrderType.StopLimit);
 			}
 		}
 	}

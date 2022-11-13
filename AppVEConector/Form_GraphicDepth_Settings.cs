@@ -83,7 +83,7 @@ namespace AppVEConector
         private void PanelSettings_InitObjectsControls()
         {
             //Получаем коды клиента
-            comboBoxCodeClient.SetListValues(Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray(),
+            comboBoxCodeClient.SetListValues(Quik.Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray(),
                 ClientCode.Value);
             comboBoxCodeClient.SelectedValueChanged += (ss, ee) =>
             {
@@ -126,7 +126,7 @@ namespace AppVEConector
         /// </summary>
         private void PanelSettings_setTypeClientLimit()
         {
-            var listPortf = Trader.Objects.tPortfolios
+            var listPortf = Quik.Trader.Objects.tPortfolios
                 .SearchAll(p => p.Account.AccClasses.FirstOrDefault(c => c == Securities.Class).NotIsNull() &&
                 p.Client.Code == ClientCode.Value);
             if (listPortf.Count() > 0)

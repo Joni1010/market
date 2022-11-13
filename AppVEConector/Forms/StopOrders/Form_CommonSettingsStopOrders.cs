@@ -1,4 +1,5 @@
-﻿using AppVEConector.settings;
+﻿using AppVEConector.Components;
+using AppVEConector.settings;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -22,34 +23,18 @@ namespace AppVEConector.Forms.StopOrders
             updateGridListSec();
         }
 
-        private Connector.QuikConnector Trader
-        {
-            get { return ParentForm.Parent.Trader; }
-        }
-
         private void initAddSec()
         {
-            comboBoxSearchSec.TextChanged += (s, e) =>
+            comboBoxSearchSec.InitSearcher((text) =>
             {
-                var text = comboBoxSearchSec.Text;
-                if (text.Length >= 2)
-                {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
-                    if (listSec.Count() > 0)
-                    {
-                        comboBoxSearchSec.Clear();
-                        comboBoxSearchSec.SetListValues(listSec);
-                    }
-                }
-                comboBoxSearchSec.Select(text.Length, 0);
-            };
+                return Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
+            });
             buttonAddSecInList.Click += (s, e) =>
             {
                 if (comboBoxSearchSec.SelectedItem.NotIsNull())
                 {
                     var secAndClass = comboBoxSearchSec.SelectedItem.ToString();
-                    var sec = Trader.Objects.tSecurities.SearchFirst(se => se.ToString() == secAndClass);
+                    var sec = Quik.Trader.Objects.tSecurities.SearchFirst(se => se.ToString() == secAndClass);
                     if (sec.NotIsNull())
                     {
                         ParentForm.Settings.Get("ItemsSec").Add(new SettingsLightOrders.SettingsForm.ItemSec()
@@ -67,7 +52,7 @@ namespace AppVEConector.Forms.StopOrders
         {
             buttonDelSec.Click += (s, e) =>
             {
-                if(dataGridViewListSec.SelectedRows.NotIsNull() && dataGridViewListSec.SelectedRows.Count > 0)
+                if (dataGridViewListSec.SelectedRows.NotIsNull() && dataGridViewListSec.SelectedRows.Count > 0)
                 {
                     foreach (DataGridViewRow row in dataGridViewListSec.SelectedRows)
                     {
@@ -90,7 +75,8 @@ namespace AppVEConector.Forms.StopOrders
             dataGridViewListSec.Rows.Clear();
             if (ParentForm.Settings.Get("ItemsSec").Count > 0)
             {
-                foreach (var itemSec in ParentForm.Settings.Get("ItemsSec")) {
+                foreach (var itemSec in ParentForm.Settings.Get("ItemsSec"))
+                {
                     var row = (DataGridViewRow)dataGridViewListSec.Rows[0].Clone();
                     row.Cells[0].Value = itemSec.SecAndClass;
                     row.Cells[1].Value = itemSec.Name;

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 using AppVEConector.libs;
-using Managers;
 using AppVEConector.libs.Signal;
 using System.Windows.Threading;
-using Connector.Logs;
 using AppVEConector.settings;
+using QuikConnector.Components.Log;
+using QuikConnector.Components.Controllers;
 
 namespace AppVEConector.Forms.StopOrders
 {
@@ -50,21 +48,21 @@ namespace AppVEConector.Forms.StopOrders
 
             buttonSaveStruct.Click += (s, e) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     SaveStructPanels();
                 });
             };
             buttonLoadStruct.Click += (s, e) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     LoadStructPanels();
                 });
             };
             buttonChangeScreen.Click += (s, e) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     var numPos = Settings.Get("numberPosition");
                     Settings.Set("numberPosition", numPos + 1);
@@ -73,7 +71,7 @@ namespace AppVEConector.Forms.StopOrders
             };
             buttonCommonSettings.Click += (s, e) =>
             {
-                Qlog.CatchException(() =>
+                QLog.CatchException(() =>
                 {
                     if (FormSettings.IsNull())
                     {
@@ -132,7 +130,7 @@ namespace AppVEConector.Forms.StopOrders
 
         private void updateAllComboBoxSec()
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 foreach (var pan in ListPanels)
                 {
@@ -270,7 +268,7 @@ namespace AppVEConector.Forms.StopOrders
         /// <param name="listOrder"></param>
         /*private void RemoveListSignal(IEnumerable<StopOrder> listOrder)
 		{
-			Qlog.CatchException(() =>
+			QLog.CatchException(() =>
 			{
 				foreach (var sOrd in listOrder)
 				{
@@ -304,7 +302,7 @@ namespace AppVEConector.Forms.StopOrders
         private void buttonMimize20s_Click(object sender, EventArgs e)
         {
             this.WindowState = FormWindowState.Minimized;
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 Thread.Sleep(20000);
                 this.GuiAsync(() =>

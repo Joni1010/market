@@ -20,10 +20,7 @@ namespace AppVEConector
 		{
 			InitializeComponent();
 			this.Parent = parent;
-			this.Trader = this.Parent.Trader;
 		}
-
-		private Connector.QuikConnector Trader = null;
 		private new MainForm Parent = null;
 
 		/// <summary> Набор тайм фреймов </summary>
@@ -191,12 +188,12 @@ namespace AppVEConector
 				panel.ButCloseOrder.Click += (s, e) =>
 				{
 					if (panel.TrElement.IsNull()) return;
-					this.Trader.CancelAllOrder(panel.TrElement.Security);
+					Quik.Trader.CancelAllOrder(panel.TrElement.Security);
 				};
 
 				panel.OpenDepth.Click += (s, e) =>
 				{
-					if (this.Trader.IsNull()) return;
+					if (Quik.Trader.IsNull()) return;
 					if (panel.TrElement.IsNull()) return;
 					this.Parent.ShowGraphicDepth(panel.TrElement.Security);
 				};
@@ -225,7 +222,7 @@ namespace AppVEConector
 				Sec = panel.TrElement.Security,
 				Direction = IsBuy ? OrderDirection.Buy : OrderDirection.Sell
 			};
-			this.Trader.CreateOrder(ord);
+			Quik.Trader.CreateOrder(ord);
 		}
 
 		private void SetSecurityInPanel(PanelGraph panel, Securities sec)
@@ -308,7 +305,7 @@ namespace AppVEConector
 
 				//Orders
 				List<Chart> orders = new List<Chart>();
-				var allOrd = this.Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
+				var allOrd = Quik.Trader.Objects.tOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allOrd)
 				{
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
@@ -316,7 +313,7 @@ namespace AppVEConector
 					if (ch != null) ch.Volume += vol;
 					else orders.Add(new Chart() { Price = o.Price, Volume = vol });
 				}
-				var allStOrd = this.Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
+				var allStOrd = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec.Code == panelGraph.TrElement.Security.Code && o.IsActive());
 				foreach (var o in allStOrd)
 				{
 					var ch = orders.FirstOrDefault(c => c.Price == o.Price);
@@ -355,7 +352,7 @@ namespace AppVEConector
 					{
 						if (!el[0].Empty() && !el[1].Empty())
 						{
-							var sec = Trader.Objects.tSecurities.SearchFirst(s => s.Code == el[0] && s.Class.Code == el[1]);
+							var sec = Quik.Trader.Objects.tSecurities.SearchFirst(s => s.Code == el[0] && s.Class.Code == el[1]);
 							if (sec.NotIsNull()) list.Add(sec);
 
 						}

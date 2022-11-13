@@ -1,13 +1,11 @@
-﻿using Connector.Logs;
-using Libs;
-using Managers;
+﻿using Libs;
 using MarketObjects;
-using QuikControl;
+using QuikConnector.Components.Controllers;
+using QuikConnector.Components.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace Market.Candles
 {
@@ -31,7 +29,7 @@ namespace Market.Candles
         /// <summary> Событие появления новой свечки </summary>
         public event EventCandle OnNewCandle;
         /// <summary> Событие появления новой исторической свечи </summary>
-        public event EventCandle OnNewOldCandle;
+        //public event EventCandle OnNewOldCandle;
 
         /// <summary>
         /// Возвращает коллекцию
@@ -64,7 +62,7 @@ namespace Market.Candles
         /// <param name="filename"></param>
         public bool WriteCollectionInFile(string filename)
         {
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 object obj = null;
                 lock (syncLock)
@@ -84,7 +82,7 @@ namespace Market.Candles
         /// <param name="filename"></param>
         public void ReadCollectionFromFile(string filename)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 this.TimeLastSave = DateTime.Now;
                 WFile file = new WFile(filename);
@@ -104,9 +102,9 @@ namespace Market.Candles
 					var binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 					this.Collection = (List<CandleData>)binaryFormatter.Deserialize(stream);
 				}*/
-            }, filename, () => { return; });
+            }, filename);
         }
-        
+
 
         /// <summary> Конструктор </summary>
         /// <param name="timeFrame">Кол-во минут</param>

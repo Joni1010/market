@@ -1,4 +1,5 @@
-﻿using AppVEConector.libs.Signal;
+﻿using AppVEConector.Components;
+using AppVEConector.libs.Signal;
 using MarketObjects;
 using System;
 using System.Collections.Generic;
@@ -28,12 +29,7 @@ namespace AppVEConector.Forms
             public decimal baseCurPos;
             public decimal sumBasePos;
         }
-        private MainForm Parent = null;
-
-        private Connector.QuikConnector Trader
-        {
-            get { return Parent.Trader; }
-        }
+        private MainForm PForm = null;
 
         private Securities SecFut = null;
 
@@ -53,10 +49,10 @@ namespace AppVEConector.Forms
         public Form_Arbitration(MainForm parent)
         {
             InitializeComponent();
-            Parent = parent;
+            PForm = parent;
             Init();
 
-            Parent.OnTimer1s += UpdateData;
+            PForm.OnTimer1s += UpdateData;
         }
         /// <summary>
         /// 
@@ -69,8 +65,7 @@ namespace AppVEConector.Forms
                 var text = comboBoxFutSec.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
+                    var listSec = Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
                     if (listSec.Count() > 0)
                     {
                         comboBoxFutSec.Clear();
@@ -86,8 +81,7 @@ namespace AppVEConector.Forms
                 var text = comboBoxBaseSec.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
+                    var listSec = Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
                     if (listSec.Count() > 0)
                     {
                         comboBoxBaseSec.Clear();
@@ -103,10 +97,10 @@ namespace AppVEConector.Forms
                 SecBase = null;
                 if (comboBoxBaseSec.SelectedItem.NotIsNull())
                 {
-                    SecBase = Parent.GetSecCodeAndClass(comboBoxBaseSec.SelectedItem.ToString());
+                    SecBase = PForm.GetSecByCode(comboBoxBaseSec.SelectedItem.ToString());
                     if (SecBase.NotIsNull())
                     {
-                        Trader.RegisterSecurities(SecBase);
+                        Quik.Trader.RegisterSecurities(SecBase);
                     }
                 }
                 UpdateData(null);
@@ -116,17 +110,17 @@ namespace AppVEConector.Forms
                 SecFut = null;
                 if (comboBoxFutSec.SelectedItem.NotIsNull())
                 {
-                    SecFut = Parent.GetSecCodeAndClass(comboBoxFutSec.SelectedItem.ToString());
+                    SecFut = PForm.GetSecByCode(comboBoxFutSec.SelectedItem.ToString());
                     if (SecFut.NotIsNull())
                     {
-                        Trader.RegisterSecurities(SecFut);
+                        Quik.Trader.RegisterSecurities(SecFut);
                     }
                 }
                 UpdateData(null);
             };
 
-            comboBoxFutAccount.SetListValues(Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray());
-            comboBoxBaseAccount.SetListValues(Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray());
+            comboBoxFutAccount.SetListValues(Quik.Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray());
+            comboBoxBaseAccount.SetListValues(Quik.Trader.Objects.tClients.ToArray().Select(c => c.Code).ToArray());
         }
         /// <summary>
         /// 
@@ -178,12 +172,12 @@ namespace AppVEConector.Forms
                 DataArb.sumBasePos = DataArb.basePos * SecBase.Lot * DataArb.basePrice;
 
 
-                var posFut = Trader.Objects.tPositions.SearchFirst(p => p.Sec == SecFut);
+                var posFut = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == SecFut);
                 if (posFut.NotIsNull())
                 {
                     DataArb.futCurPos = posFut.Data.CurrentNet;
                 }
-                var posBase = Trader.Objects.tPositions.SearchFirst(p => p.Sec == SecBase && p.Data.Type == 2);
+                var posBase = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == SecBase && p.Data.Type == 2);
                 if (posBase.NotIsNull())
                 {
                     DataArb.baseCurPos = posBase.Data.CurrentNet;

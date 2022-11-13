@@ -1,12 +1,10 @@
-﻿using AppVEConector.libs;
-using Managers;
+﻿using AppVEConector.Components;
+using AppVEConector.libs;
 using MarketObjects;
+using QuikConnector.Components.Controllers;
 using QuikConnector.MarketObjects;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AppVEConector
@@ -30,7 +28,7 @@ namespace AppVEConector
             {
                 if (comboBoxASLAccount.Items.Count == 0)
                 {
-                    comboBoxASLAccount.SetListValues(this.Trader.Objects.tClients.ToArray()
+                    comboBoxASLAccount.SetListValues(Quik.Trader.Objects.tClients.ToArray()
                         .Select(c => c.Code).ToArray());
                 }
             };
@@ -41,8 +39,7 @@ namespace AppVEConector
                 var text = comboBoxASLSec.Text;
                 if (text.Length >= 2)
                 {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
+                    var listSec = Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
                     if (listSec.Count() > 0)
                     {
                         comboBoxASLSec.Clear();
@@ -149,7 +146,7 @@ namespace AppVEConector
         {
             if (comboBoxASLSec.SelectedItem.NotIsNull())
             {
-                StopLossSec = GetSecCodeAndClass(comboBoxASLSec.SelectedItem.ToString());
+                StopLossSec = GetSecByCode(comboBoxASLSec.SelectedItem.ToString());
                 if (StopLossSec.NotIsNull())
                 {
                     labelASLInfo.Text =
@@ -222,24 +219,24 @@ namespace AppVEConector
                 return;
             }
             TimeControl = DateTime.Now;
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 foreach (var objControl in ASLObject.ToArray)
                 {
-                    var sec = GetSecCodeAndClass(objControl.SecAndCode);
+                    var sec = GetSecByCode(objControl.SecAndCode);
                     if (sec.NotIsNull())
                     {
-                        var pos = Trader.Objects.tPositions.SearchFirst(p => p.Sec == sec);
+                        var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == sec);
                         if (pos.NotIsNull())
                         {
-                            var stopLoss = Trader.Objects.tStopOrders.SearchAll(o => o.Sec == sec
+                            var stopLoss = Quik.Trader.Objects.tStopOrders.SearchAll(o => o.Sec == sec
                                && o.IsActive() && o.Comment.Contains(Define.STOP_LOSS)
                             );
                             var volume = pos.CurrentVolume;
                             //Проверяем, не появились ли лишние стоп ордера
                             if (stopLoss.Count() > 1)
                             {
-                                Trader.CancelAllStopOrder(sec);
+                                Quik.Trader.CancelAllStopOrder(sec);
                                 continue;
                             }
                             //Проверяем не изменилась ли позиция
@@ -249,19 +246,19 @@ namespace AppVEConector
                                 //Снимаем стоп если разные обьемы
                                 if (activeStop.Volume != volume)
                                 {
-                                    Trader.CancelAllStopOrder(sec);
+                                    Quik.Trader.CancelAllStopOrder(sec);
                                     continue;
                                 }
                                 //Снимаем стоп если он в другую сторону
                                 if (activeStop.IsBuy() && pos.IsBuy())
                                 {
-                                    Trader.CancelAllStopOrder(sec);
+                                    Quik.Trader.CancelAllStopOrder(sec);
                                     continue;
                                 }
                             }
                             else if (stopLoss.Count() == 0 && pos.CurrentVolume > 0)
                             {
-                                var allTrades = Trader.Objects.tMyTrades.SearchAll(t => t.Trade.Sec == sec)
+                                var allTrades = Quik.Trader.Objects.tMyTrades.SearchAll(t => t.Trade.Sec == sec)
                                     .OrderByDescending(o => o.Trade.Number);
                                 if (allTrades.NotIsNull())
                                 {
@@ -300,7 +297,7 @@ namespace AppVEConector
                                         stopOrder.ConditionPrice = Price + sec.MinPriceStep * tiks;
                                         stopOrder.Price = stopOrder.ConditionPrice + sec.MinPriceStep * 10;
                                     }
-                                    Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
+                                    Quik.Trader.CreateStopOrder(stopOrder, StopOrderType.StopLimit);
                                     AutoSLLog("Create order: " + sec.ToString() + " " +
                                         (stopOrder.IsBuy() ? "B" : "S") +
                                         " " + stopOrder.ConditionPrice);

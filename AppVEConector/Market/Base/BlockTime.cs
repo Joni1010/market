@@ -51,6 +51,16 @@ namespace Market.Base
             return false;
         }
 
+        public override bool Equals(object d2)
+        {
+            return this == (BlockTime)d2;
+        }
+
+        public override int GetHashCode()
+        {
+            return Year+Month+Day;
+        }
+
         public override string ToString()
         {
             return getNumId().ToString();

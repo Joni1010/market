@@ -12,7 +12,7 @@ namespace AppVEConector
 {
 	public partial class Form_Strategy_morePrev :Form
 	{
-		public Connector.QuikConnector Trader = null;
+		public QuikConnector.Connector Trader = null;
 
 		const int IntervalTimer = 60;    //sec
 										 /// <summary> Контролируемый тайм-фрейм </summary>
@@ -66,7 +66,7 @@ namespace AppVEConector
 		}
 
 
-		public Form_Strategy_morePrev(Connector.QuikConnector trader, TElement trEl)
+		public Form_Strategy_morePrev(QuikConnector.Connector trader, TElement trEl)
 		{
 			this.Trader = trader;
 			InitializeComponent();
@@ -147,7 +147,7 @@ namespace AppVEConector
 
 		public void CancelOldOrders()
 		{
-			var ordersForCancel = this.Trader.Objects.tOrders
+			var ordersForCancel = Quik.Trader.Objects.tOrders
 				.SearchAll(o => o.Comment.Contains(StructStrategy.PrefixComment) &&
 				o.Sec == this.TrElement.Security && o.IsActive());
 			if (ordersForCancel.NotIsNull())
@@ -309,7 +309,7 @@ namespace AppVEConector
 					Direction = OrderDirection.Buy,
 					Sec = this.TrElement.Security,
 					SecCode = this.TrElement.Security.Code,
-					Comment = StructStrategy.PrefixComment + this.Trader.Objects.tMyTrades.Count.ToString()
+					Comment = StructStrategy.PrefixComment + Quik.Trader.Objects.tMyTrades.Count.ToString()
 				};
 				ListSignals.Add(new Signal() { Order = order, CandlePrev = candlePrev, CandleCurr = candleCurr });
 				this.Trader.CreateOrder(order);
@@ -455,7 +455,7 @@ namespace AppVEConector
 					Direction = OrderDirection.Sell,
 					Sec = this.TrElement.Security,
 					SecCode = this.TrElement.Security.Code,
-					Comment = StructStrategy.PrefixComment + this.Trader.Objects.tMyTrades.Count.ToString()
+					Comment = StructStrategy.PrefixComment + Quik.Trader.Objects.tMyTrades.Count.ToString()
 				};
 				ListSignals.Add(new Signal() { Order = order, CandlePrev = candlePrev, CandleCurr = candleCurr });
 				this.Trader.CreateOrder(order);
@@ -473,7 +473,7 @@ namespace AppVEConector
 		{
 			try
 			{
-				var pos = this.Trader.Objects.tPositions.SearchFirst(p => p.Sec == this.TrElement.Security);
+				var pos = Quik.Trader.Objects.tPositions.SearchFirst(p => p.Sec == this.TrElement.Security);
 				if (pos.IsNull()) return false;
 				if (pos.CurrentVolume > 0) return true;
 			}

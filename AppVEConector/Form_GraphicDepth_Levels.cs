@@ -1,14 +1,9 @@
 ﻿using AppVEConector.libs;
-using Connector.Logs;
 using GraphicTools;
-using MarketObjects;
+using QuikConnector.Components.Log;
 using QuikConnector.MarketObjects;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AppVEConector
@@ -144,7 +139,7 @@ namespace AppVEConector
                         var level = rowEl.GetElementTag<LevelsFree.DoubleLevel>();
                         if (level.NotIsNull())
                         {
-                            Qlog.CatchException(() =>
+                            QLog.CatchException(() =>
                             {
                                 level.Top = numericUpDownPriceLevel.Value;
                                 level.Bottom = numericUpDownPriceLevel2.Value;
@@ -157,7 +152,7 @@ namespace AppVEConector
                                     level.DateRight.SetDateTime(Convert.ToDateTime(textBoxDateTimeLevel2.Text));
                                 }
                                 Levels.Edit(level);
-                            }, "",() => { MessageBox.Show("Значение даты не распознано!"); });
+                            }, "");
                         }
                     }
                 }
@@ -178,7 +173,7 @@ namespace AppVEConector
         /// <summary> Обновляет список уровней </summary>
         private void UpdatePanelLevels(bool isNew = false)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 if (this.Levels.IsNull() || isNew)
                 {

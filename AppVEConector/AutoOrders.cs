@@ -1,12 +1,10 @@
-﻿using Connector.Logs;
-using Libs;
+﻿using Libs;
 using MarketObjects;
+using QuikConnector.Components.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppVEConector
 {
@@ -154,7 +152,7 @@ namespace AppVEConector
             }
             catch (Exception e)
             {
-                Qlog.Write("Ошибка при получении данный из файла FullFileName." + e.ToString());
+                QLog.Write("Ошибка при получении данный из файла FullFileName." + e.ToString());
                 return false;
             }
         }

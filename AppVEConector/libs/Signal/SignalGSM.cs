@@ -1,10 +1,8 @@
-﻿using Connector.Logs;
-
+﻿using QuikConnector.Components.Log;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace AppVEConector.libs.Signal
 {
@@ -73,7 +71,7 @@ namespace AppVEConector.libs.Signal
 
         private bool SaveSignals()
         {
-            return (bool)Qlog.CatchException(() =>
+            return (bool)QLog.CatchException(() =>
             {
                 lock (syncObj)
                 {
@@ -97,7 +95,7 @@ namespace AppVEConector.libs.Signal
 
         private bool LoadSignals()
         {
-            return (bool)Qlog.CatchException(() =>
+            return (bool)QLog.CatchException(() =>
             {
                 if (File.Exists(this.GetFilename()))
                 {
@@ -118,7 +116,9 @@ namespace AppVEConector.libs.Signal
         {
             this.sPort = new SignalPort(namePort);
             if (sPort.NotIsNull())
+            {
                 return sPort.Open();
+            }
             return false;
         }
 

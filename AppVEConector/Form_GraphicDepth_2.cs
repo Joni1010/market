@@ -89,7 +89,7 @@ namespace AppVEConector
             order.Price = cross.Price;
             order.Volume = (int)this.numericUpDownVolume.Value;
             order.Direction = cond;
-            this.Parent.Trader.CreateOrder(order);
+            Quik.Trader.CreateOrder(order);
         }
 
         private void ContextMenuGraphic_toolStripGraphicStopOrder_Click(object s, EventArgs e)

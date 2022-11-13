@@ -1,16 +1,11 @@
-﻿using AppVEConector.GraphicTools.Base;
-using AppVEConector.GraphicTools.Indicators;
+﻿using AppVEConector.GraphicTools.Indicators;
 using GraphicTools.Base;
 using GraphicTools.Shapes;
-using Managers;
 using Market.Base;
 using Market.Candles;
-using MarketObjects;
 using MarketObjects.Charts;
+using QuikConnector.Components.Controllers;
 using QuikConnector.MarketObjects;
-using QuikControl;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -580,7 +575,7 @@ namespace GraphicTools.Extension
             }
             if (ThreadPaintHotVol.IsNull())
             {
-                ThreadPaintHotVol = MThread.InitThread(() =>
+                ThreadPaintHotVol = ThreadsController.Thread(() =>
                 {
                     GHorVolumes.CollectionCandles = Candels.AllDataPaintedCandle;
                     if (TypeHorVolume == 1)

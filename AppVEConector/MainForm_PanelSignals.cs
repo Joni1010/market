@@ -1,20 +1,17 @@
 ﻿using AppVEConector.libs;
-using Connector.Logs;
 using MarketObjects;
-
 using System;
-using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
-
-
 using AppVEConector.libs.Proceses;
 using AppVEConector.libs.Signal;
 using GraphicTools.Extension;
-using Managers;
 using QuikConnector.MarketObjects;
+using QuikConnector.Components.Log;
+using QuikConnector.Components.Controllers;
+using AppVEConector.Components;
 
 namespace AppVEConector
 {
@@ -33,25 +30,28 @@ namespace AppVEConector
         /// </summary>
         public void InitPanelSignal()
         {
-            SignalView.GSMSignaler.Phone = Connector.QuikConnector.ConfSettings.GetParam("Main", "PhoneSignal").Value;
+            SignalView.GSMSignaler.Phone = QuikConnector.Connector.ConfSettings.GetParam("Main", "PhoneSignal").Value;
 
             comboBoxSecSign.SetListValues(Global.GetWorkingListSec().ToArray());
-            comboBoxSecSign.TextChanged += (s, e) =>
+            comboBoxSecSign.InitSearcher((text) =>
             {
-                var text = comboBoxSecSign.Text;
-                if (text.Length >= 2)
-                {
-                    var listSec = Trader.Objects.tSecurities.SearchAll(el => el.Code.ToLower().Contains(text.ToLower()) ||
-                        el.Name.ToLower().Contains(text.ToLower())).Select(el => el.ToString());
-                    if (listSec.Count() > 0)
-                    {
-                        comboBoxSecSign.Clear();
-                        comboBoxSecSign.SetListValues(listSec);
-                    }
-                }
-                comboBoxSecSign.Select(text.Length, 0);
-                UpdateGridSignals();
-            };
+                return Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
+            }, ()=> { UpdateGridSignals(); });
+            //    TextChanged += (s, e) =>
+            //{
+            //    var text = comboBoxSecSign.Text;
+            //    if (text.Length >= 2)
+            //    {
+            //        var listSec = Searcher.StockAsArray(Quik.Trader.Objects.tSecurities.ToArray(), text);
+            //        if (listSec.Count() > 0)
+            //        {
+            //            comboBoxSecSign.Clear();
+            //            comboBoxSecSign.SetListValues(listSec);
+            //        }
+            //    }
+            //    comboBoxSecSign.Select(text.Length, 0);
+            //    UpdateGridSignals();
+            //};
             comboBoxSecSign.KeyPress += (s, e) =>
             {
                 var k = e.KeyChar;
@@ -93,7 +93,7 @@ namespace AppVEConector
 
                 if (comboBoxSecSign.SelectedItem is string)
                 {
-                    LastSecSignal = GetSecCodeAndClass(comboBoxSecSign.SelectedItem.ToString());
+                    LastSecSignal = GetSecByCode(comboBoxSecSign.SelectedItem.ToString());
                     if (LastSecSignal.NotIsNull())
                     {
                         numericUpDownPrice.InitSecurity(LastSecSignal);
@@ -151,7 +151,7 @@ namespace AppVEConector
         /// <param name="isUp"></param>
         private void MoveSignal(bool isUp = true)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 if (dataGridViewListSign.SelectedRows.NotIsNull())
                 {
@@ -248,7 +248,7 @@ namespace AppVEConector
         public void CheckAllSignals()
         {
             if (!SignalView.GSMSignaler.IsInit()) return;
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 foreach (var sig in SignalView.GSMSignaler.ToArray())
                 {
@@ -260,7 +260,7 @@ namespace AppVEConector
                                 var date = sig.TimeAntiRepeat.GetDateTime();
                                 if (date <= DateTime.Now)
                                 {
-                                    var sec = GetSecCodeAndClass(sig.SecClass);
+                                    var sec = GetSecByCode(sig.SecClass);
                                     if (sec.NotIsNull())
                                     {
                                         var trElem = DataTrading.Collection.FirstOrDefault(c => c.Security == sec);
@@ -319,7 +319,7 @@ namespace AppVEConector
                         case SignalMarket.TypeSignal.ByPrice:
                             if (!sig.SecClass.Empty())
                             {
-                                var sec = GetSecCodeAndClass(sig.SecClass);
+                                var sec = GetSecByCode(sig.SecClass);
 
                                 if (sec.NotIsNull() && sec.LastTrade.NotIsNull())
                                 {
@@ -483,7 +483,7 @@ namespace AppVEConector
 
         private void buttonAddSignVolume_Click(object sender, EventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 //if (LastSecSignal.IsNull()) return;
                 int timeFrame = 1;
@@ -507,7 +507,7 @@ namespace AppVEConector
 
         private void buttonDelSign_Click(object sender, EventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 //if (LastSecSignal.IsNull()) return;
                 if (dataGridViewListSign.SelectedRows.NotIsNull())
@@ -544,7 +544,7 @@ namespace AppVEConector
 
         private void buttonRestartSignalPort_Click(object sender, EventArgs e)
         {
-            Qlog.CatchException(() =>
+            QLog.CatchException(() =>
             {
                 if (comboBoxPorts.SelectedItem.NotIsNull())
                 {
@@ -580,7 +580,7 @@ namespace AppVEConector
         private void buttonSignTestCall_Click(object sender, EventArgs e)
         {
             SignalView.GSMSignaler.SendSignalCall();
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 Thread.Sleep(15000);
                 SignalView.GSMSignaler.SendSignalResetCall();
@@ -590,7 +590,7 @@ namespace AppVEConector
         private void buttonSignTestDev_Click(object sender, EventArgs e)
         {
             SignalView.GSMSignaler.SendTestSignal();
-            MThread.InitThread(() =>
+            ThreadsController.Thread(() =>
             {
                 Thread.Sleep(1000);
                 SignalView.GSMSignaler.SendTestSignal(false);
