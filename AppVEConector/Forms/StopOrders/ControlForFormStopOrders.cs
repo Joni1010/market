@@ -750,7 +750,6 @@ namespace AppVEConector.Forms.StopOrders
                 if (pan.Position.NotIsNull())
                 {
                     var countPos = pan.Position.CurrentVolume;
-                    countPos = countPos / (pan.TrElement.Security.Params.DaysToMatDate > 0 ? 1 : pan.TrElement.Security.Lot);
                     if (countPos != 0)
                     {
                         var stOrder = stopOrders.Where(o => o.Sec == pan.TrElement.Security);
