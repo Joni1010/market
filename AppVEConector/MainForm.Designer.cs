@@ -106,6 +106,7 @@ namespace AppVEConector
             this.BtnGetDepth = new System.Windows.Forms.DataGridViewButtonColumn();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.labelCountOldTrade = new System.Windows.Forms.Label();
             this.labelLastOldTrade = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBoxSearchSec = new System.Windows.Forms.TextBox();
@@ -238,7 +239,6 @@ namespace AppVEConector
             this.labelASLLog = new System.Windows.Forms.Label();
             this.comboBoxASLAccount = new System.Windows.Forms.ComboBox();
             this.label18 = new System.Windows.Forms.Label();
-            this.labelCountOldTrade = new System.Windows.Forms.Label();
             this.statusStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabPageStopOrders.SuspendLayout();
@@ -1080,6 +1080,19 @@ namespace AppVEConector
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(335, 480);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // labelCountOldTrade
+            // 
+            this.labelCountOldTrade.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelCountOldTrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.labelCountOldTrade.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelCountOldTrade.Location = new System.Drawing.Point(128, 295);
+            this.labelCountOldTrade.Margin = new System.Windows.Forms.Padding(1);
+            this.labelCountOldTrade.Name = "labelCountOldTrade";
+            this.labelCountOldTrade.Size = new System.Drawing.Size(196, 23);
+            this.labelCountOldTrade.TabIndex = 8;
+            this.labelCountOldTrade.Text = "-";
+            this.labelCountOldTrade.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // labelLastOldTrade
             // 
@@ -2717,19 +2730,6 @@ namespace AppVEConector
             this.label18.TabIndex = 7;
             this.label18.Text = "Кл. счет";
             this.label18.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // labelCountOldTrade
-            // 
-            this.labelCountOldTrade.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelCountOldTrade.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.labelCountOldTrade.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.labelCountOldTrade.Location = new System.Drawing.Point(128, 295);
-            this.labelCountOldTrade.Margin = new System.Windows.Forms.Padding(1);
-            this.labelCountOldTrade.Name = "labelCountOldTrade";
-            this.labelCountOldTrade.Size = new System.Drawing.Size(196, 23);
-            this.labelCountOldTrade.TabIndex = 8;
-            this.labelCountOldTrade.Text = "-";
-            this.labelCountOldTrade.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MainForm
             // 

@@ -724,58 +724,52 @@ namespace AppVEConector
             }
         }
 
-        DateTime Timer100ms = DateTime.Now;
-        DateTime Timer1s = DateTime.Now;
-        DateTime Timer3s = DateTime.Now;
-        DateTime Timer5s = DateTime.Now;
 
         private void InitTimers()
         {
-            void livingLoop(object s, EventArgs e)
+            TimersController.Timer(new TimeSpan(100), (s, e) =>
             {
-                QLog.CatchException(() =>
+                if (OnTimer100ms.NotIsNull())
                 {
-                    var now = DateTime.Now;
-                    //100ms
-                    if (now > Timer100ms.AddMilliseconds(100))
-                    {
-                        if (OnTimer100ms.NotIsNull())
-                        {
-                            OnTimer100ms((DispatcherTimer)s);
-                        }
-                        Timer100ms = now;
-                    }
-                    //1 sec
-                    if (now > Timer1s.AddSeconds(1))
-                    {
-                        if (OnTimer1s.NotIsNull())
-                        {
-                            OnTimer1s((DispatcherTimer)s);
-                        }
-                        Timer1s = now;
-                    }
-                    //3 sec
-                    if (now > Timer3s.AddSeconds(3))
-                    {
-                        if (OnTimer3s.NotIsNull())
-                        {
-                            OnTimer3s((DispatcherTimer)s);
-                        }
-                        Timer3s = now;
-                    }
-                    // 5 sec
-                    if (now > Timer5s.AddSeconds(5))
-                    {
-                        if (OnTimer5s.NotIsNull())
-                        {
-                            OnTimer5s((DispatcherTimer)s);
-                        }
-                        Timer5s = now;
-                    }
-                    EventStrategy();
-                });
-            }
-            TimersController.Timer(new TimeSpan(100), livingLoop);
+                    OnTimer100ms((DispatcherTimer)s);
+                }
+            });
+            TimersController.Timer(new TimeSpan(0, 0, 1), (s, e) =>
+            {
+                if (OnTimer1s.NotIsNull())
+                {
+                    OnTimer1s((DispatcherTimer)s);
+                }
+            });
+
+            TimersController.Timer(new TimeSpan(0, 0, 3), (s, e) =>
+            {
+                if (OnTimer3s.NotIsNull())
+                {
+                    OnTimer3s((DispatcherTimer)s);
+                }
+            });
+
+            TimersController.Timer(new TimeSpan(0, 0, 5), (s, e) =>
+            {
+                if (OnTimer5s.NotIsNull())
+                {
+                    OnTimer5s((DispatcherTimer)s);
+                }
+            });
+            //Проверка на отключение терминала
+            TimersController.Timer(new TimeSpan(0, 0, 30), (s, e) =>
+            {
+                if (Quik.Trader.Connected && !Quik.Trader.Objects.Terminal.Connect)
+                {
+                    SignalView.GSMSignaler.SendSignalCall();
+                }
+            });
+
+            OnTimer100ms += (timer) =>
+            {
+                EventStrategy();
+            };
 
             OnTimer1s += (timer) =>
             {
